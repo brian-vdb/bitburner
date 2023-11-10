@@ -29,17 +29,12 @@ export function getNumLogicalProcessors() {
  * Offloads text data processing to workers.
  *
  * @param {import("../.").NS} ns - The namespace object.
- * @param {Function} func - The processing function.
+ * @param {Function} func - The processing function (can be synchronous or asynchronous).
  * @param {string} filepath - The path to the text file.
  * @throws {Error} Throws an error if the text file does not exist or is empty.
  * @returns {number} The number of Web Workers created.
  */
 export function processFileWithWorkers(ns, func, filepath) {
-    const file = ns.read(filepath);
-    if (!file) {
-        throw new Error('The text file does not exist or is empty');
-    }
-
     // Get the number of logical processors
     const numLogicalProcessors = getNumLogicalProcessors();
 
