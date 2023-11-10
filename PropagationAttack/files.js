@@ -18,5 +18,5 @@ export function saveHostnamesAsJSON(ns, hostnames) {
     }
 
     const jsonContent = JSON.stringify(hostnames.map(hostname => ({ hostname })), null, 2);
-    ns.write("hostnames.txt", jsonContent);
+    ns.write("hostnames.txt", jsonContent, "w");
 }
