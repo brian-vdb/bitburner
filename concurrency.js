@@ -1,3 +1,9 @@
+/*
+   Brian van den Berg
+   File: concurrency.js
+   Description: This file contains concurrency-oriented functions to achieve load-balancing.
+*/
+
 // getNumLogicalProcessors gets the number of logical processors for optimally offloading to workers
 export function getNumLogicalProcessors() {
     try {
