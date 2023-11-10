@@ -6,7 +6,7 @@
 */
 
 import { getAvailableHacks, intrudeServer } from "./PropagationAttack/intrude";
-import { saveHostnamesAsJSON } from "./PropagationAttack/files";
+import { saveArrayAsJSON } from "./PropagationAttack/files";
 
 /**
  * Propagates through the network and all of its nodes.
@@ -41,7 +41,7 @@ export async function main(ns) {
     hostnames = _propagateNetwork(ns, host, hostnames);
 
     // Save the list of hostnames for future reference
-    saveHostnamesAsJSON(ns, hostnames);
+    saveArrayAsJSON(ns, hostnames, 'servers.txt');
 
     // Get the list of available hacking methods
     const hacks = getAvailableHacks(ns);

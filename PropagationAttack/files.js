@@ -5,18 +5,20 @@
 */
 
 /**
- * Saves an array of server hostnames as a JSON format in a .txt file
+ * Saves an array of data as a JSON format in a .txt file
  *
  * @param {import("../index").NS} ns - The environment.
- * @param {string[]} hostnames - An array of server hostnames.
+ * @param {Array} data - An array of data to be saved as JSON.
+ * @param {string} filename - The name of the file to be written.
  * @returns {void}
  */
-export function saveHostnamesAsJSON(ns, hostnames) {
-    if (!hostnames || hostnames.length === 0) {
-        ns.tprint("No hostnames provided to store.");
+export function saveArrayAsJSON(ns, data, filename) {
+    if (!data || data.length === 0) {
+        ns.tprint("No data provided to store.");
         return;
     }
 
-    const jsonContent = hostnames.map(hostname => JSON.stringify({ hostname }, null, 2)).join('\n');
-    ns.write("hostnames.txt", jsonContent, "w");
+    const jsonContent = data.map(item => JSON.stringify({ item }, null, 2)).join('\n');
+    ns.write(filename || "data.txt", jsonContent, "w");
+    ns.tprint(`Data stored in '${filename || "data.txt"}'`);
 }
