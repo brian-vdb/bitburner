@@ -4,7 +4,7 @@
    Description: This file contains functions related to network propagation and intrusion.
 */
 
-import { getAvailableHacks, intrudeServer } from "./intrude";
+import { getAvailableHacks, intrudeServer } from "./propagate/intrude";
 
 /**
  * Propagates through the network and all of its nodes.
