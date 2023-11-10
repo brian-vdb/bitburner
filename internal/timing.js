@@ -5,23 +5,6 @@
 */
 
 /**
- * Schedules a task with a delay for execution.
- *
- * @param {Function} task - The task to be scheduled.
- * @param {number} delay - The delay in milliseconds before executing the task.
- * @returns {void}
- */
-export function scheduleTask(task, delay) {
-    setTimeout(async () => {
-        const result = task();
-
-        if (result instanceof Promise) {
-            await result; // Wait for the promise to resolve
-        }
-    }, delay);
-}
-
-/**
  * Schedules a task to run periodically with a specified interval.
  *
  * @param {Function} task - The task to be scheduled.
