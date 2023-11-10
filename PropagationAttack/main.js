@@ -6,7 +6,7 @@
 */
 
 import { getAvailableHacks, intrudeServer } from "./PropagationAttack/intrude";
-import { saveArrayAsJSON } from "./PropagationAttack/files";
+import { saveArrayAsJSON } from "./internal/json";
 
 /**
  * Propagates through the network and all of its nodes.
