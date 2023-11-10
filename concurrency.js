@@ -1,5 +1,5 @@
 // getNumLogicalProcessors gets the number of logical processors for optimally offloading to workers
-export async function getNumLogicalProcessors() {
+export function getNumLogicalProcessors() {
     try {
         // Fetch the number logical processors available
         if (navigator && 'hardwareConcurrency' in navigator) {
