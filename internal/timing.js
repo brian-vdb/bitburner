@@ -4,7 +4,13 @@
    Description: This file contains timing-oriented functions such as scheduling or sleeping.
 */
 
-// scheduleTask schedules a task with a delay for execution
+/**
+ * Schedules a task with a delay for execution.
+ *
+ * @param {Function} task - The task to be scheduled.
+ * @param {number} delay - The delay in milliseconds before executing the task.
+ * @returns {void}
+ */
 export function scheduleTask(task, delay) {
     setTimeout(async () => {
         const result = task();
@@ -15,7 +21,13 @@ export function scheduleTask(task, delay) {
     }, delay);
 }
 
-// schedulePeriodicTask schedules a task to run periodically with a specified interval
+/**
+ * Schedules a task to run periodically with a specified interval.
+ *
+ * @param {Function} task - The task to be scheduled.
+ * @param {number} interval - The interval in milliseconds between each execution of the task.
+ * @returns {number} The ID of the interval, which can be used to clearInterval.
+ */
 export function schedulePeriodicTask(task, interval) {
     return setInterval(async () => {
         const result = task();
@@ -26,7 +38,12 @@ export function schedulePeriodicTask(task, interval) {
     }, interval);
 }
 
-// sleep makes the task inactive
+/**
+ * Makes the task inactive for a specified duration.
+ *
+ * @param {number} ms - The duration in milliseconds for which the task should be inactive.
+ * @returns {Promise<void>} A promise that resolves after the specified duration.
+ */
 export function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
