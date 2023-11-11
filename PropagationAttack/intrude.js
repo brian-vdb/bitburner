@@ -37,7 +37,7 @@ export function intrudeServer(ns, hostname, target, hacks) {
     // Check if the server is already nuked
     if (ns.hasRootAccess(target)) {
         // Update the public scripts
-        if(uploadPublicScriptsToServer(ns, hostname, target)) {
+        if(!uploadPublicScriptsToServer(ns, hostname, target)) {
             ns.tprint(`Warning: Failed to update 'public/*' on ${target}`);
         }
         return;
@@ -56,7 +56,7 @@ export function intrudeServer(ns, hostname, target, hacks) {
     ns.nuke(target);
 
     // Upload the public scripts
-    if(uploadPublicScriptsToServer(ns, hostname, target)) {
+    if(!uploadPublicScriptsToServer(ns, hostname, target)) {
         ns.tprint(`Warning: Failed to upload 'public/*' to ${target}`);
     }
 
