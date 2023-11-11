@@ -16,7 +16,7 @@ import { sleep } from './internal/time';
 export async function main(ns) {
     const hostname = ns.getHostname();
 
-    // Perform the Propagation Attack
+    // Perform a Propagation Attack
     let propagationOutput = 'servers.txt';
     const pid = ns.exec('./tools/PropagationAttack/main.js', hostname, { preventDuplicates: true }, propagationOutput);
     while (isProcessRunning(ns, pid)) {
