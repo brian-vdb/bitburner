@@ -4,12 +4,12 @@
    Description: This file contains functions related to intrusion of servers.
 */
 
-import { uploadPublicScriptsToServer } from "./PropagationAttack/upload";
+import { uploadPublicScriptsToServer } from "./tools/PropagationAttack/upload";
 
 /**
  * Gets the available hacks as an array of functions.
  *
- * @param {import("../index").NS} ns - The environment object.
+ * @param {import("../../index").NS} ns - The environment object.
  * @returns {((hostname: string) => void)[]} An array of functions that take a 'hostname' argument and return void.
  */
 export function getAvailableHacks(ns) {
@@ -27,7 +27,7 @@ export function getAvailableHacks(ns) {
 /**
  * Attempts to intrude into the previously found nodes.
  *
- * @param {import("../index").NS} ns - The environment object.
+ * @param {import("../../index").NS} ns - The environment object.
  * @param {string} hostname - Hostname of the server attacking.
  * @param {string} target - The server to try and intrude
  * @param {((hostname: string) => void)[]} hacks - Port hacks to nuke a server

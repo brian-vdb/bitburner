@@ -5,13 +5,13 @@
    Description: This module contains functions related to network propagation and intrusion for the PropagationAttack feature.
 */
 
-import { getAvailableHacks, intrudeServer } from "./PropagationAttack/intrude";
+import { getAvailableHacks, intrudeServer } from "./tools/PropagationAttack/intrude";
 import { saveArrayAsJSON } from "./internal/json";
 
 /**
  * Propagates through the network and all of its nodes.
  *
- * @param {import("../index").NS} ns - The environment object.
+ * @param {import("../../index").NS} ns - The environment object.
  * @param {string} hostname - The hostname of the server currently being propagated from
  * @param {string[]} servers - The list of servers that have been found
  * @returns {string[]} An array of server hostnames on the network.
@@ -35,7 +35,7 @@ function _propagateNetwork(ns, hostname, servers) {
 /**
  * Main function to perform a propagation attack.
  *
- * @param {import("../index").NS} ns - The environment object.
+ * @param {import("../../index").NS} ns - The environment object.
  * @returns {Promise<void>} A promise that resolves when the attack is complete.
  */
 export async function main(ns) {

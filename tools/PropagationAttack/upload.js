@@ -7,7 +7,7 @@
 /**
  * Uploads all of the scripts in the public folder to a server
  *
- * @param {import("../index").NS} ns - The environment object.
+ * @param {import("../../index").NS} ns - The environment object.
  * @param {string} hostname - Hostname of the server uploading.
  * @param {string} target - The server to upload to.
  * @returns {boolean} - Wether the files were transmitted
