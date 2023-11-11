@@ -10,8 +10,9 @@
  * @param {import("../index").NS} ns - The environment object.
  * @param {string} hostname - Hostname of the server uploading.
  * @param {string} target - The server to upload to.
- * @returns {void}
+ * @returns {boolean} - Wether the files were transmitted
  */
 export function uploadPublicScriptsToServer(ns, hostname, target) {
-   ns.tprint(ns.ls(hostname, 'public/'));
+   const scripts = ns.ls(hostname, 'public/');
+   return ns.scp(scripts, target, hostname);
 }
