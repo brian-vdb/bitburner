@@ -32,7 +32,12 @@ function _propagateNetwork(ns, host, hostnames) {
     return hostnames;
 }
 
-/** @param {import("../index").NS} ns */
+/**
+ * Main function to perform a propagation attack.
+ *
+ * @param {import("./index").NS} ns - The namespace object.
+ * @returns {Promise<void>} A promise that resolves when the attack is complete.
+ */
 export async function main(ns) {
     const host = ns.getHostname();
     let hostnames = [];

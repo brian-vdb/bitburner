@@ -35,7 +35,7 @@ function isProcessRunning(ns, pid) {
  * Main function to automate the game.
  *
  * @param {import("./index").NS} ns - The namespace object.
- * @returns {Promise<void>} A promise that resolves when the attack is complete.
+ * @returns {Promise<void>} A promise that resolves when the script finishes.
  */
 export async function main(ns) {
     const hostname = ns.getHostname();
