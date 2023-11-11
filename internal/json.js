@@ -19,10 +19,10 @@ export function saveArrayAsJSON(ns, data, fieldname, filename) {
     }
 
     // Convert the array to a list of JSON objects.
-    const jsonData = data.map(item => JSON.stringify({ [fieldname]: item }, null, 4)).join();
+    const jsonData = data.map(item => JSON.stringify({ [fieldname]: item }, null, null)).join();
 
     // Write the stringified JSON array to the file.
-    ns.write(filename || "data.txt", jsonData, "w");
+    ns.write(filename || "data.txt", `[${jsonData}]`, "w");
 }
 
 /**
@@ -43,7 +43,7 @@ export function readJSONFile(ns, filename) {
 
     // Parse the string as a JSON object and return it
     try {
-        const jsonArray = JSON.parse(`[${fileContent}]`);
+        const jsonArray = JSON.parse(fileContent);
         if (!Array.isArray(jsonArray)) {
             throw new Error('File does not contain a valid JSON array.');
         }
