@@ -52,7 +52,7 @@ export async function main(ns) {
     servers.forEach((server) => {
         intrudeServer(ns, hostname, server, hacks);
     });
-
+    
     // Save the list of servers for future reference
-    saveArrayAsJSON(ns, servers, 'servers.txt');
+    saveArrayAsJSON(ns, servers, 'hostname', 'servers.txt');
 }
