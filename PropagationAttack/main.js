@@ -35,7 +35,7 @@ function _propagateNetwork(ns, host, hostnames) {
 /**
  * Main function to perform a propagation attack.
  *
- * @param {import("./index").NS} ns - The namespace object.
+ * @param {import("../index").NS} ns - The namespace object.
  * @returns {Promise<void>} A promise that resolves when the attack is complete.
  */
 export async function main(ns) {
