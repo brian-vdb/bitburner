@@ -40,9 +40,6 @@ export async function main(ns) {
     // Get a list of all of the hostnames in the whole network
     hostnames = _propagateNetwork(ns, host, hostnames);
 
-    // Save the list of hostnames for future reference
-    saveArrayAsJSON(ns, hostnames, 'servers.txt');
-
     // Get the list of available hacking methods
     const hacks = getAvailableHacks(ns);
 
@@ -50,4 +47,7 @@ export async function main(ns) {
     hostnames.forEach((hostname) => {
         intrudeServer(ns, hacks, hostname);
     });
+
+    // Save the list of hostnames for future reference
+    saveArrayAsJSON(ns, hostnames, 'servers.txt');
 }
