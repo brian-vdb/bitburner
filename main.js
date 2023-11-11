@@ -17,7 +17,7 @@ export async function main(ns) {
     const hostname = ns.getHostname();
 
     // Perform a Propagation Attack
-    let propagationOutput = 'servers.txt';
+    let propagationOutput = 'data/servers.txt';
     const pid = ns.exec('./tools/PropagationAttack/main.js', hostname, { preventDuplicates: true }, propagationOutput);
     while (isProcessRunning(ns, pid)) {
         await sleep(20);
