@@ -39,6 +39,10 @@ function _propagateNetwork(ns, hostname, servers) {
  * @returns {Promise<void>} A promise that resolves when the attack is complete.
  */
 export async function main(ns) {
+    if (ns.args.length < 1) {
+        throw new Error("Output filename was expected but not provided.");
+    }
+
     const hostname = ns.getHostname();
     let servers = [];
     
@@ -54,5 +58,5 @@ export async function main(ns) {
     });
     
     // Save the list of servers for future reference
-    saveArrayAsJSON(ns, servers, 'hostname', 'servers.txt');
+    saveArrayAsJSON(ns, servers, 'hostname', ns.args[0]);
 }
