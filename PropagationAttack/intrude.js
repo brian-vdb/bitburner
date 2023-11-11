@@ -4,6 +4,8 @@
    Description: This file contains functions related to intrusion of servers.
 */
 
+import { uploadPublicScriptsToServer } from "./PropagationAttack/upload";
+
 /**
  * Gets the available hacks as an array of functions.
  *
@@ -26,26 +28,35 @@ export function getAvailableHacks(ns) {
  * Attempts to intrude into the previously found nodes.
  *
  * @param {import("../index").NS} ns - The environment object.
- * @param {string} hostname - The server to try and intrude
+ * @param {string} hostname - Hostname of the server attacking.
+ * @param {string} target - The server to try and intrude
+ * @param {((hostname: string) => void)[]} hacks - Port hacks to nuke a server
  * @returns {void}
  */
-export function intrudeServer(ns, hacks, hostname) {
+export function intrudeServer(ns, hostname, target, hacks) {
     // Check if the server is already nuked
-    if (ns.hasRootAccess(hostname)) return;
+    if (ns.hasRootAccess(target)) {
+        // Update the public scripts
+        uploadPublicScriptsToServer(ns, hostname, target);
+        return;
+    }
 
     // Check if we can nuke the server
-    const hacksRequired = ns.getServerNumPortsRequired(hostname);
+    const hacksRequired = ns.getServerNumPortsRequired(target);
     if (hacks.length < hacksRequired) return;
 
     // Perform the required amount of hacks
     for (let i = 0; i < hacksRequired; i++) {
-        hacks[i](hostname);
+        hacks[i](target);
     }
 
     // Nuke the server
-    ns.nuke(hostname);
+    ns.nuke(target);
+
+    // Upload the public scripts
+    uploadPublicScriptsToServer(ns, hostname, target);
 
     // Log the successful nuke
     const date = new Date();
-    ns.tprint(`${date.getHours()}.${date.getMinutes()}: ${hostname} Nuked`);
+    ns.tprint(`${date.getHours()}.${date.getMinutes()}: ${target} Nuked`);
 }

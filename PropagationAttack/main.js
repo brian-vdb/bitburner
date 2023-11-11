@@ -12,24 +12,24 @@ import { saveArrayAsJSON } from "./internal/json";
  * Propagates through the network and all of its nodes.
  *
  * @param {import("../index").NS} ns - The environment object.
- * @param {string} host - The hostname of the server currently being propagated from
- * @param {string[]} hostnames - The list of hostnames that have been seen
+ * @param {string} hostname - The hostname of the server currently being propagated from
+ * @param {string[]} servers - The list of servers that have been found
  * @returns {string[]} An array of server hostnames on the network.
  */
-function _propagateNetwork(ns, host, hostnames) {
-    hostnames.push(host);
+function _propagateNetwork(ns, hostname, servers) {
+    servers.push(hostname);
 
     // Find the neighboring servers
-    const targets = ns.scan(host);
+    const targets = ns.scan(hostname);
 
     // Using forEach to iterate over the array
     targets.forEach((target) => {
-        if (!hostnames.includes(target)) {
-            hostnames = _propagateNetwork(ns, target, hostnames);
+        if (!servers.includes(target)) {
+            servers = _propagateNetwork(ns, target, servers);
         }
     });
 
-    return hostnames;
+    return servers;
 }
 
 /**
@@ -39,20 +39,20 @@ function _propagateNetwork(ns, host, hostnames) {
  * @returns {Promise<void>} A promise that resolves when the attack is complete.
  */
 export async function main(ns) {
-    const host = ns.getHostname();
-    let hostnames = [];
+    const hostname = ns.getHostname();
+    let servers = [];
     
-    // Get a list of all of the hostnames in the whole network
-    hostnames = _propagateNetwork(ns, host, hostnames);
+    // Get a list of all of the servers in the network
+    servers = _propagateNetwork(ns, hostname, servers);
 
     // Get the list of available hacking methods
     const hacks = getAvailableHacks(ns);
 
     // Hack into every vulnerable server in the network
-    hostnames.forEach((hostname) => {
-        intrudeServer(ns, hacks, hostname);
+    servers.forEach((server) => {
+        intrudeServer(ns, hostname, server, hacks);
     });
 
-    // Save the list of hostnames for future reference
-    saveArrayAsJSON(ns, hostnames, 'servers.txt');
+    // Save the list of servers for future reference
+    saveArrayAsJSON(ns, servers, 'servers.txt');
 }
