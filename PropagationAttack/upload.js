@@ -13,5 +13,5 @@
  * @returns {void}
  */
 export function uploadPublicScriptsToServer(ns, hostname, target) {
-   ns.tprint(ns.ls(hostname));
+   ns.tprint(ns.ls(hostname, 'public/'));
 }
