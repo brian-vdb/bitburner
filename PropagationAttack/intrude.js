@@ -7,7 +7,7 @@
 /**
  * Gets the available hacks as an array of functions.
  *
- * @param {import("../index").NS} ns - The environment.
+ * @param {import("../index").NS} ns - The environment object.
  * @returns {((hostname: string) => void)[]} An array of functions that take a 'hostname' argument and return void.
  */
 export function getAvailableHacks(ns) {
@@ -25,7 +25,7 @@ export function getAvailableHacks(ns) {
 /**
  * Attempts to intrude into the previously found nodes.
  *
- * @param {import("../index").NS} ns - The environment.
+ * @param {import("../index").NS} ns - The environment object.
  * @param {string} hostname - The server to try and intrude
  * @returns {void}
  */

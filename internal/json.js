@@ -7,7 +7,7 @@
 /**
  * Saves an array of data as a JSON format in a .txt file.
  *
- * @param {import("../index").NS} ns - The environment.
+ * @param {import("../index").NS} ns - The environment object.
  * @param {Array} data - An array of data to be saved as JSON.
  * @param {string} filename - The name of the file to be written.
  * @returns {void}

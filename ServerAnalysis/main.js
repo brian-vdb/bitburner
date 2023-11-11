@@ -8,7 +8,7 @@
 /**
  * Main function to perform a server analysis.
  *
- * @param {import("../index").NS} ns - The namespace object.
+ * @param {import("../index").NS} ns - The environment object.
  * @returns {Promise<void>} A promise that resolves when the analysis is complete.
  */
 export async function main(ns) {

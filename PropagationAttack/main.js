@@ -11,7 +11,7 @@ import { saveArrayAsJSON } from "./internal/json";
 /**
  * Propagates through the network and all of its nodes.
  *
- * @param {import("../index").NS} ns - The environment.
+ * @param {import("../index").NS} ns - The environment object.
  * @param {string} host - The hostname of the server currently being propagated from
  * @param {string[]} hostnames - The list of hostnames that have been seen
  * @returns {string[]} An array of server hostnames on the network.
@@ -35,7 +35,7 @@ function _propagateNetwork(ns, host, hostnames) {
 /**
  * Main function to perform a propagation attack.
  *
- * @param {import("../index").NS} ns - The namespace object.
+ * @param {import("../index").NS} ns - The environment object.
  * @returns {Promise<void>} A promise that resolves when the attack is complete.
  */
 export async function main(ns) {

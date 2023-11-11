@@ -34,7 +34,7 @@ function isProcessRunning(ns, pid) {
 /**
  * Main function to automate the game.
  *
- * @param {import("./index").NS} ns - The namespace object.
+ * @param {import("./index").NS} ns - The environment object.
  * @returns {Promise<void>} A promise that resolves when the script finishes.
  */
 export async function main(ns) {
