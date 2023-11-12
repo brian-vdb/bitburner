@@ -14,6 +14,7 @@ import { readJSONFile } from "./internal/json";
  * @returns {Promise<void>} A promise that resolves when the analysis is complete.
  */
 export async function main(ns) {
-   const servers = readJSONFile(ns, 'data/servers.txt');
-   ns.tprint(servers);
+   if (ns.args.length < 2) {
+      throw new Error("Expected args: [Input File] [Output File]");
+   }
 }

@@ -26,31 +26,39 @@ export function saveArrayAsJSON(ns, data, fieldname, filename) {
 }
 
 /**
- * Reads a JSON file and returns an array of objects.
+ * Reads a JSON file and returns the parsed content.
  *
  * @param {import("../index").NS} ns - The environment object.
  * @param {string} filename - The name of the file to be read.
- * @throws {Error} If the file is empty or does not exist.
+ * @returns {Object[]} - An array of objects parsed from the JSON file.
  * @throws {Error} If there is an issue reading the file or parsing JSON.
- * @returns {Object[]} - An array of parsed JSON objects.
  */
 export function readJSONFile(ns, filename) {
+    // Read the content of the JSON file
     const fileContent = ns.read(filename);
     if (!fileContent) {
-        ns.tprint(`File '${filename}' is empty or does not exist.`);
-        return [];
+        throw new Error(`File not found or empty: ${filename}`);
     }
 
-    // Parse the string as a JSON object and return it
     try {
-        const jsonArray = JSON.parse(fileContent);
-        if (!Array.isArray(jsonArray)) {
-            throw new Error('File does not contain a valid JSON array.');
-        }
-
-        return jsonArray;
+        // Parse the JSON content
+        return JSON.parse(fileContent);
     } catch (error) {
-        ns.tprint(`Error reading file '${filename}': ${error.message}`);
-        return [];
+        throw new Error(`Error parsing JSON in file ${filename}: ${error.message}`);
     }
+}
+
+/**
+ * Writes an array of objects to a JSON file.
+ *
+ * @param {import("../index").NS} ns - The environment object.
+ * @param {string} filename - The name of the file to be written.
+ * @param {Object[]} jsonArray - An array of objects to be written to the file.
+ */
+export function writeJSONFile(ns, filename, jsonArray) {
+    // Convert the array of objects to a JSON string
+    const jsonString = JSON.stringify(jsonArray, null, 2);
+
+    // Write the JSON string to the file
+    ns.write(filename, jsonString, 'w');
 }

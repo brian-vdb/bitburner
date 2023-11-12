@@ -13,6 +13,6 @@
  * @returns {boolean} - Wether the files were transmitted
  */
 export function uploadPublicScriptsToServer(ns, hostname, target) {
-   const scripts = ns.ls(hostname, 'public/');
-   return ns.scp(scripts, target, hostname);
+    const scripts = ns.ls(hostname, 'public/');
+    return ns.scp(scripts, target, hostname);
 }
