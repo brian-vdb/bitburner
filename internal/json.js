@@ -14,15 +14,17 @@
  * @returns {void}
  */
 export function saveArrayAsJSON(ns, data, fieldname, filename) {
-    if (!data || data.length === 0) {
-        ns.tprint("No data provided to store.");
-    }
+  if (!data || data.length === 0) {
+    ns.tprint("No data provided to store.");
+  }
 
-    // Convert the array to a list of JSON objects.
-    const jsonData = data.map(item => JSON.stringify({ [fieldname]: item }, null, null)).join();
+  // Convert the array to a list of JSON objects.
+  const jsonData = data
+    .map((item) => JSON.stringify({ [fieldname]: item }, null, null))
+    .join();
 
-    // Write the stringified JSON array to the file.
-    ns.write(filename || "data.txt", `[${jsonData}]`, "w");
+  // Write the stringified JSON array to the file.
+  ns.write(filename || "data.txt", `[${jsonData}]`, "w");
 }
 
 /**
@@ -34,18 +36,18 @@ export function saveArrayAsJSON(ns, data, fieldname, filename) {
  * @throws {Error} If there is an issue reading the file or parsing JSON.
  */
 export function readJSONFile(ns, filename) {
-    // Read the content of the JSON file
-    const fileContent = ns.read(filename);
-    if (!fileContent) {
-        throw new Error(`File not found or empty: ${filename}`);
-    }
+  // Read the content of the JSON file
+  const fileContent = ns.read(filename);
+  if (!fileContent) {
+    throw new Error(`File not found or empty: ${filename}`);
+  }
 
-    try {
-        // Parse the JSON content
-        return JSON.parse(fileContent);
-    } catch (error) {
-        throw new Error(`Error parsing JSON in file ${filename}: ${error.message}`);
-    }
+  try {
+    // Parse the JSON content
+    return JSON.parse(fileContent);
+  } catch (error) {
+    throw new Error(`Error parsing JSON in file ${filename}: ${error.message}`);
+  }
 }
 
 /**
@@ -56,9 +58,9 @@ export function readJSONFile(ns, filename) {
  * @param {Object[]} jsonArray - An array of objects to be written to the file.
  */
 export function writeJSONFile(ns, filename, jsonArray) {
-    // Convert the array of objects to a JSON string
-    const jsonString = JSON.stringify(jsonArray, null, 2);
+  // Convert the array of objects to a JSON string
+  const jsonString = JSON.stringify(jsonArray, null, 2);
 
-    // Write the JSON string to the file
-    ns.write(filename, jsonString, 'w');
+  // Write the JSON string to the file
+  ns.write(filename, jsonString, "w");
 }
