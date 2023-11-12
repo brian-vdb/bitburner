@@ -4,8 +4,7 @@
    Description: This file contains functionality related to automation.
 */
 
-import { isProcessRunning } from './internal/process';
-import { sleep } from './internal/time';
+import { propagationAttack } from "./tools/handles";
 
 /**
  * Main function to automate the game.
@@ -14,12 +13,5 @@ import { sleep } from './internal/time';
  * @returns {Promise<void>} A promise that resolves when the script finishes.
  */
 export async function main(ns) {
-    const hostname = ns.getHostname();
-
-    // Perform a Propagation Attack
-    let propagationOutput = 'data/servers.txt';
-    const pid = ns.exec('./tools/PropagationAttack/main.js', hostname, { preventDuplicates: true }, propagationOutput);
-    while (isProcessRunning(ns, pid)) {
-        await sleep(20);
-    }
+  propagationAttack(ns, 'data/servers.txt');
 }
