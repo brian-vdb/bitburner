@@ -13,13 +13,14 @@
  * @param {string} hostname - The host to execute the script.
  * @param {import("../index").RunOptions | undefined} opts - Options to configure the thread.
  * @param {string | number | boolean)[]} args - Optional arguements to pass to the script.
+ * @returns {number} - pid of the script that started.
  */
 export function execute(ns, script, hostname, opts, args) {
-  ns.exec(
+  return ns.exec(
     script,
     hostname,
     opts,
-    ...args
+    args
   );
 }
 

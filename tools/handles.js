@@ -4,7 +4,7 @@
    Description: This file contains handles to run the tools from the main script.
 */
 
-import { isProcessRunning } from "./internal/process";
+import { execute, isProcessRunning } from "./internal/process";
 import { sleep } from "./internal/time";
 
 /**
@@ -15,11 +15,14 @@ import { sleep } from "./internal/time";
  * @returns {boolean} - True if the process started.
  */
 export async function propagationAttack(ns, outputFile) {
-  // Perform a Propagation Attack
-  const pid = ns.exec(
+  // Start the attack
+  const pid = execute(
+    ns,
     "./tools/PropagationAttack/main.js",
     ns.getHostname(),
-    { preventDuplicates: true },
+    {
+      preventDuplicates: true,
+    },
     outputFile
   );
 
