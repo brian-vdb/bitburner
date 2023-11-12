@@ -9,7 +9,7 @@ import {
   getAvailableHacks,
   intrudeServer,
 } from "./tools/PropagationAttack/intrude";
-import { saveArrayAsJSON } from "./internal/json";
+import { arrayToJSON, writeJSONFile } from "./internal/json";
 
 /**
  * Propagates through the network and all of its nodes.
@@ -61,5 +61,6 @@ export async function main(ns) {
   });
 
   // Save the list of servers for future reference
-  saveArrayAsJSON(ns, servers, "hostname", ns.args[0]);
+  const jsonServers = arrayToJSON(servers, "hostname");
+  writeJSONFile(ns, jsonServers, ns.args[0]);
 }
