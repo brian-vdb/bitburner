@@ -1,10 +1,8 @@
 /*
    Brian van den Berg
-   File: hacks.js
+   File: hack.js
    Description: This file contains functions to hack a server.
 */
-
-import { execute } from "./internal/process";
 
 /**
  * Weakens a server from a host with a number of threads.
@@ -17,8 +15,7 @@ import { execute } from "./internal/process";
  */
 export function weaken(ns, hostname, target, threads) {
   return (
-    execute(
-      ns,
+    ns.exec(
       "public/weaken.js",
       hostname,
       { preventDuplicates: false, threads: threads },

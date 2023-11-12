@@ -5,7 +5,7 @@
 */
 
 import { propagationAttack } from "./tools/handles";
-import { weaken } from "./network/hacks";
+import { weaken } from "./network/hack";
 
 /**
  * Main function to automate the game.
