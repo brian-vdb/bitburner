@@ -4,6 +4,8 @@
    Description: This file contains functions to hack a server.
 */
 
+import { execute } from "./internal/process";
+
 /**
  * Weakens a server from a host with a number of threads.
  *
@@ -13,9 +15,10 @@
  * @param {number} threads - Number of threads to attack with.
  * @returns {boolean} - True if the process started.
  */
-function weaken(ns, hostname, target, threads) {
+export function weaken(ns, hostname, target, threads) {
   return (
-    ns.exec(
+    execute(
+      ns,
       "public/weaken.js",
       hostname,
       { preventDuplicates: false, threads: threads },
@@ -34,7 +37,7 @@ function weaken(ns, hostname, target, threads) {
  * @param {number} threads - Number of threads to attack with.
  * @returns {boolean} - True if the process started.
  */
-function grow(ns, hostname, target, threads) {
+export function grow(ns, hostname, target, threads) {
   return (
     ns.exec(
       "public/grow.js",
@@ -55,7 +58,7 @@ function grow(ns, hostname, target, threads) {
  * @param {number} threads - Number of threads to attack with.
  * @returns {boolean} - True if the process started.
  */
-function hack(ns, hostname, target, threads) {
+export function hack(ns, hostname, target, threads) {
   return (
     ns.exec(
       "public/hack.js",

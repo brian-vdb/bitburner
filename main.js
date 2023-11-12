@@ -5,6 +5,7 @@
 */
 
 import { propagationAttack } from "./tools/handles";
+import { weaken } from "./network/hacks";
 
 /**
  * Main function to automate the game.
@@ -14,4 +15,5 @@ import { propagationAttack } from "./tools/handles";
  */
 export async function main(ns) {
   propagationAttack(ns, "data/servers.txt");
+  weaken(ns, 'n00dles', 'n00dles', 2);
 }
