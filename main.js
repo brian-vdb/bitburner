@@ -13,5 +13,5 @@ import { propagationAttack } from "./tools/handles";
  * @returns {Promise<void>} A promise that resolves when the script finishes.
  */
 export async function main(ns) {
-  propagationAttack(ns, 'data/servers.txt');
+  propagationAttack(ns, "data/servers.txt");
 }
