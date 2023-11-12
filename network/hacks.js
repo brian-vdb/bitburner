@@ -14,7 +14,15 @@
  * @returns {boolean} - True if the process started.
  */
 function weaken(ns, hostname, target, threads) {
-    return ns.exec('public/weaken.js', hostname, {preventDuplicates: false, threads: threads}, target, threads) > 0;
+  return (
+    ns.exec(
+      "public/weaken.js",
+      hostname,
+      { preventDuplicates: false, threads: threads },
+      target,
+      threads
+    ) > 0
+  );
 }
 
 /**
@@ -27,7 +35,15 @@ function weaken(ns, hostname, target, threads) {
  * @returns {boolean} - True if the process started.
  */
 function grow(ns, hostname, target, threads) {
-    return ns.exec('public/grow.js', hostname, {preventDuplicates: false, threads: threads}, target, threads) > 0;
+  return (
+    ns.exec(
+      "public/grow.js",
+      hostname,
+      { preventDuplicates: false, threads: threads },
+      target,
+      threads
+    ) > 0
+  );
 }
 
 /**
@@ -40,5 +56,13 @@ function grow(ns, hostname, target, threads) {
  * @returns {boolean} - True if the process started.
  */
 function hack(ns, hostname, target, threads) {
-    return ns.exec('public/hack.js', hostname, {preventDuplicates: false, threads: threads}, target, threads) > 0;
+  return (
+    ns.exec(
+      "public/hack.js",
+      hostname,
+      { preventDuplicates: false, threads: threads },
+      target,
+      threads
+    ) > 0
+  );
 }
