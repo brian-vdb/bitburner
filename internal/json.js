@@ -64,3 +64,16 @@ export function writeJSONFile(ns, filename, jsonArray) {
   // Write the JSON string to the file
   ns.write(filename, jsonString, "w");
 }
+
+/**
+ * Converts an array to JSON objects.
+ *
+ * @param {any[]} array - Input array to translate into an object array.
+ * @param {string} fieldname - Name of the variables inside of the array.
+ * @returns {Object[]} - An array of objects converted from the input array.
+ */
+export function arrayToJSON(array, fieldname) {
+  return array.map((item) => {
+    return { [fieldname]: item };
+  });
+}
