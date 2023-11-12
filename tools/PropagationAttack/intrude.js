@@ -13,15 +13,15 @@ import { uploadPublicScriptsToServer } from "./tools/PropagationAttack/upload";
  * @returns {((hostname: string) => void)[]} An array of functions that take a 'hostname' argument and return void.
  */
 export function getAvailableHacks(ns) {
-    const hacks = [];
+  const hacks = [];
 
-    if (ns.fileExists('BruteSSH.exe')) hacks.push(ns.brutessh);
-    if (ns.fileExists('FTPCrack.exe')) hacks.push(ns.ftpcrack);
-    if (ns.fileExists('relaySMTP.exe')) hacks.push(ns.relaysmtp);
-    if (ns.fileExists('HTTPWorm.exe')) hacks.push(ns.httpworm);
-    if (ns.fileExists('SQLInject.exe')) hacks.push(ns.sqlinject);
+  if (ns.fileExists("BruteSSH.exe")) hacks.push(ns.brutessh);
+  if (ns.fileExists("FTPCrack.exe")) hacks.push(ns.ftpcrack);
+  if (ns.fileExists("relaySMTP.exe")) hacks.push(ns.relaysmtp);
+  if (ns.fileExists("HTTPWorm.exe")) hacks.push(ns.httpworm);
+  if (ns.fileExists("SQLInject.exe")) hacks.push(ns.sqlinject);
 
-    return hacks;
+  return hacks;
 }
 
 /**
@@ -34,33 +34,33 @@ export function getAvailableHacks(ns) {
  * @returns {void}
  */
 export function intrudeServer(ns, hostname, target, hacks) {
-    // Check if the server is already nuked
-    if (ns.hasRootAccess(target)) {
-        // Update the public scripts
-        if(!uploadPublicScriptsToServer(ns, hostname, target)) {
-            ns.tprint(`Warning: Failed to update 'public/*' on ${target}`);
-        }
-        return;
+  // Check if the server is already nuked
+  if (ns.hasRootAccess(target)) {
+    // Update the public scripts
+    if (!uploadPublicScriptsToServer(ns, hostname, target)) {
+      ns.tprint(`Warning: Failed to update 'public/*' on ${target}`);
     }
+    return;
+  }
 
-    // Check if we can nuke the server
-    const hacksRequired = ns.getServerNumPortsRequired(target);
-    if (hacks.length < hacksRequired) return;
+  // Check if we can nuke the server
+  const hacksRequired = ns.getServerNumPortsRequired(target);
+  if (hacks.length < hacksRequired) return;
 
-    // Perform the required amount of hacks
-    for (let i = 0; i < hacksRequired; i++) {
-        hacks[i](target);
-    }
+  // Perform the required amount of hacks
+  for (let i = 0; i < hacksRequired; i++) {
+    hacks[i](target);
+  }
 
-    // Nuke the server
-    ns.nuke(target);
+  // Nuke the server
+  ns.nuke(target);
 
-    // Upload the public scripts
-    if(!uploadPublicScriptsToServer(ns, hostname, target)) {
-        ns.tprint(`Warning: Failed to upload 'public/*' to ${target}`);
-    }
+  // Upload the public scripts
+  if (!uploadPublicScriptsToServer(ns, hostname, target)) {
+    ns.tprint(`Warning: Failed to upload 'public/*' to ${target}`);
+  }
 
-    // Log the successful nuke
-    const date = new Date();
-    ns.tprint(`${date.getHours()}.${date.getMinutes()}: ${target} Nuked`);
+  // Log the successful nuke
+  const date = new Date();
+  ns.tprint(`${date.getHours()}.${date.getMinutes()}: ${target} Nuked`);
 }

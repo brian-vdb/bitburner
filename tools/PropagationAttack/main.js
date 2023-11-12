@@ -5,7 +5,10 @@
    Description: This module contains functions related to network propagation and intrusion for the PropagationAttack feature.
 */
 
-import { getAvailableHacks, intrudeServer } from "./tools/PropagationAttack/intrude";
+import {
+  getAvailableHacks,
+  intrudeServer,
+} from "./tools/PropagationAttack/intrude";
 import { saveArrayAsJSON } from "./internal/json";
 
 /**
@@ -17,19 +20,19 @@ import { saveArrayAsJSON } from "./internal/json";
  * @returns {string[]} An array of server hostnames on the network.
  */
 function _propagateNetwork(ns, hostname, servers) {
-    servers.push(hostname);
+  servers.push(hostname);
 
-    // Find the neighboring servers
-    const targets = ns.scan(hostname);
+  // Find the neighboring servers
+  const targets = ns.scan(hostname);
 
-    // Using forEach to iterate over the array
-    targets.forEach((target) => {
-        if (!servers.includes(target)) {
-            servers = _propagateNetwork(ns, target, servers);
-        }
-    });
+  // Using forEach to iterate over the array
+  targets.forEach((target) => {
+    if (!servers.includes(target)) {
+      servers = _propagateNetwork(ns, target, servers);
+    }
+  });
 
-    return servers;
+  return servers;
 }
 
 /**
@@ -39,24 +42,24 @@ function _propagateNetwork(ns, hostname, servers) {
  * @returns {Promise<void>} A promise that resolves when the attack is complete.
  */
 export async function main(ns) {
-    if (ns.args.length < 1) {
-        throw new Error("Output filename was expected but not provided.");
-    }
+  if (ns.args.length < 1) {
+    throw new Error("Output filename was expected but not provided.");
+  }
 
-    const hostname = ns.getHostname();
-    let servers = [];
-    
-    // Get a list of all of the servers in the network
-    servers = _propagateNetwork(ns, hostname, servers);
+  const hostname = ns.getHostname();
+  let servers = [];
 
-    // Get the list of available hacking methods
-    const hacks = getAvailableHacks(ns);
+  // Get a list of all of the servers in the network
+  servers = _propagateNetwork(ns, hostname, servers);
 
-    // Hack into every vulnerable server in the network
-    servers.forEach((server) => {
-        intrudeServer(ns, hostname, server, hacks);
-    });
-    
-    // Save the list of servers for future reference
-    saveArrayAsJSON(ns, servers, 'hostname', ns.args[0]);
+  // Get the list of available hacking methods
+  const hacks = getAvailableHacks(ns);
+
+  // Hack into every vulnerable server in the network
+  servers.forEach((server) => {
+    intrudeServer(ns, hostname, server, hacks);
+  });
+
+  // Save the list of servers for future reference
+  saveArrayAsJSON(ns, servers, "hostname", ns.args[0]);
 }
