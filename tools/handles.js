@@ -4,8 +4,7 @@
    Description: This file contains handles to run the tools from the main script.
 */
 
-import { isProcessRunning } from "./internal/process";
-import { sleep } from "./internal/time";
+import { awaitScript } from "./internal/process";
 
 /**
  * Executes a Propagation Attack and stores it in data/servers.txt.
@@ -28,14 +27,10 @@ export async function propagationAttack(ns) {
   // Check if the process was started
   if (pid == 0) {
     return false;
+  } else {
+    await awaitScript(ns, pid);
+    return true;
   }
-
-  // Wait for the attack to finish
-  while (isProcessRunning(ns, pid)) {
-    await sleep(20);
-  }
-
-  return true;
 }
 
 /**
@@ -60,12 +55,8 @@ export async function serverAnalysis(ns) {
   // Check if the process was started
   if (pid == 0) {
     return false;
+  } else {
+    await awaitScript(ns, pid);
+    return true;
   }
-
-  // Wait for the attack to finish
-  while (isProcessRunning(ns, pid)) {
-    await sleep(20);
-  }
-
-  return true;
 }

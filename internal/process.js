@@ -4,6 +4,8 @@
    Description: This file contains functionality related to processes.
 */
 
+import { sleep } from "./internal/time";
+
 /**
  * Checks if a process with the specified PID is currently running.
  *
@@ -11,7 +13,7 @@
  * @param {number} pid - The process ID to check.
  * @returns {boolean} True if the process is running, false otherwise.
  */
-export function isProcessRunning(ns, pid) {
+function isProcessRunning(ns, pid) {
   // Getting a list of processes
   const processes = ns.ps();
 
@@ -27,4 +29,16 @@ export function isProcessRunning(ns, pid) {
 
   // Specified process not found in processes
   return false;
+}
+
+/**
+ * Waits for a script to finish execution.
+ *
+ * @param {import("../index").NS} ns - The environment object.
+ * @param {number} pid - The script pid to wait for.
+ */
+export async function awaitScript(ns, pid) {
+  while (isProcessRunning(ns, pid)) {
+    await sleep(20);
+  }
 }
