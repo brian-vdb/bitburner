@@ -38,9 +38,10 @@ export async function propagationAttack(ns) {
  * The result gets stored in hosts.txt and targets.txt.
  *
  * @param {import("../index").NS} ns - The environment object.
+ * @param {string} inputFile - File containing server objects with hostnames.
  * @returns {Promise<boolean>} - True if the process started.
  */
-export async function serverAnalysis(ns) {
+export async function serverAnalysis(ns, inputFile) {
   // Start the analysis
   const pid = ns.exec(
     "./tools/ServerAnalysis/main.js",
@@ -49,7 +50,8 @@ export async function serverAnalysis(ns) {
       preventDuplicates: true,
       temporary: false,
       threads: 1,
-    }
+    },
+    inputFile
   );
 
   // Check if the process was started

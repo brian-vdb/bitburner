@@ -37,6 +37,7 @@ function _propagateNetwork(ns, hostname, servers) {
 
 /**
  * Main function to perform a propagation attack.
+ * Executes a Propagation Attack and stores it in data/servers.txt.
  *
  * @param {import("../../index").NS} ns - The environment object.
  * @returns {Promise<void>} A promise that resolves when the attack is complete.

@@ -5,7 +5,6 @@
 */
 
 import { propagationAttack, serverAnalysis } from "./tools/handles";
-import { weaken } from "./network/hack";
 
 /**
  * Main function to automate the game.
@@ -14,6 +13,10 @@ import { weaken } from "./network/hack";
  * @returns {Promise<void>} A promise that resolves when the script finishes.
  */
 export async function main(ns) {
+  ns.tprint(`>>>\n| Running: Propagation Attack |`);
   await propagationAttack(ns);
-  await serverAnalysis(ns);
+
+  let inputFile = "data/servers.txt";
+  ns.tprint(`>>>\n| Running: Server Analysis [${inputFile}] |`);
+  await serverAnalysis(ns, inputFile);
 }

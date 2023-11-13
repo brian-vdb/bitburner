@@ -21,7 +21,9 @@ export function readJSONFile(ns, filename) {
 
   try {
     // Parse the JSON content
-    return JSON.parse(fileContent);
+    const jsonContent = JSON.parse(fileContent);
+    ns.tprint(`Data fetched from '${filename}'`);
+    return jsonContent;
   } catch (error) {
     throw new Error(`Error parsing JSON in file ${filename}: ${error.message}`);
   }
@@ -40,6 +42,7 @@ export function writeJSONFile(ns, jsonArray, filename) {
 
   // Write the JSON string to the file
   ns.write(filename, jsonString, "w");
+  ns.tprint(`Data stored in '${filename}'`);
 }
 
 /**
