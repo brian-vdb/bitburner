@@ -4,7 +4,7 @@
    Description: This file contains functionality related to automation.
 */
 
-import { propagationAttack } from "./tools/handles";
+import { propagationAttack, serverAnalysis } from "./tools/handles";
 import { weaken } from "./network/hack";
 
 /**
@@ -14,6 +14,6 @@ import { weaken } from "./network/hack";
  * @returns {Promise<void>} A promise that resolves when the script finishes.
  */
 export async function main(ns) {
-  propagationAttack(ns, "data/servers.txt");
-  weaken(ns, 'n00dles', 'n00dles', 2);
+  await propagationAttack(ns);
+  await serverAnalysis(ns);
 }
