@@ -17,4 +17,6 @@ export async function main(ns) {
   if (ns.args.length < 2) {
     throw new Error("Expected args: [Input File] [Output File]");
   }
+  const servers = readJSONFile(ns, ns.args[0]);
+  ns.tprint(servers);
 }
