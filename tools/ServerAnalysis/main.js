@@ -44,7 +44,7 @@ export async function main(ns) {
     const required = ns.getServerRequiredHackingLevel(server.hostname);
 
     // Check if the server is a valid hacking target
-    if (level >= required) {
+    if (level >= required && ns.getServerMaxMoney(server.hostname) > 0) {
       targets.push(prepareTarget(ns, server.hostname));
     }
   });

@@ -1,16 +1,14 @@
 /*
   Brian van den Berg
   Module: BatchAnalysis
-  File: main.js
-  Description: This module contains functions related to collecting information about batches.
+  File: hackAnalysis.js
+  Description: This script handles hacking threads in batch analysis.
 */
 
 import { readJSONFile } from "internal/json.js";
 
 /**
- * Main function to perform a batch analysis.
- * Start a batch analysis using data/targets.txt.
- * The result gets stored in batches.txt.
+ * Main function to analyze required hack threads for batches.
  *
  * @param {import("../../index").NS} ns - The environment object.
  * @returns {Promise<void>} A promise that resolves when the analysis is complete.
@@ -21,11 +19,11 @@ export async function main(ns) {
   }
 
   // Setup data containers
-  const targets = readJSONFile(ns, ns.args[0]);
-  const batches = [];
+  const batches = readJSONFile(ns, ns.args[0]);
 
-  targets.forEach(target => {
-    
+  batches.forEach(batch => {
+    // Calculate the amount of hack threads required
+    batch.hackThreads = ns.hackAnalyzeThreads(batch.hostname, 1000);
   });
 
   // Debugging Line

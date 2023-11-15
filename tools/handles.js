@@ -5,6 +5,7 @@
 */
 
 import { awaitScript } from "internal/process";
+import { readJSONFile, writeJSONFile } from "internal/json";
 
 /**
  * Executes a Propagation Attack.
@@ -66,21 +67,32 @@ export async function serverAnalysis(ns) {
  * @param {import("../index").NS} ns - The environment object.
  * @returns {Promise<boolean>} True if the process started.
  */
-export async function batchAnalysis(ns, inputFile) {
-  // Start the analysis
+export async function batchAnalysis(ns) {
+  const targets = readJSONFile(ns, "data/targets.txt");
+  const batches = [];
+
+  // Create data/batches.txt containing target hostnames
+  targets.forEach(target => {
+    batches.push({ hostname: target.hostname });
+  });
+  writeJSONFile(ns, batches, "data/batches.txt");
+
+  ns.tprint(batches);
+
+  // Start the hack analysis
   const pid = ns.exec(
-    "tools/BatchAnalysis/main.js",
+    "tools/BatchAnalysis/hackAnalysis.js",
     ns.getHostname(),
     {
       preventDuplicates: true,
       temporary: false,
       threads: 1,
     },
-    "data/targets.txt"
+    "data/batches.txt"
   );
 
   // Check if the process started
-  if (pid == 0) throw new Error(`Batch Analysis could not be started`);
+  if (pid == 0) throw new Error(`Hack Analysis could not be started`);
 
   // Wait for the process to finish
   await awaitScript(ns, pid);
