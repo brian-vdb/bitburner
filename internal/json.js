@@ -9,7 +9,7 @@
  *
  * @param {import("../index").NS} ns - The environment object.
  * @param {string} filename - The name of the file to be read.
- * @returns {Object[]} - An array of objects parsed from the JSON file.
+ * @returns {Object[]} An array of objects parsed from the JSON file.
  * @throws {Error} If there is an issue reading the file or parsing JSON.
  */
 export function readJSONFile(ns, filename) {
@@ -50,7 +50,7 @@ export function writeJSONFile(ns, jsonArray, filename) {
  *
  * @param {any[]} array - Input array to translate into an object array.
  * @param {string} fieldname - Name of the variables inside of the array.
- * @returns {Object[]} - An array of objects converted from the input array.
+ * @returns {Object[]} An array of objects converted from the input array.
  */
 export function arrayToJSON(array, fieldname) {
   return array.map((item) => {

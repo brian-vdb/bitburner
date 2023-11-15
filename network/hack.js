@@ -11,7 +11,7 @@
  * @param {string} hostname - Server hosting the attack.
  * @param {string} target - Server to attack.
  * @param {number} threads - Number of threads to attack with.
- * @returns {boolean} - True if the process started.
+ * @returns {boolean} True if the process started.
  */
 export function weaken(ns, hostname, target, threads) {
   return (
@@ -32,7 +32,7 @@ export function weaken(ns, hostname, target, threads) {
  * @param {string} hostname - Server hosting the attack.
  * @param {string} target - Server to attack.
  * @param {number} threads - Number of threads to attack with.
- * @returns {boolean} - True if the process started.
+ * @returns {boolean} True if the process started.
  */
 export function grow(ns, hostname, target, threads) {
   return (
@@ -53,7 +53,7 @@ export function grow(ns, hostname, target, threads) {
  * @param {string} hostname - Server hosting the attack.
  * @param {string} target - Server to attack.
  * @param {number} threads - Number of threads to attack with.
- * @returns {boolean} - True if the process started.
+ * @returns {boolean} True if the process started.
  */
 export function hack(ns, hostname, target, threads) {
   return (

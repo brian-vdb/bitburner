@@ -24,6 +24,10 @@ export async function main(ns) {
   const targets = readJSONFile(ns, ns.args[0]);
   const batches = [];
 
+  targets.forEach(target => {
+    
+  });
+
   // Debugging Line
-  ns.tprint(targets);
+  ns.tprint(batches);
 }

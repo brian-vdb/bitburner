@@ -11,7 +11,7 @@ import { awaitScript } from "internal/process";
  * The result gets stored in data/servers.txt.
  *
  * @param {import("../index").NS} ns - The environment object.
- * @returns {Promise<boolean>} - True if the process started.
+ * @returns {Promise<boolean>} True if the process started.
  */
 export async function propagationAttack(ns) {
   // Start the attack
@@ -35,7 +35,7 @@ export async function propagationAttack(ns) {
  * The result gets stored in data/hosts.txt and data/targets.txt.
  *
  * @param {import("../index").NS} ns - The environment object.
- * @returns {Promise<boolean>} - True if the process started.
+ * @returns {Promise<boolean>} True if the process started.
  */
 export async function serverAnalysis(ns) {
   // Start the analysis
@@ -64,7 +64,7 @@ export async function serverAnalysis(ns) {
  * The result gets stored in data/batches.txt.
  *
  * @param {import("../index").NS} ns - The environment object.
- * @returns {Promise<boolean>} - True if the process started.
+ * @returns {Promise<boolean>} True if the process started.
  */
 export async function batchAnalysis(ns, inputFile) {
   // Start the analysis
