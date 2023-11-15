@@ -18,8 +18,7 @@ import { prepareHost, prepareTarget } from "tools/ServerAnalysis/servers";
  */
 export async function main(ns) {
   if (ns.args.length < 1) {
-    ns.tprint("Error: Expected program parameters [inputFile]");
-    return;
+    throw new Error(`Error: Expected program parameters [inputFile]`);
   }
 
   // Setup data containers
