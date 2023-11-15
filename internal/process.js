@@ -1,7 +1,7 @@
 /*
-   Brian van den Berg
-   File: main.js
-   Description: This file contains functionality related to processes.
+  Brian van den Berg
+  File: main.js
+  Description: This file contains functionality related to processes.
 */
 
 import { sleep } from "./internal/time";

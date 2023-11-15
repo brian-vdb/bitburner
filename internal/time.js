@@ -1,7 +1,7 @@
 /*
-   Brian van den Berg
-   File: time.js
-   Description: This file contains time-oriented functionality.
+  Brian van den Berg
+  File: time.js
+  Description: This file contains time-oriented functionality.
 */
 
 /**

@@ -1,7 +1,7 @@
 /*
-   Brian van den Berg
-   File: json.js
-   Description: Helper functions for working with JSON data in the game environment.
+  Brian van den Berg
+  File: json.js
+  Description: Helper functions for working with JSON data in the game environment.
 */
 
 /**

@@ -1,7 +1,7 @@
 /*
-   Brian van den Berg
-   File: hack.js
-   Description: This file contains functions to hack a server.
+  Brian van den Berg
+  File: hack.js
+  Description: This file contains functions to hack a server.
 */
 
 /**

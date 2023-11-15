@@ -1,7 +1,7 @@
 /*
-   Brian van den Berg
-   File: main.js
-   Description: This file contains handles to run the tools from the main script.
+  Brian van den Berg
+  File: handles.js
+  Description: This file contains handles to run the tools from the main script.
 */
 
 import { awaitScript } from "./internal/process";
