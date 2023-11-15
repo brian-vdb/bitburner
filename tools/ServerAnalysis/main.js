@@ -2,19 +2,19 @@
   Brian van den Berg
   Module: ServerAnalysis
   File: main.js
-  Description: This module contains functions related to collecting information about servers.
+  Description: Tool to perform server analysis.
 */
 
 import { readJSONFile, writeJSONFile } from "internal/json";
 import { prepareHost, prepareTarget } from "tools/ServerAnalysis/servers";
 
 /**
- * Main function to perform a server analysis.
+ * Perform a server analysis.
  * Start a server analysis using data/servers.txt to split it into hosts and targets.
- * The result gets stored in hosts.txt and targets.txt.
+ * The results get stored in hosts.txt and targets.txt.
  *
  * @param {import("../../index").NS} ns - The environment object.
- * @returns {Promise<void>} A promise that resolves when the analysis is complete.
+ * @returns {Promise<void>} Resolves when the analysis is complete.
  */
 export async function main(ns) {
   if (ns.args.length < 1) {

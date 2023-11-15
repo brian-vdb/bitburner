@@ -2,11 +2,11 @@
   Brian van den Berg
   Module: ServerAnalysis
   File: servers.js
-  Description: This module contains functions related to servers.
+  Description: Functions related to server information.
 */
 
 /**
- * Prepares a host object with information about the specified server.
+ * Prepare a host object with information about the specified server.
  *
  * @param {import("../../index").NS} ns - The environment object.
  * @param {string} hostname - The hostname of the server.
@@ -22,7 +22,7 @@ export function prepareHost(ns, hostname) {
 }
 
 /**
- * Prepares a target object with information about the specified server.
+ * Prepare a target object with information about the specified server.
  *
  * @param {import("../../index").NS} ns - The environment object.
  * @param {string} hostname - The hostname of the server.
@@ -39,7 +39,7 @@ export function prepareTarget(ns, hostname) {
   const moneyCurrent = ns.getServerMoneyAvailable(target.hostname);
   const moneyMax = ns.getServerMaxMoney(target.hostname);
 
-  // save the server status to the target
+  // Save the server status to the target
   if (securityCurrent !== securityMin) {
     target.status = "weaken";
   } else if (moneyCurrent !== moneyMax) {
