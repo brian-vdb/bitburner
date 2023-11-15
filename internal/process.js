@@ -1,7 +1,7 @@
 /*
   Brian van den Berg
   File: main.js
-  Description: This file contains functionality related to processes.
+  Description: Helper functions for working with processes in the game environment.
 */
 
 import { sleep } from "./internal/time";
