@@ -1,5 +1,6 @@
 /*
    Brian van den Berg
+   Module: PropagationAttack
    File: upload.js
    Description: This file contains functions related to uploading files to servers.
 */
