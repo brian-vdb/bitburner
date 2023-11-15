@@ -7,7 +7,8 @@
 import { awaitScript } from "./internal/process";
 
 /**
- * Executes a Propagation Attack and stores it in data/servers.txt.
+ * Executes a Propagation Attack.
+ * The result gets stored in data/servers.txt.
  *
  * @param {import("../index").NS} ns - The environment object.
  * @returns {Promise<boolean>} - True if the process started.
@@ -30,7 +31,7 @@ export async function propagationAttack(ns) {
 }
 
 /**
- * Start server analysis using data/servers.txt.
+ * Start a Server Analysis using data/servers.txt.
  * The result gets stored in data/hosts.txt and data/targets.txt.
  *
  * @param {import("../index").NS} ns - The environment object.
@@ -59,7 +60,7 @@ export async function serverAnalysis(ns) {
 }
 
 /**
- * Start batch analysis using data/targets.txt.
+ * Start a Batch Analysis using data/targets.txt.
  * The result gets stored in data/batches.txt.
  *
  * @param {import("../index").NS} ns - The environment object.
