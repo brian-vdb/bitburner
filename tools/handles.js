@@ -24,10 +24,10 @@ export async function propagationAttack(ns) {
 
   // Check if the process started
   if (pid == 0) throw new Error(`Propagation Attack could not be started`);
-  
+
   // Wait for the process to finish
   await awaitScript(ns, pid);
-  
+
   return 0;
 }
 
@@ -65,22 +65,24 @@ export async function serverAnalysis(ns) {
  * The result gets stored in data/batches.txt.
  *
  * @param {import("../index").NS} ns - The environment object.
+ * @param {number} hackPercentage - The percentage of money to hack
+ * @param {number} batchInterval - The interval between batch actions in ms
  * @returns {Promise<boolean>} True if the process started.
  */
-export async function batchAnalysis(ns) {
+export async function batchAnalysis(ns, hackPercentage, batchInterval) {
   const targets = readJSONFile(ns, "data/targets.txt");
   const batches = [];
 
   // Create data/batches.txt containing target hostnames
-  targets.forEach(target => {
-    batches.push({ hostname: target.hostname });
+  targets.forEach((target) => {
+    if (target.status === "hack") {
+      batches.push({ hostname: target.hostname });
+    }
   });
   writeJSONFile(ns, batches, "data/batches.txt");
 
-  ns.tprint(batches);
-
   // Start the hack analysis
-  const pid = ns.exec(
+  let pid = ns.exec(
     "tools/BatchAnalysis/hackAnalysis.js",
     ns.getHostname(),
     {
@@ -88,11 +90,54 @@ export async function batchAnalysis(ns) {
       temporary: false,
       threads: 1,
     },
-    "data/batches.txt"
+    "data/batches.txt",
+    "data/targets.txt",
+    hackPercentage
   );
 
   // Check if the process started
   if (pid == 0) throw new Error(`Hack Analysis could not be started`);
+
+  // Wait for the process to finish
+  await awaitScript(ns, pid);
+
+  // Start the grow analysis
+  pid = ns.exec(
+    "tools/BatchAnalysis/growAnalysis.js",
+    ns.getHostname(),
+    {
+      preventDuplicates: true,
+      temporary: false,
+      threads: 1,
+    },
+    "data/batches.txt",
+    "data/targets.txt",
+    hackPercentage
+  );
+
+  // Check if the process started
+  if (pid == 0) throw new Error(`Grow Analysis could not be started`);
+
+  // Wait for the process to finish
+  await awaitScript(ns, pid);
+
+  // Start the main analysis
+  pid = ns.exec(
+    "tools/BatchAnalysis/main.js",
+    ns.getHostname(),
+    {
+      preventDuplicates: true,
+      temporary: false,
+      threads: 1,
+    },
+    "data/batches.txt",
+    "data/targets.txt",
+    hackPercentage,
+    batchInterval
+  );
+
+  // Check if the process started
+  if (pid == 0) throw new Error(`Main Analysis could not be started`);
 
   // Wait for the process to finish
   await awaitScript(ns, pid);
