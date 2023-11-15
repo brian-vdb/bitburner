@@ -5,8 +5,8 @@
   Description: This module contains functions related to collecting information about servers.
 */
 
-import { readJSONFile, writeJSONFile } from "./internal/json";
-import { prepareHost, prepareTarget } from "./tools/ServerAnalysis/servers";
+import { readJSONFile, writeJSONFile } from "internal/json";
+import { prepareHost, prepareTarget } from "tools/ServerAnalysis/servers";
 
 /**
  * Main function to perform a server analysis.

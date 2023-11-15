@@ -4,7 +4,7 @@
    Description: This file contains functionality related to automation.
 */
 
-import { propagationAttack, serverAnalysis, batchAnalysis } from "./tools/handles";
+import { propagationAttack, serverAnalysis, batchAnalysis } from "tools/handles";
 
 /**
  * Main function to automate the game.

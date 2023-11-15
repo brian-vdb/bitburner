@@ -4,7 +4,7 @@
   Description: This file contains handles to run the tools from the main script.
 */
 
-import { awaitScript } from "./internal/process";
+import { awaitScript } from "internal/process";
 
 /**
  * Executes a Propagation Attack.
@@ -15,7 +15,7 @@ import { awaitScript } from "./internal/process";
  */
 export async function propagationAttack(ns) {
   // Start the attack
-  const pid = ns.exec("./tools/PropagationAttack/main.js", ns.getHostname(), {
+  const pid = ns.exec("tools/PropagationAttack/main.js", ns.getHostname(), {
     preventDuplicates: true,
     temporary: false,
     threads: 1,
@@ -40,7 +40,7 @@ export async function propagationAttack(ns) {
 export async function serverAnalysis(ns) {
   // Start the analysis
   const pid = ns.exec(
-    "./tools/ServerAnalysis/main.js",
+    "tools/ServerAnalysis/main.js",
     ns.getHostname(),
     {
       preventDuplicates: true,
@@ -69,7 +69,7 @@ export async function serverAnalysis(ns) {
 export async function batchAnalysis(ns, inputFile) {
   // Start the analysis
   const pid = ns.exec(
-    "./tools/BatchAnalysis/main.js",
+    "tools/BatchAnalysis/main.js",
     ns.getHostname(),
     {
       preventDuplicates: true,

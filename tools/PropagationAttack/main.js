@@ -8,8 +8,8 @@
 import {
   getAvailableHacks,
   intrudeServer,
-} from "./tools/PropagationAttack/intrude";
-import { arrayToJSON, writeJSONFile } from "./internal/json";
+} from "tools/PropagationAttack/intrude";
+import { arrayToJSON, writeJSONFile } from "internal/json";
 
 /**
  * Propagates through the network and all of its nodes.

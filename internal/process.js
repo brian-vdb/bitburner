@@ -4,7 +4,7 @@
   Description: Helper functions for working with processes in the game environment.
 */
 
-import { sleep } from "./internal/time";
+import { sleep } from "internal/time";
 
 /**
  * Checks if a process with the specified PID is currently running.
