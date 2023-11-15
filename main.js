@@ -21,7 +21,7 @@ export async function main(ns) {
   ns.tprint(`>>> | Running: Server Analysis | <<<`);
   await serverAnalysis(ns);
 
-  // Perform a Batch Analysis
+  // Perform a Batch Analysis // TODO: Pass parameters from args
   ns.tprint(`>>> | Running: Batch Analysis | <<<`);
   await batchAnalysis(ns, 0.01, 1);
 }
