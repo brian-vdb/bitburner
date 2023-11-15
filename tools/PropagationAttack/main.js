@@ -1,8 +1,8 @@
 /*
-   Brian van den Berg
-   Module: PropagationAttack
-   File: main.js
-   Description: This module contains functions related to network propagation and intrusion for the PropagationAttack feature.
+  Brian van den Berg
+  Module: PropagationAttack
+  File: main.js
+  Description: This module contains functions related to network propagation and intrusion for the PropagationAttack feature.
 */
 
 import {

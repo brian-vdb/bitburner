@@ -1,8 +1,8 @@
 /*
-   Brian van den Berg
-   Module: PropagationAttack
-   File: intrude.js
-   Description: This file contains functions related to intrusion of servers.
+  Brian van den Berg
+  Module: PropagationAttack
+  File: intrude.js
+  Description: This file contains functions related to intrusion of servers.
 */
 
 import { uploadPublicScriptsToServer } from "./tools/PropagationAttack/upload";

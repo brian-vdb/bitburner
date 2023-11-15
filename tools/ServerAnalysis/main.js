@@ -1,8 +1,8 @@
 /*
-   Brian van den Berg
-   Module: ServerAnalysis
-   File: main.js
-   Description: This module contains functions related to collecting information about servers.
+  Brian van den Berg
+  Module: ServerAnalysis
+  File: main.js
+  Description: This module contains functions related to collecting information about servers.
 */
 
 import { readJSONFile, writeJSONFile } from "./internal/json";
