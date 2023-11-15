@@ -2,7 +2,7 @@
   Brian van den Berg
   Module: PropagationAttack
   File: main.js
-  Description: This module contains functions related to network propagation and intrusion for the PropagationAttack feature.
+  Description: Tool to perform network propagation and intrusion.
 */
 
 import {
@@ -12,23 +12,23 @@ import {
 import { arrayToJSON, writeJSONFile } from "internal/json";
 
 /**
- * Propagates through the network and all of its nodes.
+ * Propagate through the network and all of its nodes.
  *
  * @param {import("../../index").NS} ns - The environment object.
- * @param {string} hostname - The hostname of the server currently being propagated from
- * @param {string[]} servers - The list of servers that have been found
+ * @param {string} hostname - The current server's hostname for propagation.
+ * @param {string[]} servers - The list of discovered servers.
  * @returns {string[]} An array of server hostnames on the network.
  */
-function _propagateNetwork(ns, hostname, servers) {
+function propagateNetwork(ns, hostname, servers) {
   servers.push(hostname);
 
-  // Find the neighboring servers
+  // Find neighboring servers
   const targets = ns.scan(hostname);
 
-  // Using forEach to iterate over the array
+  // Iterate over the array using forEach
   targets.forEach((target) => {
     if (!servers.includes(target)) {
-      servers = _propagateNetwork(ns, target, servers);
+      servers = propagateNetwork(ns, target, servers);
     }
   });
 
@@ -36,18 +36,18 @@ function _propagateNetwork(ns, hostname, servers) {
 }
 
 /**
- * Main function to perform a propagation attack.
- * Executes a Propagation Attack and stores it in data/servers.txt.
+ * Perform a propagation attack.
+ * Executes a Propagation Attack and stores results in data/servers.txt.
  *
  * @param {import("../../index").NS} ns - The environment object.
- * @returns {Promise<void>} A promise that resolves when the attack is complete.
+ * @returns {Promise<void>} Resolves when the attack is complete.
  */
 export async function main(ns) {
   const hostname = ns.getHostname();
   let servers = [];
 
-  // Get a list of all of the servers in the network
-  servers = _propagateNetwork(ns, hostname, servers);
+  // Get a list of all servers in the network
+  servers = propagateNetwork(ns, hostname, servers);
 
   // Get the list of available hacking methods
   const hacks = getAvailableHacks(ns);
