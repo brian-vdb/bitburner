@@ -2,16 +2,16 @@
   Brian van den Berg
   Module: BatchAnalysis
   File: hackAnalysis.js
-  Description: This script handles hacking threads in batch analysis.
+  Description: Handles hacking threads for Batch Analysis.
 */
 
 import { readJSONFile, writeJSONFile } from "internal/json.js";
 
 /**
- * Main function to analyze required hack threads for batches.
+ * Analyzes hack threads required for batches.
  *
  * @param {import("../../index").NS} ns - The environment object.
- * @returns {Promise<void>} A promise that resolves when the analysis is complete.
+ * @returns {Promise<void>} Resolves when the analysis is complete.
  */
 export async function main(ns) {
   if (ns.args.length < 3) {
@@ -24,7 +24,7 @@ export async function main(ns) {
   const batches = readJSONFile(ns, ns.args[0]);
   const targets = readJSONFile(ns, ns.args[1]);
 
-  // Define constants
+  // Constants
   const weakenEffect = ns.weakenAnalyze(1);
 
   batches.forEach((batch) => {
@@ -47,6 +47,6 @@ export async function main(ns) {
     );
   });
 
-  // Store the batch information
+  // Store batch information
   writeJSONFile(ns, batches, ns.args[0]);
 }
