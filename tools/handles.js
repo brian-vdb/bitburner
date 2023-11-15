@@ -5,7 +5,7 @@
 */
 
 import { awaitScript } from "internal/process";
-import { performBatchAnalysis } from "tools/BatchAnalysis/main";
+import { BatchAnalysis } from "tools/BatchAnalysis/main";
 
 /**
  * Execute a Propagation Attack.
@@ -66,7 +66,7 @@ export async function serverAnalysis(ns) {
  * @returns {Promise<void>} Resolves when the Batch Analysis is complete.
  */
 export async function batchAnalysis(ns, hackPercentage, batchInterval) {
-  await performBatchAnalysis(
+  await BatchAnalysis(
     ns,
     "data/batches.txt",
     "data/targets.txt",

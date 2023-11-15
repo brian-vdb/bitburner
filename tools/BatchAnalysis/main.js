@@ -9,23 +9,6 @@ import { readJSONFile, writeJSONFile } from "internal/json.js";
 import { awaitScript } from "internal/process.js";
 
 /**
- * Set up Batch Analysis by creating a list of target hostnames and saving it to a file.
- *
- * @param {import("../../index").NS} ns - The environment object.
- * @param {string} outputFile - File to save batches data.
- * @param {string} targetFile - File containing target hostnames.
- * @returns {void}
- */
-function setupBatchAnalysis(ns, outputFile, targetFile) {
-  // Generate list of target hostnames for hacking
-  const targets = readJSONFile(ns, targetFile);
-  const batches = targets
-    .filter((target) => target.status === "hack")
-    .map((target) => ({ hostname: target.hostname }));
-  writeJSONFile(ns, batches, outputFile);
-}
-
-/**
  * Perform hack analysis on targets with the specified hack percentage.
  *
  * @param {import("../../index").NS} ns - The environment object.
@@ -89,15 +72,19 @@ async function growBatchAnalysis(ns, outputFile, targetFile, hackPercentage) {
  * @param {number} batchInterval - Interval for batch analysis.
  * @returns {Promise<void>} Resolves when the analysis is complete.
  */
-export async function performBatchAnalysis(
+export async function BatchAnalysis(
   ns,
   outputFile,
   targetFile,
   hackPercentage,
   batchInterval
 ) {
-  // Perform Batch Analysis Setup
-  setupBatchAnalysis(ns, outputFile, targetFile);
+  // Generate list of target hostnames for hacking
+  const targets = readJSONFile(ns, targetFile);
+  let batches = targets
+    .filter((target) => target.status === "hack")
+    .map((target) => ({ hostname: target.hostname }));
+  writeJSONFile(ns, batches, outputFile);
 
   // Perform Hack Batch Analysis
   await hackBatchAnalysis(ns, outputFile, targetFile, hackPercentage);
@@ -106,8 +93,7 @@ export async function performBatchAnalysis(
   await growBatchAnalysis(ns, outputFile, targetFile, hackPercentage);
 
   // Fetch files to make conclusions on the data
-  const batches = readJSONFile(ns, outputFile);
-  const targets = readJSONFile(ns, targetFile);
+  batches = readJSONFile(ns, outputFile);
 
   // Calculate execution window and financial details for each batch
   batches.forEach((batch) => {
@@ -135,11 +121,5 @@ export async function main(ns) {
       `Expected program parameters: [outputFile: string, targetFile: string, hackPercentage: number, batchInterval: number]`
     );
   }
-  await performBatchAnalysis(
-    ns,
-    ns.args[0],
-    ns.args[1],
-    ns.args[2],
-    ns.args[3]
-  );
+  await BatchAnalysis(ns, ns.args[0], ns.args[1], ns.args[2], ns.args[3]);
 }
