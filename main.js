@@ -4,7 +4,7 @@
    Description: This file contains functionality related to automation.
 */
 
-import { propagationAttack, serverAnalysis } from "./tools/handles";
+import { propagationAttack, serverAnalysis, batchAnalysis } from "./tools/handles";
 
 /**
  * Main function to automate the game.
@@ -13,10 +13,15 @@ import { propagationAttack, serverAnalysis } from "./tools/handles";
  * @returns {Promise<void>} A promise that resolves when the script finishes.
  */
 export async function main(ns) {
-  ns.tprint(`>>>\n| Running: Propagation Attack |`);
+  // Perform a Propagation Attack
+  ns.tprint(`>>> | Running: Propagation Attack | <<<`);
   await propagationAttack(ns);
 
-  let inputFile = "data/servers.txt";
-  ns.tprint(`>>>\n| Running: Server Analysis [${inputFile}] |`);
-  await serverAnalysis(ns, inputFile);
+  // Perform a Server Analysis
+  ns.tprint(`>>> | Running: Server Analysis | <<<`);
+  await serverAnalysis(ns);
+
+  // Perform a Batch Analysis
+  ns.tprint(`>>> | Running: Batch Analysis | <<<`);
+  await batchAnalysis(ns);
 }
