@@ -16,7 +16,9 @@ export function prepareHost(ns, hostname) {
   const host = { hostname: hostname };
 
   // Get server RAM
-  host.maxRam = ns.getServerMaxRam(host.hostname);
+  host.ramMax = ns.getServerMaxRam(host.hostname);
+  host.ramAvailable = host.ramMax - ns.getServerUsedRam(host.hostname)
+  host.threadsAvailable = Math.floor(host.ramAvailable / 0.15)
 
   return host;
 }
@@ -32,27 +34,24 @@ export function prepareTarget(ns, hostname) {
   const target = { hostname: hostname };
 
   // Get Security statistics
-  const securityMin = ns.getServerMinSecurityLevel(target.hostname);
-  const securityCurrent = ns.getServerSecurityLevel(target.hostname);
+  target.securityMin = ns.getServerMinSecurityLevel(target.hostname);
+  target.securityCurrent = ns.getServerSecurityLevel(target.hostname);
 
   // Get Money statistics
-  const moneyCurrent = ns.getServerMoneyAvailable(target.hostname);
-  const moneyMax = ns.getServerMaxMoney(target.hostname);
-
+  target.moneyCurrent = ns.getServerMoneyAvailable(target.hostname);
+  target.moneyMax = ns.getServerMaxMoney(target.hostname);
+  
   // Save the server status to the target
-  if (securityCurrent !== securityMin) {
+  if (target.securityCurrent !== target.securityMin) {
     target.status = "weaken";
-  } else if (moneyCurrent !== moneyMax) {
+  } else if (target.moneyCurrent !== target.moneyMax) {
     target.status = "grow";
   } else {
     target.status = "hack";
   }
 
-  // Save the server statistics to the target
-  target.securityMin = securityMin;
-  target.securityCurrent = securityCurrent;
-  target.moneyCurrent = moneyCurrent;
-  target.moneyMax = moneyMax;
+  // Calulate the current server value
+  target.value = Math.ceil(target.moneyMax / ns.getHackTime(target.hostname))
 
   return target;
 }

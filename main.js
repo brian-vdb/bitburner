@@ -4,7 +4,7 @@
    Description: This file contains functionality related to automation.
 */
 
-import { propagationAttack, serverAnalysis } from "./tools/handles";
+import { BatchAnalysis, propagationAttack, serverAnalysis } from "./tools/handles";
 
 /**
  * Main function to automate the game.
@@ -20,4 +20,7 @@ export async function main(ns) {
   // Perform a Server Analysis
   ns.tprint(`>>> | Running: Server Analysis | <<<`);
   await serverAnalysis(ns);
+
+  ns.tprint(`>>> | Running: Batch Analysis | <<<`)
+  await BatchAnalysis(ns);
 }
