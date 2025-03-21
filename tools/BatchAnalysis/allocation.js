@@ -26,16 +26,12 @@ function getTotalRequiredThreads(ns, target) {
       // If target's money is already at or above max, no grow threads are needed.
       if (target.moneyCurrent >= target.moneyMax) return 0;
 
-      // Determine the multiplier needed to reach moneyMax from current money.
-      const multiplier = target.moneyMax / target.moneyCurrent;
-
       // Calculate the number of grow threads needed using Bitburner's growthAnalyze.
+      const multiplier = target.moneyMax / target.moneyCurrent;
       const growThreads = Math.ceil(ns.growthAnalyze(target.hostname, multiplier));
 
-      // Dynamically calculate the security increase from running the growThreads.
-      const securityIncrease = ns.growthAnalyzeSecurity(growThreads);
-
       // Determine the number of weaken threads required to offset that security increase.
+      const securityIncrease = ns.growthAnalyzeSecurity(growThreads);
       const weakenThreadsForGrow = Math.ceil(securityIncrease / ns.weakenAnalyze(1));
 
       // Return the total threads required: grow threads + weaken threads to offset security.

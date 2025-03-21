@@ -30,12 +30,14 @@ export async function propagationAttack(ns) {
 
 /**
  * Execute a Server Analysis using data/servers.txt.
+ * Optionally accepts maxHackTargets.
  * The results are stored in data/hosts.txt and data/targets.txt.
  *
  * @param {import("../index").NS} ns - The environment object.
+ * @param {number} [maxHackTargets=5] - Optional maximum number of hack targets.
  * @returns {Promise<void>} Resolves when the analysis is complete.
  */
-export async function serverAnalysis(ns) {
+export async function serverAnalysis(ns, maxHackTargets = 5) {
   // Start the analysis
   const pid = ns.exec(
     "tools/ServerAnalysis/main.js",
@@ -45,7 +47,8 @@ export async function serverAnalysis(ns) {
       temporary: false,
       threads: 1,
     },
-    "data/servers.txt"
+    "data/servers.txt",
+    maxHackTargets
   );
 
   // Check if the process started
@@ -56,13 +59,15 @@ export async function serverAnalysis(ns) {
 }
 
 /**
- * Execute a Server Analysis using data/servers.txt.
- * The results are stored in data/batch.txt.
+ * Execute a Batch Analysis using data/hosts.txt and data/targets.txt.
+ * Optionally accepts hackInterval.
+ * The results are stored in data/targets.txt.
  *
  * @param {import("../index").NS} ns - The environment object.
+ * @param {number} [hackInterval=1000] - Optional hack interval in ms.
  * @returns {Promise<void>} Resolves when the analysis is complete.
  */
-export async function BatchAnalysis(ns) {
+export async function BatchAnalysis(ns, hackInterval = 1000) {
   // Start the analysis
   const pid = ns.exec(
     "tools/BatchAnalysis/main.js",
@@ -73,7 +78,8 @@ export async function BatchAnalysis(ns) {
       threads: 1,
     },
     "data/hosts.txt",
-    "data/targets.txt"
+    "data/targets.txt",
+    hackInterval
   );
 
   // Check if the process started

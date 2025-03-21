@@ -7,24 +7,31 @@
 
 import { readJSONFile, writeJSONFile } from "internal/json";
 import { prepareHost, prepareTarget } from "tools/ServerAnalysis/servers";
+import { sortAndLimitTargets } from "./servers";
 
 /**
  * Perform a server analysis.
  * Start a server analysis using data/servers.txt to split it into hosts and targets.
  * The results get stored in hosts.txt and targets.txt.
  *
+ * Optional args:
+ *   ns.args[1] - max hack targets (default: 5)
+ * 
  * @param {import("../../index").NS} ns - The environment object.
  * @returns {Promise<void>} Resolves when the analysis is complete.
  */
 export async function main(ns) {
   if (ns.args.length < 1) {
-    throw new Error(`Expected program parameters: [serversFile: string]`);
+    throw new Error(`Expected program parameters: [serversFile: string, maxHackTargets?: number]`);
   }
 
   // Setup data containers
   const servers = readJSONFile(ns, ns.args[0]);
   const hosts = [];
   const targets = [];
+
+  // Extract optional parameters with default values if not provided
+  const maxHackTargets = ns.args[1] !== undefined ? ns.args[1] : 5;
 
   // Loop through every known server to find valid hosts
   servers.forEach((server) => {
@@ -49,6 +56,9 @@ export async function main(ns) {
     }
   });
 
+  // Sort the targets and limit to the max hack targets
+  const sortedTargets = sortAndLimitTargets(targets, maxHackTargets);
+
   // Store the result
-  writeJSONFile(ns, targets, "data/targets.txt");
+  writeJSONFile(ns, sortedTargets, "data/targets.txt");
 }

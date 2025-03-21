@@ -41,6 +41,18 @@ export function prepareTarget(ns, hostname) {
   target.moneyCurrent = ns.getServerMoneyAvailable(target.hostname);
   target.moneyMax = ns.getServerMaxMoney(target.hostname);
   
+  // Save the hack timing information
+  target.weakenTime = ns.getWeakenTime(target.hostname)
+  target.growTime = ns.getGrowTime(target.hostname)
+  target.hackTime = ns.getHackTime(target.hostname)
+
+  // Calculate the minimum and maximum time requirement for the target
+  target.minTime = Math.min(target.weakenTime, target.growTime, target.hackTime);
+  target.maxTime = Math.max(target.weakenTime, target.growTime, target.hackTime);
+
+  // Assign a value to the target
+  target.value = (target.moneyMax / 100)
+
   // Save the server status to the target
   if (target.securityCurrent !== target.securityMin) {
     target.status = "weaken";
@@ -50,8 +62,30 @@ export function prepareTarget(ns, hostname) {
     target.status = "hack";
   }
 
-  // Calulate the current server value
-  target.value = Math.ceil(target.moneyMax / ns.getHackTime(target.hostname))
-
   return target;
+}
+
+/**
+ * Sorts the targets array based on the target status (hack -> grow -> weaken)
+ * and limits the hack targets to the top `maxHackTargets` based on their value.
+ *
+ * @param {Object[]} targets - Array of target objects populated with prepareTarget.
+ * @param {number} maxHackTargets - Maximum number of hack targets to include.
+ * @returns {Object[]} Sorted and filtered targets array.
+ */
+export function sortAndLimitTargets(targets, maxHackTargets) {
+  // Separate targets by their status
+  const hackTargets = targets.filter(target => target.status === "hack");
+  const growTargets = targets.filter(target => target.status === "grow");
+  const weakenTargets = targets.filter(target => target.status === "weaken");
+
+  // Sort hack targets in descending order by value and limit to maxHackTargets
+  const limitedHackTargets = hackTargets.sort((a, b) => b.value - a.value).slice(0, maxHackTargets);
+
+  // Optionally sort grow and weaken targets by value descending (for consistency)
+  const sortedGrowTargets = growTargets.sort((a, b) => b.value - a.value);
+  const sortedWeakenTargets = weakenTargets.sort((a, b) => b.value - a.value);
+
+  // Combine arrays: hack targets first, then grow targets, then weaken targets
+  return [...limitedHackTargets, ...sortedGrowTargets, ...sortedWeakenTargets];
 }
