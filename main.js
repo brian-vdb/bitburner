@@ -6,7 +6,7 @@
 */
 
 import { sleep } from "./internal/time";
-import { maintainHomeNetwork, BatchAnalysis, BatchExecution, propagationAttack, serverAnalysis } from "./modules/handles";
+import { maintainHomeNetwork, batchAnalysis, batchExecution, propagationAttack, serverAnalysis } from "./modules/handles";
 
 /**
  * Main function to automate the game in an infinite loop.
@@ -42,11 +42,11 @@ export async function main(ns) {
 
     // Perform Batch Analysis
     ns.tprint(`>>> | Running: Batch Analysis with hackInterval=${hackInterval} | <<<`);
-    await BatchAnalysis(ns, hackInterval);
+    await batchAnalysis(ns, hackInterval);
 
     // Perform Batch Execution
     ns.tprint(`>>> | Running: Batch Execution | <<<`);
-    await BatchExecution(ns);
+    await batchExecution(ns);
 
     ns.tprint(`>>> | Iteration complete. Restarting loop in ${hackInterval * 4}ms... | <<<`);
     await sleep(hackInterval * 4);
