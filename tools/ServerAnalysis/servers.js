@@ -18,7 +18,7 @@ export function prepareHost(ns, hostname) {
   // Get server RAM
   host.ramMax = ns.getServerMaxRam(host.hostname);
   host.ramAvailable = host.ramMax - ns.getServerUsedRam(host.hostname)
-  host.threadsAvailable = Math.floor(host.ramAvailable / 0.15)
+  host.threadsAvailable = Math.floor(host.ramAvailable / 1.75)
 
   return host;
 }
@@ -51,7 +51,7 @@ export function prepareTarget(ns, hostname) {
   target.maxTime = Math.max(target.weakenTime, target.growTime, target.hackTime);
 
   // Assign a value to the target
-  target.value = (target.moneyMax / 100)
+  target.value = target.moneyMax
 
   // Save the server status to the target
   if (target.securityCurrent !== target.securityMin) {
@@ -63,6 +63,45 @@ export function prepareTarget(ns, hostname) {
   }
 
   return target;
+}
+
+/**
+ * Normalizes the value of each target based on maxMoney and maxTime.
+ *
+ * @param {Object[]} targets - The array of target objects.
+ * @param {number} maxMoneyMultiplier - The maximum multiplier assigned for money.
+ * @param {number} maxTimeMultiplier - The maximum multiplier assigned for time.
+ * @returns {Object[]} The same targets array with an updated 'value' property.
+ */
+export function normalizeTargets(targets, maxMoneyMultiplier, maxTimeMultiplier) {
+  if (targets.length === 0) return targets;
+  
+  // Determine global min and max values for money and time
+  const minMoney = Math.min(...targets.map(target => target.moneyMax));
+  const maxMoney = Math.max(...targets.map(target => target.moneyMax));
+  const minTime = Math.min(...targets.map(target => target.maxTime));
+  const maxTime = Math.max(...targets.map(target => target.maxTime));
+  
+  // Detirmine the ranges
+  const moneyRange = maxMoney - minMoney;
+  const timeRange = maxTime - minTime;
+  
+  targets.forEach(target => {
+    // Normalize money
+    let normalizedMoney = moneyRange === 0
+      ? 1
+      : 1 + ((target.moneyMax - minMoney) / moneyRange) * (maxMoneyMultiplier - 1);
+    
+    // Compute time multiplier
+    let timeMultiplier = timeRange === 0
+      ? 1
+      : 1 + ((maxTimeMultiplier - 1) * ((maxTime - target.maxTime) / timeRange));
+    
+    // Final normalized value
+    target.value = normalizedMoney * timeMultiplier;
+  });
+  
+  return targets;
 }
 
 /**

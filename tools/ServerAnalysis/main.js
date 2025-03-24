@@ -7,7 +7,7 @@
 
 import { readJSONFile, writeJSONFile } from "internal/json";
 import { prepareHost, prepareTarget } from "tools/ServerAnalysis/servers";
-import { sortAndLimitTargets } from "./servers";
+import { normalizeTargets, sortAndLimitTargets } from "./servers";
 
 /**
  * Perform a server analysis.
@@ -51,13 +51,16 @@ export async function main(ns) {
     const required = ns.getServerRequiredHackingLevel(server.hostname);
 
     // Check if the server is a valid hacking target
-    if (level >= required && ns.getServerMaxMoney(server.hostname) > 0) {
+    if (level >= required && ns.getServerMaxMoney(server.hostname) > 0 && ns.hasRootAccess(server.hostname)) {
       targets.push(prepareTarget(ns, server.hostname));
     }
   });
 
+  // Normalize the target values
+  const normalizedTargets = normalizeTargets(targets, 2, 2);
+
   // Sort the targets and limit to the max hack targets
-  const sortedTargets = sortAndLimitTargets(targets, maxHackTargets);
+  const sortedTargets = sortAndLimitTargets(normalizedTargets, maxHackTargets);
 
   // Store the result
   writeJSONFile(ns, sortedTargets, "data/targets.txt");

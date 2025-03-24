@@ -5,7 +5,7 @@
   Description: Functions related to the creation of a batch of attacks.
 */
 
-class SortedEventList {
+export class SortedEventList {
   /**
    * Constructs a SortedEventList.
    * @param {Object[]} [initialEvents=[]] - Optional initial array of events.
@@ -79,7 +79,7 @@ export function prepareBatch(targets, hackInterval) {
     // Check if there is a grow target.
     const growTargets = targets.filter(target => target.status === "grow");
     if (growTargets.length > 0 && hackInterval !== undefined) {
-      executionStartTime = executionEndTime - hackInterval;
+      executionStartTime = executionEndTime - (3 * hackInterval);
     } else {
       executionStartTime = executionEndTime;
     }
@@ -108,7 +108,7 @@ function createWeakenEvents(target, batch, hackInterval) {
     : (batch.executionStartTime - hackInterval);
   
   return [{
-    time: eventTime,
+    time: Math.round(eventTime),
     target: target.hostname,
     action: 'weaken',
     threads: target.threadsAssigned
@@ -123,6 +123,7 @@ function createWeakenEvents(target, batch, hackInterval) {
  * @param {Object} batch - The batch object.
  * @param {number} hackInterval - The hack interval.
  * @returns {Object[]} An array with two events: one for grow and one for weaken.
+ * If either the calculated grow threads or weaken threads is 0, returns an empty array.
  */
 function createGrowEvents(ns, target, batch, hackInterval) {
   // Calculate the multiplier required to reach maximum money.
@@ -143,25 +144,30 @@ function createGrowEvents(ns, target, batch, hackInterval) {
   // Scale the required threads for grow and weaken based on the assigned ratio.
   const assignedGrowThreads = ratio !== 1 ? Math.floor(ratio * totalGrowThreads) - 1 : totalGrowThreads;
   const assignedWeakenThreadsForGrow = ratio !== 1 ? Math.ceil(ratio * totalWeakenThreadsForGrow) : totalWeakenThreadsForGrow;
+
+  // If either calculated threads is 0, return an empty array.
+  if (assignedGrowThreads <= 0 || assignedWeakenThreadsForGrow <= 0) {
+    return [];
+  }
   
   // Calculate event start times.
   const weakenStartTime = (target.weakenTime >= batch.executionTimeframe + hackInterval)
     ? (batch.executionEndTime - target.weakenTime)
     : (batch.executionStartTime - hackInterval);
   
-  const growStartTime = (target.growTime >= (weakenStartTime + target.weakenTime - batch.executionStartTime + 2 * hackInterval))
-    ? (weakenStartTime + target.weakenTime - target.growTime - hackInterval)
+  const growStartTime = (target.growTime >= (weakenStartTime + target.weakenTime - batch.executionStartTime + 4 * hackInterval))
+    ? (weakenStartTime + target.weakenTime - target.growTime - 3 * hackInterval)
     : (batch.executionStartTime - hackInterval);
   
   return [
     {
-      time: growStartTime,
+      time: Math.round(growStartTime),
       target: target.hostname,
       action: 'grow',
       threads: assignedGrowThreads
     },
     {
-      time: weakenStartTime,
+      time: Math.round(weakenStartTime),
       target: target.hostname,
       action: 'weaken',
       threads: assignedWeakenThreadsForGrow

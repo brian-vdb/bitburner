@@ -61,7 +61,7 @@ export async function serverAnalysis(ns, maxHackTargets = 5) {
 /**
  * Execute a Batch Analysis using data/hosts.txt and data/targets.txt.
  * Optionally accepts hackInterval.
- * The results are stored in data/targets.txt.
+ * The results are stored in data/targets.txt and data/batch.txt.
  *
  * @param {import("../index").NS} ns - The environment object.
  * @param {number} [hackInterval=1000] - Optional hack interval in ms.
@@ -84,6 +84,33 @@ export async function BatchAnalysis(ns, hackInterval = 1000) {
 
   // Check if the process started
   if (pid === 0) throw new Error(`Batch Analysis could not be started`);
+
+  // Wait for the process to finish
+  await awaitScript(ns, pid);
+}
+
+/**
+ * Execute a Batch Analysis using data/hosts.txt and data/batch.txt.
+ *
+ * @param {import("../index").NS} ns - The environment object.
+ * @returns {Promise<void>} Resolves when the analysis is complete.
+ */
+export async function BatchExecution(ns) {
+  // Start the execution
+  const pid = ns.exec(
+    "tools/BatchExecution/main.js",
+    ns.getHostname(),
+    {
+      preventDuplicates: true,
+      temporary: false,
+      threads: 1,
+    },
+    "data/hosts.txt",
+    "data/batch.txt"
+  );
+
+  // Check if the process started
+  if (pid === 0) throw new Error(`Batch Execution could not be started`);
 
   // Wait for the process to finish
   await awaitScript(ns, pid);
