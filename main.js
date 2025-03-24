@@ -48,7 +48,7 @@ export async function main(ns) {
     ns.tprint(`>>> | Running: Batch Execution | <<<`);
     await batchExecution(ns);
 
-    ns.tprint(`>>> | Iteration complete. Restarting loop in ${hackInterval * 4}ms... | <<<`);
-    await sleep(hackInterval * 4);
+    ns.tprint(`>>> | Iteration complete. Restarting loop in ${hackInterval}ms... | <<<`);
+    await sleep(hackInterval);
   }
 }

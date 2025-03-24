@@ -66,30 +66,23 @@ export class SortedEventList {
  * @returns {Object} An object containing executionStartTime, executionEndTime, and a SortedEventList for events.
  */
 export function prepareBatch(targets, hackInterval) {
-  // Set executionEndTime to the highest maxTime among targets.
-  const executionEndTime = Math.max(...targets.map(target => target.maxTime));
+  // Set the initial execution window variables
+  const executionStartTime = Math.max(...targets.map(target => target.maxTime));
+  const schedulingEndTime = executionStartTime - hackInterval;
+  let executionEndTime;
 
-  let executionStartTime;
-  // Filter hack targets (status equals "hack")
+  // Set the execution end time according to the presence of hack targets
   const hackTargets = targets.filter(target => target.status === "hack");
-
   if (hackTargets.length > 0) {
-    // Use the lowest minTime among hack targets.
-    const lowestMinTime = Math.min(...hackTargets.map(target => target.minTime));
-    executionStartTime = executionEndTime - lowestMinTime - (3 * hackInterval);
+    const highestMaxTime = Math.max(...hackTargets.map(target => target.maxTime));
+    executionEndTime = schedulingEndTime + highestMaxTime;
   } else {
-    // Check if there is a grow target.
-    const growTargets = targets.filter(target => target.status === "grow");
-    if (growTargets.length > 0 && hackInterval !== undefined) {
-      executionStartTime = executionEndTime - (3 * hackInterval);
-    } else {
-      executionStartTime = executionEndTime;
-    }
+    executionEndTime = schedulingEndTime + 3 * hackInterval;
   }
-
+  
   // Initialize events as a SortedEventList instance with the optional initial events.
   return {
-    executionStartTime, executionEndTime,
+    schedulingEndTime, executionStartTime, executionEndTime,
     executionTimeframe: executionEndTime - executionStartTime,
     events: new SortedEventList()
   };
@@ -110,32 +103,33 @@ export function prepareBatch(targets, hackInterval) {
  * @returns {Object[]} An array of event objects for heal actions (weaken and grow), or an empty array if no threads are allocated.
  */
 function createHealEvents(ns, target, batch, hackInterval) {
-  // Get the thread counts for heal (combined weaken and grow).
-  const { weakenThreads, growThreads, hackThreads } = calculateThreadCounts(ns, target, target.threadsAssigned);
-
-  // Calculate the weaken start time.
-  const weakenStartTime = (target.weakenTime >= batch.executionTimeframe + hackInterval)
-    ? (batch.executionEndTime - target.weakenTime)
-    : (batch.executionStartTime - hackInterval);
-  
-  // Calculate the grow start time.
-  const growStartTime = (target.growTime >= weakenStartTime + target.weakenTime - batch.executionStartTime + 4 * hackInterval)
-    ? (weakenStartTime + target.weakenTime - target.growTime - 3 * hackInterval)
-    : (batch.executionStartTime - hackInterval);
-
-  // Create events for weaken and grow actions if thread counts are positive.
   let events = [];
+
+  // Get the thread counts for heal (combined weaken and grow)
+  const { weakenThreads, growThreads, hackThreads } = calculateThreadCounts(ns, target, target.threadsAssigned);
+  
   if (weakenThreads > 0) {
+    // Calculate the weaken start time
+    const weakenStartTime = growThreads > 0 ?
+      batch.executionStartTime + (3 * hackInterval) - target.weakenTime : 
+      batch.executionStartTime - target.weakenTime;
+    
+    // Create the weaken event
     events.push({
-      time: Math.round(weakenStartTime),
+      time: weakenStartTime,
       target: target.hostname,
       action: 'weaken',
       threads: weakenThreads
     });
   }
+  
   if (growThreads > 0) {
+    // Calculate the grow start time
+    const growStartTime = batch.executionStartTime - target.growTime;
+    
+    // Create the grow event
     events.push({
-      time: Math.round(growStartTime),
+      time: growStartTime,
       target: target.hostname,
       action: 'grow',
       threads: growThreads
