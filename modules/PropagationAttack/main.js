@@ -8,7 +8,7 @@
 import {
   getAvailableHacks,
   intrudeServer,
-} from "tools/PropagationAttack/intrude";
+} from "./intrude";
 import { arrayToJSON, writeJSONFile } from "internal/json";
 
 /**

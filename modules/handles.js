@@ -15,11 +15,14 @@ import { awaitScript } from "internal/process";
  */
 export async function propagationAttack(ns) {
   // Start the attack
-  const pid = ns.exec("tools/PropagationAttack/main.js", ns.getHostname(), {
-    preventDuplicates: true,
-    temporary: false,
-    threads: 1,
-  });
+  const pid = ns.exec(
+    "modules/PropagationAttack/main.js",
+    ns.getHostname(), {
+      preventDuplicates: true,
+      temporary: false,
+      threads: 1,
+    }
+  );
 
   // Check if the process started
   if (pid === 0) throw new Error(`Propagation Attack could not be started`);
@@ -40,7 +43,7 @@ export async function propagationAttack(ns) {
 export async function serverAnalysis(ns, maxHackTargets = 5) {
   // Start the analysis
   const pid = ns.exec(
-    "tools/ServerAnalysis/main.js",
+    "modules/ServerAnalysis/main.js",
     ns.getHostname(),
     {
       preventDuplicates: true,
@@ -70,7 +73,7 @@ export async function serverAnalysis(ns, maxHackTargets = 5) {
 export async function BatchAnalysis(ns, hackInterval = 1000) {
   // Start the analysis
   const pid = ns.exec(
-    "tools/BatchAnalysis/main.js",
+    "modules/BatchAnalysis/main.js",
     ns.getHostname(),
     {
       preventDuplicates: true,
@@ -98,7 +101,7 @@ export async function BatchAnalysis(ns, hackInterval = 1000) {
 export async function BatchExecution(ns) {
   // Start the execution
   const pid = ns.exec(
-    "tools/BatchExecution/main.js",
+    "modules/BatchExecution/main.js",
     ns.getHostname(),
     {
       preventDuplicates: true,

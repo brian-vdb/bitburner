@@ -5,7 +5,7 @@
   Description: Functions related to server intrusion.
 */
 
-import { uploadPublicScriptsToServer } from "tools/PropagationAttack/upload";
+import { uploadPublicScriptsToServer } from "./upload";
 
 /**
  * Get available hacks as an array of functions.

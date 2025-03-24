@@ -6,7 +6,7 @@
 */
 
 import { readJSONFile, writeJSONFile } from "internal/json";
-import { prepareHost, prepareTarget } from "tools/ServerAnalysis/servers";
+import { prepareHost, prepareTarget } from "./servers";
 import { normalizeTargets, sortAndLimitTargets } from "./servers";
 
 /**
@@ -36,7 +36,7 @@ export async function main(ns) {
   // Loop through every known server to find valid hosts
   servers.forEach((server) => {
     // Check if the server is a valid host
-    if (ns.hasRootAccess(server.hostname)) {
+    if (ns.hasRootAccess(server.hostname) && server.hostname !== 'home') {
       hosts.push(prepareHost(ns, server.hostname));
     }
   });
