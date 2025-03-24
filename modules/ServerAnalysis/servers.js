@@ -54,10 +54,8 @@ export function prepareTarget(ns, hostname) {
   target.value = target.moneyMax
 
   // Save the server status to the target
-  if (target.securityCurrent !== target.securityMin) {
-    target.status = "weaken";
-  } else if (target.moneyCurrent !== target.moneyMax) {
-    target.status = "grow";
+  if (target.securityCurrent !== target.securityMin || target.moneyCurrent !== target.moneyMax) {
+    target.status = "heal";
   } else {
     target.status = "hack";
   }
@@ -114,17 +112,12 @@ export function normalizeTargets(targets, maxMoneyMultiplier, maxTimeMultiplier)
  */
 export function sortAndLimitTargets(targets, maxHackTargets) {
   // Separate targets by their status
+  const healTargets = targets.filter(target => target.status === "heal");
   const hackTargets = targets.filter(target => target.status === "hack");
-  const growTargets = targets.filter(target => target.status === "grow");
-  const weakenTargets = targets.filter(target => target.status === "weaken");
 
   // Sort hack targets in descending order by value and limit to maxHackTargets
   const limitedHackTargets = hackTargets.sort((a, b) => b.value - a.value).slice(0, maxHackTargets);
 
-  // Optionally sort grow and weaken targets by value descending (for consistency)
-  const sortedGrowTargets = growTargets.sort((a, b) => b.value - a.value);
-  const sortedWeakenTargets = weakenTargets.sort((a, b) => b.value - a.value);
-
   // Combine arrays: hack targets first, then grow targets, then weaken targets
-  return [...limitedHackTargets, ...sortedGrowTargets, ...sortedWeakenTargets];
+  return [...limitedHackTargets, ...healTargets];
 }

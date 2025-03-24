@@ -57,7 +57,7 @@ export async function main(ns) {
   });
 
   // Normalize the target values
-  const normalizedTargets = normalizeTargets(targets, 2, 2);
+  const normalizedTargets = normalizeTargets(targets, 2, 1.5);
 
   // Sort the targets and limit to the max hack targets
   const sortedTargets = sortAndLimitTargets(normalizedTargets, maxHackTargets);

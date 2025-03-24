@@ -5,6 +5,8 @@
   Description: Functions related to the creation of a batch of attacks.
 */
 
+import { calculateThreadCounts } from "./threads";
+
 export class SortedEventList {
   /**
    * Constructs a SortedEventList.
@@ -94,85 +96,53 @@ export function prepareBatch(targets, hackInterval) {
 }
 
 /**
- * Creates weaken events for a target.
+ * Creates heal events for a target.
+ *
+ * Heal events combine weaken and grow actions. This function calculates the required thread counts
+ * for both actions using calculateThreadCounts, then creates separate events for each. The event timings
+ * are determined based on the target's properties (weakenTime, growTime) and the batch's execution timeframe
+ * and hack interval.
  *
  * @param {import("../../index").NS} ns - The environment object.
  * @param {Object} target - The target object.
- * @param {Object} batch - The batch object.
+ * @param {Object} batch - The batch object containing executionStartTime, executionEndTime, etc.
  * @param {number} hackInterval - The hack interval.
- * @returns {Object[]} An array with a single weaken event.
+ * @returns {Object[]} An array of event objects for heal actions (weaken and grow), or an empty array if no threads are allocated.
  */
-function createWeakenEvents(target, batch, hackInterval) {
-  const eventTime = (target.weakenTime >= batch.executionTimeframe + hackInterval)
-    ? (batch.executionEndTime - target.weakenTime)
-    : (batch.executionStartTime - hackInterval);
-  
-  return [{
-    time: Math.round(eventTime),
-    target: target.hostname,
-    action: 'weaken',
-    threads: target.threadsAssigned
-  }];
-}
+function createHealEvents(ns, target, batch, hackInterval) {
+  // Get the thread counts for heal (combined weaken and grow).
+  const { weakenThreads, growThreads, hackThreads } = calculateThreadCounts(ns, target, target.threadsAssigned);
 
-/**
- * Creates grow events for a target.
- * 
- * @param {import("../../index").NS} ns - The environment object.
- * @param {Object} target - The target object.
- * @param {Object} batch - The batch object.
- * @param {number} hackInterval - The hack interval.
- * @returns {Object[]} An array with two events: one for grow and one for weaken.
- * If either the calculated grow threads or weaken threads is 0, returns an empty array.
- */
-function createGrowEvents(ns, target, batch, hackInterval) {
-  // Calculate the multiplier required to reach maximum money.
-  const multiplier = target.moneyMax / target.moneyCurrent;
-  
-  // Calculate total grow threads required using Bitburner's growthAnalyze.
-  const totalGrowThreads = Math.ceil(ns.growthAnalyze(target.hostname, multiplier));
-  
-  // Calculate the security increase from the growth operation.
-  const totalSecurityIncrease = ns.growthAnalyzeSecurity(totalGrowThreads);
-  
-  // Calculate total weaken threads needed to offset the security increase.
-  const totalWeakenThreadsForGrow = Math.ceil(totalSecurityIncrease / ns.weakenAnalyze(1));
-  
-  // Determine the ratio of assigned threads relative to the total required threads.
-  const ratio = target.threadsAssigned / target.threadsNeeded;
-  
-  // Scale the required threads for grow and weaken based on the assigned ratio.
-  const assignedGrowThreads = ratio !== 1 ? Math.floor(ratio * totalGrowThreads) - 1 : totalGrowThreads;
-  const assignedWeakenThreadsForGrow = ratio !== 1 ? Math.ceil(ratio * totalWeakenThreadsForGrow) : totalWeakenThreadsForGrow;
-
-  // If either calculated threads is 0, return an empty array.
-  if (assignedGrowThreads <= 0 || assignedWeakenThreadsForGrow <= 0) {
-    return [];
-  }
-  
-  // Calculate event start times.
+  // Calculate the weaken start time.
   const weakenStartTime = (target.weakenTime >= batch.executionTimeframe + hackInterval)
     ? (batch.executionEndTime - target.weakenTime)
     : (batch.executionStartTime - hackInterval);
   
-  const growStartTime = (target.growTime >= (weakenStartTime + target.weakenTime - batch.executionStartTime + 4 * hackInterval))
+  // Calculate the grow start time.
+  const growStartTime = (target.growTime >= weakenStartTime + target.weakenTime - batch.executionStartTime + 4 * hackInterval)
     ? (weakenStartTime + target.weakenTime - target.growTime - 3 * hackInterval)
     : (batch.executionStartTime - hackInterval);
-  
-  return [
-    {
-      time: Math.round(growStartTime),
-      target: target.hostname,
-      action: 'grow',
-      threads: assignedGrowThreads
-    },
-    {
+
+  // Create events for weaken and grow actions if thread counts are positive.
+  let events = [];
+  if (weakenThreads > 0) {
+    events.push({
       time: Math.round(weakenStartTime),
       target: target.hostname,
       action: 'weaken',
-      threads: assignedWeakenThreadsForGrow
-    }
-  ];
+      threads: weakenThreads
+    });
+  }
+  if (growThreads > 0) {
+    events.push({
+      time: Math.round(growStartTime),
+      target: target.hostname,
+      action: 'grow',
+      threads: growThreads
+    });
+  }
+  
+  return events;
 }
 
 /**
@@ -186,10 +156,8 @@ function createGrowEvents(ns, target, batch, hackInterval) {
  */
 function getTargetEvents(ns, target, batch, hackInterval) {
   switch (target.status) {
-    case 'weaken':
-      return createWeakenEvents(target, batch, hackInterval);
-    case 'grow':
-      return createGrowEvents(ns, target, batch, hackInterval);
+    case 'heal':
+      return createHealEvents(ns, target, batch, hackInterval);
     default:
       return [];
   }
