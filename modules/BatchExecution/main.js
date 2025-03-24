@@ -25,6 +25,7 @@ export async function main(ns) {
   let hosts = readJSONFile(ns, ns.args[0]);
   const batch = readJSONFile(ns, ns.args[1]);
   batch.events = new SortedEventList(batch.events);
+  ns.tprint(`Starting batch execution`);
 
   // Initialize sliding average of delays using an exponential moving average (EMA)
   let offset = 3;
@@ -57,6 +58,5 @@ export async function main(ns) {
 
   // Sleep untill the end of the execution cycle
   let currentTime = await activeWaitUntil(ns, batch.executionEndTime + startTime + offset) - startTime;
-  ns.tprint(`[${currentTime}]: Finished Batch execution`);
-  
+  ns.tprint(`[${currentTime}]: Finished batch execution`);
 }

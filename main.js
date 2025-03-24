@@ -6,7 +6,7 @@
 */
 
 import { sleep } from "./internal/time";
-import { BatchAnalysis, BatchExecution, propagationAttack, serverAnalysis } from "./tools/handles";
+import { maintainHomeNetwork, BatchAnalysis, BatchExecution, propagationAttack, serverAnalysis } from "./tools/handles";
 
 /**
  * Main function to automate the game in an infinite loop.
@@ -14,7 +14,7 @@ import { BatchAnalysis, BatchExecution, propagationAttack, serverAnalysis } from
  * Optional args:
  *   ns.args[0] - hack interval (default: 1000)
  *   ns.args[1] - max hack targets (default: 5)
- *   ns.args[2] - max hack time (default: undefined)
+ *   ns.args[2] - max action time (default: undefined) for weaken, grow, and hack operations.
  *
  * @param {import("./index").NS} ns - The environment object.
  * @returns {Promise<void>} A promise that never resolves as it loops indefinitely.
@@ -23,10 +23,14 @@ export async function main(ns) {
   // Extract optional arguments with default values
   const hackInterval = ns.args[0] !== undefined ? ns.args[0] : 1000;
   const maxHackTargets = ns.args[1] !== undefined ? ns.args[1] : 5;
-  const maxHackTime = ns.args[2] !== undefined ? ns.args[2] : undefined;
+  const maxActionTime = ns.args[2] !== undefined ? ns.args[2] : undefined;
 
   while (true) {
-    ns.tprint(`>>> | Starting automation iteration with hackInterval=${hackInterval} and maxHackTargets=${maxHackTargets} | <<<`);
+    ns.tprint(`>>> | Starting automation iteration with hackInterval=${hackInterval}, maxHackTargets=${maxHackTargets} and maxActionTime=${maxActionTime} | <<<`);
+
+    // Maintain the Home Network
+    ns.tprint(`>>> | Running: Maintain Home Network | <<<`);
+    await maintainHomeNetwork(ns);
 
     // Perform a Propagation Attack
     ns.tprint(`>>> | Running: Propagation Attack | <<<`);
@@ -44,7 +48,7 @@ export async function main(ns) {
     ns.tprint(`>>> | Running: Batch Execution | <<<`);
     await BatchExecution(ns);
 
-    ns.tprint(`>>> | Iteration complete. Restarting loop in ${hackInterval}ms... | <<<`);
+    ns.tprint(`>>> | Iteration complete. Restarting loop in ${hackInterval * 4}ms... | <<<`);
     await sleep(hackInterval * 4);
   }
 }
