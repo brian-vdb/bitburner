@@ -6,7 +6,7 @@
 */
 
 import { sleep } from "./internal/time";
-import { maintainHomeNetwork, BatchAnalysis, BatchExecution, propagationAttack, serverAnalysis } from "./tools/handles";
+import { maintainHomeNetwork, BatchAnalysis, BatchExecution, propagationAttack, serverAnalysis } from "./modules/handles";
 
 /**
  * Main function to automate the game in an infinite loop.
