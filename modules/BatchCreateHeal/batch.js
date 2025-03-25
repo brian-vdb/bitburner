@@ -5,58 +5,8 @@
   Description: Functions related to the creation of a batch of attacks
 */
 
+import { createBaseBatch } from "../../internal/batch";
 import { calculateThreadCounts } from "./threads";
-
-export class SortedEventList {
-  /**
-   * Constructs a SortedEventList.
-   * @param {Object[]} [initialEvents=[]] - Optional initial array of events
-   */
-  constructor(initialEvents = []) {
-    // Initialize the events array with the provided initial events
-    this.events = Array.isArray(initialEvents) ? initialEvents : [];
-
-    // Mark as unsorted so that sorting happens on first access
-    this.isSorted = false;
-  }
-
-  // Adds a new event to the list and marks the list as unsorted
-  enqueue(event) {
-    this.events.push(event);
-    this.isSorted = false;
-  }
-
-  // Sorts the events by their time property if the array is not sorted
-  sortEvents() {
-    if (!this.isSorted) {
-      this.events.sort((a, b) => a.time - b.time);
-      this.isSorted = true;
-    }
-  }
-
-  // Removes and returns the event with the lowest time
-  dequeue() {
-    this.sortEvents();
-    return this.events.shift();
-  }
-
-  // Returns the event with the lowest time without removing it
-  peek() {
-    this.sortEvents();
-    return this.events[0];
-  }
-
-  // Returns the number of events
-  size() {
-    return this.events.length;
-  }
-
-  // Getter that returns the sorted events array
-  get eventsArray() {
-    this.sortEvents();
-    return this.events;
-  }
-}
 
 /**
  * Prepares the timeframe for a batch of attacks on the targets
@@ -66,17 +16,16 @@ export class SortedEventList {
  * @returns {Object} An object containing executionStartTime, executionEndTime, and a SortedEventList for events
  */
 export function prepareBatch(targets, hackInterval=1000) {
+  let batch = createBaseBatch();
+  
   // Set the initial execution window variables
-  const executionStartTime = Math.max(...targets.map(target => target.maxTime));
-  const schedulingEndTime = executionStartTime - hackInterval;
-  const executionEndTime = schedulingEndTime + 3 * hackInterval;
+  batch.executionStartTime = Math.max(...targets.map(target => target.maxTime));
+  batch.schedulingEndTime = batch.executionStartTime - hackInterval;
+  batch.executionEndTime = batch.schedulingEndTime + 3 * hackInterval;
+  batch.executionTimeframe = batch.schedulingEndTime - batch.executionStartTime;
   
   // Initialize events as a SortedEventList instance with the optional initial events.
-  return {
-    schedulingEndTime, executionStartTime, executionEndTime,
-    executionTimeframe: executionEndTime - executionStartTime,
-    events: new SortedEventList()
-  };
+  return batch;
 }
 
 /**
@@ -165,43 +114,5 @@ export function populateBatch(ns, targets, batch, hackInterval=1000) {
       batch.events.enqueue(event);
     });
   });
-  return batch;
-}
-
-/**
- * Normalizes the batch by deducting the time until the first event is fired from
- * all event times (including finishTime) and the batch's time properties
- *
- * @param {Object} batch - The batch object containing time properties and events
- * @returns {Object} The normalized batch object
- */
-export function normalizeBatch(batch) {
-  // Get the first event (lowest time) from the sorted event list
-  const firstEvent = batch.events.peek();
-  if (!firstEvent) {
-    // If there are no events, nothing to normalize
-    return batch;
-  }
-  
-  // Calculate the shift value as the time until the first event is fired
-  const shift = firstEvent.time;
-  
-  // Deduct shift from every event's time and finishTime
-  batch.events.events.forEach(event => {
-    event.time -= shift;
-    event.finishTime -= shift;
-  });
-  
-  // Deduct shift from the batch's time properties
-  batch.schedulingEndTime -= shift;
-  batch.executionStartTime -= shift;
-  batch.executionEndTime -= shift;
-  batch.executionTimeframe = batch.executionEndTime - batch.executionStartTime;
-  
-  // Adjust the executionEndTime according to the event that finishes last
-  const maxFinishTime = Math.max(...batch.events.events.map(event => event.finishTime));
-  batch.executionEndTime = maxFinishTime;
-  batch.executionTimeframe = batch.executionEndTime - batch.executionStartTime;
-  
   return batch;
 }

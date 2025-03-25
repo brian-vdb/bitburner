@@ -7,7 +7,8 @@
 
 import { readJSONFile, writeJSONFile } from "internal/json";
 import { assignThreads } from "./allocation";
-import { normalizeBatch, populateBatch, prepareBatch } from "./batch";
+import { populateBatch, prepareBatch } from "./batch";
+import { normalizeBatch } from "../../internal/batch";
 
 /**
  * Executes a batch analysis and stores results in data/targets.txt

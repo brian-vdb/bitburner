@@ -6,9 +6,9 @@
 */
 
 import { readJSONFile } from "internal/json";
-import { SortedEventList } from "../BatchCreateHeal/batch";
 import { activeWaitUntil } from "internal/time";
 import { handleEvent } from "./events";
+import { SortedEventList } from "../../internal/batch";
 
 /**
  * Perform a batch execution.
