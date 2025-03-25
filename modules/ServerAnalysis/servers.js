@@ -104,18 +104,18 @@ export function normalizeTargets(targets, maxMoneyMultiplier, maxTimeMultiplier)
 
 /**
  * Sorts the targets array based on the target status (hack -> grow -> weaken)
- * and limits the hack targets to the top `maxHackTargets` based on their value.
+ * and limits the hack targets to the top `maxHackTargets` based on their value
  *
- * @param {Object[]} targets - Array of target objects populated with prepareTarget.
- * @param {number} maxHackTargets - Maximum number of hack targets to include.
- * @returns {Object[]} Sorted and filtered targets array.
+ * @param {Object[]} targets - Array of target objects populated with prepareTarget
+ * @param {number} maxHackTargets - Maximum number of hack targets to include
+ * @returns {Object[]} Sorted and filtered targets array
  */
 export function sortAndLimitTargets(targets, maxHackTargets) {
   // Separate targets by their status
   const healTargets = targets.filter(target => target.status === "heal");
   const hackTargets = targets.filter(target => target.status === "hack");
 
-  // Sort hack targets in descending order by value and limit to maxHackTargets
+  // Sort hack targets in descending order by value and limit to maxHealTargets and maxHackTargets
   const limitedHackTargets = hackTargets.sort((a, b) => b.value - a.value).slice(0, maxHackTargets);
 
   // Combine arrays: hack targets first, then grow targets, then weaken targets

@@ -51,13 +51,18 @@ export async function main(ns) {
     const required = ns.getServerRequiredHackingLevel(server.hostname);
 
     // Check if the server is a valid hacking target
-    if (level >= required && ns.getServerMaxMoney(server.hostname) > 0 && ns.hasRootAccess(server.hostname)) {
-      targets.push(prepareTarget(ns, server.hostname));
-    }
+    if (
+    level >= required &&
+    ns.getServerMaxMoney(server.hostname) > 0 &&
+    ns.hasRootAccess(server.hostname) &&
+    !server.hostname.startsWith('home')
+  ) {
+    targets.push(prepareTarget(ns, server.hostname));
+  }
   });
 
   // Normalize the target values
-  const normalizedTargets = normalizeTargets(targets, 2, 1.5);
+  const normalizedTargets = normalizeTargets(targets, 2, 2);
 
   // Sort the targets and limit to the max hack targets
   const sortedTargets = sortAndLimitTargets(normalizedTargets, maxHackTargets);

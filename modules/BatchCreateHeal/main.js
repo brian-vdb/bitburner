@@ -1,23 +1,22 @@
 /*
   Brian van den Berg
-  Module: BatchAnalysis
+  Module: BatchCreateHeal
   File: main.js
   Description: Tool to perform batch analysis.
 */
 
 import { readJSONFile, writeJSONFile } from "internal/json";
 import { assignThreads } from "./allocation";
-import { populateBatch, prepareBatch } from "./batch";
+import { normalizeBatch, populateBatch, prepareBatch } from "./batch";
 
 /**
- * Perform a batch analysis.
- * Executes a batch analysis and stores results in data/targets.txt.
+ * Executes a batch analysis and stores results in data/targets.txt
  *
  * Optional args:
  *   ns.args[2] - hack interval (default: 1000)
  *
- * @param {import("../../index").NS} ns - The environment object.
- * @returns {Promise<void>} Resolves when the analysis is complete.
+ * @param {import("../../index").NS} ns - The environment object
+ * @returns {Promise<void>} Resolves when the analysis is complete
  */
 export async function main(ns) {
   if (ns.args.length < 2) {
@@ -35,11 +34,12 @@ export async function main(ns) {
   targets = assignThreads(ns, hosts, targets);
 
   // Prepare the batch according to the assigned threads
-  let batch = prepareBatch(targets, hackInterval)
-  batch = populateBatch(ns, targets, batch, hackInterval)
+  let batch = prepareBatch(targets, hackInterval);
+  batch = populateBatch(ns, targets, batch, hackInterval);
+  batch = normalizeBatch(batch);
 
   // Store the result
-  batch.events = batch.events.eventsArray
+  batch.events = batch.events.eventsArray;
   writeJSONFile(ns, targets, "data/targets.txt");
-  writeJSONFile(ns, batch, "data/batch.txt")
+  writeJSONFile(ns, batch, "data/batch.txt");
 }

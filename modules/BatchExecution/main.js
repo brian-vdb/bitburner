@@ -6,8 +6,8 @@
 */
 
 import { readJSONFile } from "internal/json";
-import { SortedEventList } from "../BatchAnalysis/batch";
-import { activeWaitUntil } from "../../internal/time";
+import { SortedEventList } from "../BatchCreateHeal/batch";
+import { activeWaitUntil } from "internal/time";
 import { handleEvent } from "./events";
 
 /**

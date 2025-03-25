@@ -1,17 +1,17 @@
 /*
   Brian van den Berg
   File: handles.js
-  Description: Contains handles to execute tools from the main script.
+  Description: Contains handles to execute tools from the main script
 */
 
 import { awaitScript } from "internal/process";
 
 /**
- * Executes the Maintain Home Network process.
- * This process maintains the network of in-home servers.
+ * Executes the Maintain Home Network process
+ * This process maintains the network of in-home servers
  *
- * @param {import("../index").NS} ns - The environment object.
- * @returns {Promise<void>} Resolves when the maintenance is complete.
+ * @param {import("../index").NS} ns - The environment object
+ * @returns {Promise<void>} Resolves when the maintenance is complete
  */
 export async function maintainHomeNetwork(ns) {
   // Start the network maintenance process
@@ -33,11 +33,11 @@ export async function maintainHomeNetwork(ns) {
 }
 
 /**
- * Executes a Propagation Attack.
- * The results are stored in data/servers.txt.
+ * Executes a Propagation Attack
+ * The results are stored in data/servers.txt
  *
- * @param {import("../index").NS} ns - The environment object.
- * @returns {Promise<void>} Resolves when the attack is complete.
+ * @param {import("../index").NS} ns - The environment object
+ * @returns {Promise<void>} Resolves when the attack is complete
  */
 export async function propagationAttack(ns) {
   // Start the attack
@@ -59,15 +59,15 @@ export async function propagationAttack(ns) {
 }
 
 /**
- * Executes a Server Analysis using data/servers.txt.
- * Optionally accepts a maximum number of hack targets.
- * The results are stored in data/hosts.txt and data/targets.txt.
+ * Executes a Server Analysis using data/servers.txt
+ * Optionally accepts a maximum number of hack targets
+ * The results are stored in data/hosts.txt and data/targets.txt
  *
- * @param {import("../index").NS} ns - The environment object.
- * @param {number} [maxHackTargets=5] - Optional maximum number of hack targets.
- * @returns {Promise<void>} Resolves when the analysis is complete.
+ * @param {import("../index").NS} ns - The environment object
+ * @param {number} [maxHackTargets=5] - Maximum number of hack targets
+ * @returns {Promise<void>} Resolves when the analysis is complete
  */
-export async function serverAnalysis(ns, maxHackTargets = 5) {
+export async function serverAnalysis(ns, maxHackTargets=5) {
   // Start the analysis
   const pid = ns.exec(
     "modules/ServerAnalysis/main.js",
@@ -89,18 +89,17 @@ export async function serverAnalysis(ns, maxHackTargets = 5) {
 }
 
 /**
- * Executes a Batch Analysis using data/hosts.txt and data/targets.txt.
- * Optionally accepts a hack interval.
- * The results are stored in data/targets.txt and data/batch.txt.
+ * Creates a Heal Batch using data/hosts.txt and data/targets.txt
+ * The results are stored in data/targets.txt and data/batch.txt
  *
- * @param {import("../index").NS} ns - The environment object.
- * @param {number} [hackInterval=1000] - Optional hack interval in ms.
- * @returns {Promise<void>} Resolves when the analysis is complete.
+ * @param {import("../index").NS} ns - The environment object
+ * @param {number} [hackInterval=1000] - The hack interval
+ * @returns {Promise<void>} Resolves when the analysis is complete
  */
-export async function batchAnalysis(ns, hackInterval = 1000) {
+export async function batchCreateHeal(ns, hackInterval=1000) {
   // Start the analysis
   const pid = ns.exec(
-    "modules/BatchAnalysis/main.js",
+    "modules/BatchCreateHeal/main.js",
     ns.getHostname(),
     {
       preventDuplicates: true,
@@ -113,17 +112,47 @@ export async function batchAnalysis(ns, hackInterval = 1000) {
   );
 
   // Check if the process started
-  if (pid === 0) throw new Error("Batch Analysis could not be started");
+  if (pid === 0) throw new Error("Batch Create Heal could not be started");
 
   // Wait for the process to finish
   await awaitScript(ns, pid);
 }
 
 /**
- * Executes a Batch Execution using data/hosts.txt and data/batch.txt.
+ * Creates a Hack Batch using data/hosts.txt and data/targets.txt
+ * The results are stored in data/targets.txt and data/batch.txt
  *
- * @param {import("../index").NS} ns - The environment object.
- * @returns {Promise<void>} Resolves when the execution is complete.
+ * @param {import("../index").NS} ns - The environment object
+ * @param {number} [hackPercentage=10] - The hack percentage
+ * @returns {Promise<void>} Resolves when the analysis is complete
+ */
+export async function batchCreateHack(ns, hackPercentage=10) {
+  // Start the analysis
+  const pid = ns.exec(
+    "modules/BatchCreateHack/main.js",
+    ns.getHostname(),
+    {
+      preventDuplicates: true,
+      temporary: false,
+      threads: 1,
+    },
+    "data/hosts.txt",
+    "data/targets.txt",
+    hackPercentage
+  );
+
+  // Check if the process started
+  if (pid === 0) throw new Error("Batch Create Hack could not be started");
+
+  // Wait for the process to finish
+  await awaitScript(ns, pid);
+}
+
+/**
+ * Executes a Batch Execution using data/hosts.txt and data/batch.txt
+ *
+ * @param {import("../index").NS} ns - The environment object
+ * @returns {Promise<void>} Resolves when the execution is complete
  */
 export async function batchExecution(ns) {
   // Start the execution
