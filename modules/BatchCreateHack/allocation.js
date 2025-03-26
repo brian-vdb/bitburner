@@ -16,7 +16,7 @@ import { calculateThreadCounts } from "./threads";
  * @param {number} [hackPercentage=10] - The hack percentage
  * @returns {Object[]} Sorted targets array with updated threadsNeeded property
  */
-export function calculateAndSortTargets(ns, targets, maxHackTargets=5, hackPercentage=10) {
+export function calculateAndSortTargets(ns, targets, maxHackTargets = 5, hackPercentage = 10) {
   // Filter out targets with status 'heal'
   targets = targets.filter(target => target.status !== 'heal');
 
@@ -26,8 +26,8 @@ export function calculateAndSortTargets(ns, targets, maxHackTargets=5, hackPerce
     target.threadsNeeded = threadCounts.hackThreads;
   });
 
-  // Sort targets by target.value descending
-  return targets.sort((a, b) => b.value - a.value).slice(0, maxHackTargets);
+  // Sort targets by target.value descending and limit to maxHackTargets
+  return targets.sort((a, b) => b.value - a.value).splice(0, maxHackTargets);
 }
 
 /**
@@ -43,6 +43,11 @@ export function calculateAndSortTargets(ns, targets, maxHackTargets=5, hackPerce
 export function assignThreads(ns, hosts, targets, maxHackTargets=5, hackPercentage=10) {
   // Sort (and filter) targets using calculateAndSortTargets
   targets = calculateAndSortTargets(ns, targets, maxHackTargets, hackPercentage);
+  
+  // Ensure threadsAssigned is initialized on each target
+  targets.forEach(target => {
+    target.threadsAssigned = target.threadsAssigned ?? 0;
+  });
   
   // Calculate total available threads using reduce
   let totalThreadsAvailable = hosts.reduce((sum, host) => sum + host.threadsAvailable, 0);

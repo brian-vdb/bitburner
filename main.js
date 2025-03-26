@@ -12,36 +12,37 @@ import { maintainHomeNetwork, batchExecution, propagationAttack, serverAnalysis,
  * Prepares the server information for performing actions on the network
  *
  * @param {import("./index").NS} ns - The environment object
+ * @param {number} [maxActionTime=1440] - The maximum time an action is allowed to take
  * @returns {Promise<void>} A promise that never resolves as it loops indefinitely
  */
-async function prepareServers(ns) {
+async function prepareServers(ns, maxActionTime=1440) {
   // Perform a Propagation Attack
   ns.tprint(`>>> | Running: Propagation Attack | <<<`);
   await propagationAttack(ns);
 
   // Perform a Server Analysis
-  ns.tprint(`>>> | Running: Server Analysis | <<<`);
-  await serverAnalysis(ns);
+  ns.tprint(`>>> | Running: Server Analysis with maxActionTime=${maxActionTime} | <<<`);
+  await serverAnalysis(ns, maxActionTime);
 }
 
 /**
  * Main function to automate the game in an infinite loop
  *
  * Optional args:
- *   ns.args[0] - max hack targets (default: 5)
- *   ns.args[1] - max action time (default: undefined) for weaken, grow, and hack operations.
- *   ns.args[2] - hack percentage (default: 10)
- *   ns.args[3] - hack interval (default: 1000)
+ *   ns.args[0] - hack percentage (default: 10)
+ *   ns.args[1] - hack interval (default: 1000)
+ *   ns.args[2] - max hack targets (default: 5)
+ *   ns.args[3] - max action time (default: undefined) for weaken, grow, and hack operations.
  *
  * @param {import("./index").NS} ns - The environment object
  * @returns {Promise<void>} A promise that never resolves as it loops indefinitely
  */
 export async function main(ns) {
   // Extract optional arguments with default values
-  const maxHackTargets = ns.args[0] !== undefined ? ns.args[0] : 5;
-  const maxActionTime = ns.args[1] !== undefined ? ns.args[1] : undefined;
-  const hackPercentage = ns.args[2] !== undefined ? ns.args[2] : 10;
-  const hackInterval = ns.args[3] !== undefined ? ns.args[3] : 1000;
+  const hackPercentage = ns.args[0] !== undefined ? ns.args[0] : 10;
+  const hackInterval = ns.args[1] !== undefined ? ns.args[1] : 1000;
+  const maxHackTargets = ns.args[2] !== undefined ? ns.args[2] : 5;
+  const maxActionTime = ns.args[3] !== undefined ? ns.args[3] : 1440;
 
   while (true) {
     ns.tprint(`>>> | Starting automation iteration with maxHackTargets=${maxHackTargets}, maxActionTime=${maxActionTime}, hackPercentage=${hackPercentage} and hackInterval=${hackInterval}| <<<`);
@@ -51,14 +52,14 @@ export async function main(ns) {
     await maintainHomeNetwork(ns);
 
     // Prepare the servers
-    await prepareServers(ns, maxHackTargets);
+    await prepareServers(ns, maxActionTime);
 
     // Check available RAM on the home server
-    const homeMaxRam = ns.getServerMaxRam('home');
-    ns.tprint(`>>> | homeMaxRam=${homeMaxRam}GB | <<<`);
+    const hostMaxRam = ns.getServerMaxRam(ns.getHostname());
+    ns.tprint(`>>> | hostMaxRam=${hostMaxRam}GB | <<<`);
 
     // Choose which batch analysis to run based on available RAM
-    if (homeMaxRam <= 8) {
+    if (hostMaxRam <= 8) {
       // Create a heal batch
       ns.tprint(`>>> | Running: Batch Create Heal with hackInterval=${hackInterval} | <<<`);
       await batchCreateHeal(ns, hackInterval);
@@ -72,11 +73,11 @@ export async function main(ns) {
       await sleep(hackInterval);
 
       // Prepare the servers
-      await prepareServers(ns, maxHackTargets);
+      await prepareServers(ns, maxActionTime);
 
       // Create a hack batch
       ns.tprint(`>>> | Running: Batch Create Hack with maxHackTargets=${maxHackTargets} and hackPercentage=${hackPercentage} | <<<`);
-      await batchCreateHack(ns, hackPercentage);
+      await batchCreateHack(ns, maxHackTargets, hackPercentage);
     } else {
       ns.tprint(`>>> | Running: Batch Analysis Full with hackInterval=${hackInterval} | <<<`);
       // TODO: Implement batchAnalysis when available

@@ -22,7 +22,7 @@ export function prepareBatch(targets, hackInterval=1000) {
   batch.executionStartTime = Math.max(...targets.map(target => target.maxTime));
   batch.schedulingEndTime = batch.executionStartTime - hackInterval;
   batch.executionEndTime = batch.schedulingEndTime + 3 * hackInterval;
-  batch.executionTimeframe = batch.schedulingEndTime - batch.executionStartTime;
+  batch.executionTimeFrame = batch.schedulingEndTime - batch.executionStartTime;
   
   // Initialize events as a SortedEventList instance with the optional initial events.
   return batch;

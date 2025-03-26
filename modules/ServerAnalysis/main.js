@@ -11,14 +11,14 @@ import { normalizeTargets } from "./servers";
 
 /**
  * Perform a server analysis.
- * Start a server analysis using data/servers.txt to split it into hosts and targets.
- * The results get stored in hosts.txt and targets.txt.
+ * Start a server analysis using data/servers.txt to split it into hosts and targets
+ * The results get stored in hosts.txt and targets.txt
  *
  * Optional args:
- *   ns.args[1] - max hack targets (default: 5)
+ *   ns.args[1] - max action time (default: 1440)
  * 
- * @param {import("../../index").NS} ns - The environment object.
- * @returns {Promise<void>} Resolves when the analysis is complete.
+ * @param {import("../../index").NS} ns - The environment object
+ * @returns {Promise<void>} Resolves when the analysis is complete
  */
 export async function main(ns) {
   if (ns.args.length < 1) {
@@ -29,6 +29,10 @@ export async function main(ns) {
   const servers = readJSONFile(ns, ns.args[0]);
   const hosts = [];
   const targets = [];
+
+  // Extract optional parameters with default values if not provided
+  let maxActionTime = ns.args[1] !== undefined ? ns.args[1] : 1440;
+  maxActionTime = maxActionTime * 60 * 1000;
 
   // Loop through every known server to find valid hosts
   servers.forEach((server) => {
@@ -49,13 +53,14 @@ export async function main(ns) {
 
     // Check if the server is a valid hacking target
     if (
-    level >= required &&
-    ns.getServerMaxMoney(server.hostname) > 0 &&
-    ns.hasRootAccess(server.hostname) &&
-    !server.hostname.startsWith('home')
-  ) {
-    targets.push(prepareTarget(ns, server.hostname));
-  }
+      level >= required &&
+      ns.getServerMaxMoney(server.hostname) > 0 &&
+      ns.hasRootAccess(server.hostname) &&
+      !server.hostname.startsWith('home')
+    ) {
+      const target = prepareTarget(ns, server.hostname);
+      if (maxActionTime === undefined || target.maxTime < maxActionTime) targets.push(target);
+    }
   });
 
   // Normalize the target values

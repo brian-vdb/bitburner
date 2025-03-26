@@ -5,84 +5,29 @@
   Description: Functions related to the creation of a batch of attacks
 */
 
+import { createBaseBatch } from "../../internal/batch";
 import { calculateThreadCounts } from "./threads";
-
-export class SortedEventList {
-  /**
-   * Constructs a SortedEventList
-   * @param {Object[]} [initialEvents=[]] - Optional initial array of events
-   */
-  constructor(initialEvents = []) {
-    // Initialize the events array with the provided initial events
-    this.events = Array.isArray(initialEvents) ? initialEvents : [];
-
-    // Mark as unsorted so that sorting happens on first access
-    this.isSorted = false;
-  }
-
-  // Adds a new event to the list and marks the list as unsorted
-  enqueue(event) {
-    this.events.push(event);
-    this.isSorted = false;
-  }
-
-  // Sorts the events by their time property if the array is not sorted
-  sortEvents() {
-    if (!this.isSorted) {
-      this.events.sort((a, b) => a.time - b.time);
-      this.isSorted = true;
-    }
-  }
-
-  // Removes and returns the event with the lowest time
-  dequeue() {
-    this.sortEvents();
-    return this.events.shift();
-  }
-
-  // Returns the event with the lowest time without removing it
-  peek() {
-    this.sortEvents();
-    return this.events[0];
-  }
-
-  // Returns the number of events
-  size() {
-    return this.events.length;
-  }
-
-  // Getter that returns the sorted events array
-  get eventsArray() {
-    this.sortEvents();
-    return this.events;
-  }
-}
 
 /**
  * Prepares the timeframe for a batch of attacks on the targets
  *
  * @param {Object[]} targets - The collection of target objects
+ * @param {number} [hackInterval=1000] - The hack interval
  * @returns {Object} An object containing executionStartTime, executionEndTime, and a SortedEventList for events
  */
-export function prepareBatch(targets) {
-  // Set the initial execution window variables
-  let schedulingEndTime = 0;
-  let executionStartTime = 0;
-  let executionEndTime = 0;
+export function prepareBatch(targets, hackInterval=1000) {
+  let batch = createBaseBatch();
 
   // Set the execution window according to hack targets
   const hackTargets = targets.filter(target => target.status === "hack");
   if (hackTargets.length > 0) {
-    executionStartTime = Math.max(...hackTargets.map(target => target.hackTime));
-    executionEndTime = executionStartTime;
+    batch.executionStartTime = Math.max(...hackTargets.map(target => target.hackTime));
+    batch.schedulingEndTime = batch.executionStartTime - hackInterval;
+    batch.executionEndTime = batch.executionStartTime;
   }
   
   // Initialize events as a SortedEventList instance with the optional initial events
-  return {
-    schedulingEndTime,
-    executionStartTime, executionEndTime, executionTimeFrame: executionEndTime - executionStartTime,
-    events: new SortedEventList()
-  };
+  return batch;
 }
 
 /**
@@ -107,6 +52,7 @@ function createHackEvents(ns, target, batch, hackPercentage=10) {
     // Create the grow event
     events.push({
       time: hackStartTime,
+      finishTime: hackStartTime + target.hackTime,
       target: target.hostname,
       action: 'hack',
       threads: hackThreads

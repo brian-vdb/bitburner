@@ -89,7 +89,7 @@ export function createBaseBatch() {
     schedulingEndTime: 0,
     executionStartTime: 0,
     executionEndTime: 0,
-    executionTimeframe: 0,
+    executionTimeFrame: 0,
     events: new SortedEventList()
   };
 }
@@ -124,12 +124,12 @@ export function normalizeBatch(batch) {
   batch.executionEndTime -= shift;
   
   // Calculate the new execution timeframe
-  batch.executionTimeframe = batch.executionEndTime - batch.executionStartTime;
+  batch.executionTimeFrame = batch.executionEndTime - batch.executionStartTime;
   
   // Adjust the executionEndTime to the finishTime of the event that finishes last
   const maxFinishTime = Math.max(...batch.events.events.map(event => event.finishTime));
   batch.executionEndTime = maxFinishTime;
-  batch.executionTimeframe = batch.executionEndTime - batch.executionStartTime;
+  batch.executionTimeFrame = batch.executionEndTime - batch.executionStartTime;
   
   return batch;
 }

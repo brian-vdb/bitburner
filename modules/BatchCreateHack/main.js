@@ -8,6 +8,7 @@
 import { readJSONFile, writeJSONFile } from "internal/json";
 import { assignThreads } from "./allocation";
 import { populateBatch, prepareBatch } from "./batch";
+import { normalizeBatch } from "../../internal/batch";
 
 /**
  * Perform a batch analysis purely for hacking a percentage of money from hacking targets.
@@ -38,6 +39,7 @@ export async function main(ns) {
   // Prepare the batch according to the assigned threads
   let batch = prepareBatch(targets)
   batch = populateBatch(ns, targets, batch, hackPercentage)
+  batch = normalizeBatch(batch);
 
   // Store the result
   batch.events = batch.events.eventsArray

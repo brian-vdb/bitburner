@@ -60,13 +60,13 @@ export async function propagationAttack(ns) {
 
 /**
  * Executes a Server Analysis using data/servers.txt
- * Optionally accepts a maximum number of hack targets
  * The results are stored in data/hosts.txt and data/targets.txt
  *
  * @param {import("../index").NS} ns - The environment object
+ * @param {number} [maxActionTime=1440] - The maximum time an action is allowed to take
  * @returns {Promise<void>} Resolves when the analysis is complete
  */
-export async function serverAnalysis(ns) {
+export async function serverAnalysis(ns, maxActionTime=1440) {
   // Start the analysis
   const pid = ns.exec(
     "modules/ServerAnalysis/main.js",
@@ -76,7 +76,8 @@ export async function serverAnalysis(ns) {
       temporary: false,
       threads: 1,
     },
-    "data/servers.txt"
+    "data/servers.txt",
+    maxActionTime
   );
 
   // Check if the process started
