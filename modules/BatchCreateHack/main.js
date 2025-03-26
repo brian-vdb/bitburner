@@ -29,10 +29,11 @@ export async function main(ns) {
   let targets = readJSONFile(ns, ns.args[1]);
 
   // Extract optional parameters with default values if not provided
-  const hackPercentage = ns.args[2] !== undefined ? ns.args[2] : 10;
+  const maxHackTargets = ns.args[2] !== undefined ? ns.args[2] : 5;
+  const hackPercentage = ns.args[3] !== undefined ? ns.args[3] : 10;
 
   // Allocate the threads to every target using the optional parameters
-  targets = assignThreads(ns, hosts, targets, hackPercentage);
+  targets = assignThreads(ns, hosts, targets, maxHackTargets, hackPercentage);
 
   // Prepare the batch according to the assigned threads
   let batch = prepareBatch(targets)

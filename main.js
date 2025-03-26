@@ -12,17 +12,16 @@ import { maintainHomeNetwork, batchExecution, propagationAttack, serverAnalysis,
  * Prepares the server information for performing actions on the network
  *
  * @param {import("./index").NS} ns - The environment object
- * @param {number} [maxHackTargets=5] - Maximum number of hack targets
  * @returns {Promise<void>} A promise that never resolves as it loops indefinitely
  */
-async function prepareServers(ns, maxHackTargets) {
+async function prepareServers(ns) {
   // Perform a Propagation Attack
   ns.tprint(`>>> | Running: Propagation Attack | <<<`);
   await propagationAttack(ns);
 
   // Perform a Server Analysis
-  ns.tprint(`>>> | Running: Server Analysis with maxHackTargets=${maxHackTargets} | <<<`);
-  await serverAnalysis(ns, maxHackTargets);
+  ns.tprint(`>>> | Running: Server Analysis | <<<`);
+  await serverAnalysis(ns);
 }
 
 /**
@@ -76,7 +75,7 @@ export async function main(ns) {
       await prepareServers(ns, maxHackTargets);
 
       // Create a hack batch
-      ns.tprint(`>>> | Running: Batch Create Hack with hackPercentage=${hackPercentage} | <<<`);
+      ns.tprint(`>>> | Running: Batch Create Hack with maxHackTargets=${maxHackTargets} and hackPercentage=${hackPercentage} | <<<`);
       await batchCreateHack(ns, hackPercentage);
     } else {
       ns.tprint(`>>> | Running: Batch Analysis Full with hackInterval=${hackInterval} | <<<`);

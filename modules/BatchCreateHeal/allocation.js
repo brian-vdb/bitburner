@@ -43,7 +43,7 @@ export function calculateAndSortTargets(ns, targets) {
  * @returns {Object[]} Targets with threads assigned to them
  */
 export function assignThreads(ns, hosts, targets) {
-  // First, sort (and filter) targets using calculateAndSortTargets
+  // Sort (and filter) targets using calculateAndSortTargets
   targets = calculateAndSortTargets(ns, targets);
 
   // Calculate total available threads using reduce

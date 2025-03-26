@@ -7,7 +7,7 @@
 
 import { readJSONFile, writeJSONFile } from "internal/json";
 import { prepareHost, prepareTarget } from "./servers";
-import { normalizeTargets, sortAndLimitTargets } from "./servers";
+import { normalizeTargets } from "./servers";
 
 /**
  * Perform a server analysis.
@@ -29,9 +29,6 @@ export async function main(ns) {
   const servers = readJSONFile(ns, ns.args[0]);
   const hosts = [];
   const targets = [];
-
-  // Extract optional parameters with default values if not provided
-  const maxHackTargets = ns.args[1] !== undefined ? ns.args[1] : 5;
 
   // Loop through every known server to find valid hosts
   servers.forEach((server) => {
@@ -62,11 +59,8 @@ export async function main(ns) {
   });
 
   // Normalize the target values
-  const normalizedTargets = normalizeTargets(targets, 2, 2);
-
-  // Sort the targets and limit to the max hack targets
-  const sortedTargets = sortAndLimitTargets(normalizedTargets, maxHackTargets);
+  const normalizedTargets = normalizeTargets(targets, 2, 1.5);
 
   // Store the result
-  writeJSONFile(ns, sortedTargets, "data/targets.txt");
+  writeJSONFile(ns, normalizedTargets, "data/targets.txt");
 }

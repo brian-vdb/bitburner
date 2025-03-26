@@ -64,10 +64,9 @@ export async function propagationAttack(ns) {
  * The results are stored in data/hosts.txt and data/targets.txt
  *
  * @param {import("../index").NS} ns - The environment object
- * @param {number} [maxHackTargets=5] - Maximum number of hack targets
  * @returns {Promise<void>} Resolves when the analysis is complete
  */
-export async function serverAnalysis(ns, maxHackTargets=5) {
+export async function serverAnalysis(ns) {
   // Start the analysis
   const pid = ns.exec(
     "modules/ServerAnalysis/main.js",
@@ -77,8 +76,7 @@ export async function serverAnalysis(ns, maxHackTargets=5) {
       temporary: false,
       threads: 1,
     },
-    "data/servers.txt",
-    maxHackTargets
+    "data/servers.txt"
   );
 
   // Check if the process started
@@ -123,10 +121,11 @@ export async function batchCreateHeal(ns, hackInterval=1000) {
  * The results are stored in data/targets.txt and data/batch.txt
  *
  * @param {import("../index").NS} ns - The environment object
+ * @param {number} [maxHackTargets=5] - Maximum number of hack targets
  * @param {number} [hackPercentage=10] - The hack percentage
  * @returns {Promise<void>} Resolves when the analysis is complete
  */
-export async function batchCreateHack(ns, hackPercentage=10) {
+export async function batchCreateHack(ns, maxHackTargets=5, hackPercentage=10) {
   // Start the analysis
   const pid = ns.exec(
     "modules/BatchCreateHack/main.js",
@@ -138,6 +137,7 @@ export async function batchCreateHack(ns, hackPercentage=10) {
     },
     "data/hosts.txt",
     "data/targets.txt",
+    maxHackTargets,
     hackPercentage
   );
 

@@ -8,27 +8,44 @@
 import { calculateThreadCounts } from "./threads";
 
 /**
+ * Calculates thread counts for each target and sorts/ filters targets
+ *
+ * @param {import("../../index").NS} ns - The environment object
+ * @param {Object[]} targets - The collection of targets from server analysis
+ * @param {number} [maxHackTargets=5] - Maximum number of hack targets to include
+ * @param {number} [hackPercentage=10] - The hack percentage
+ * @returns {Object[]} Sorted targets array with updated threadsNeeded property
+ */
+export function calculateAndSortTargets(ns, targets, maxHackTargets=5, hackPercentage=10) {
+  // Filter out targets with status 'heal'
+  targets = targets.filter(target => target.status !== 'heal');
+
+  // Calculate threads needed for each target
+  targets.forEach(target => {
+    const threadCounts = calculateThreadCounts(ns, target, hackPercentage, undefined);
+    target.threadsNeeded = threadCounts.hackThreads;
+  });
+
+  // Sort targets by target.value descending
+  return targets.sort((a, b) => b.value - a.value).slice(0, maxHackTargets);
+}
+
+/**
  * Assigns threads from hosts to targets
  *
  * @param {import("../../index").NS} ns - The environment object
  * @param {Object[]} hosts - The collection of hosts from server analysis
  * @param {Object[]} targets - The collection of targets from server analysis
+ * @param {number} [maxHackTargets=5] - Maximum number of hack targets to include
  * @param {number} [hackPercentage=10] - The hack percentage
  * @returns {Object[]} Targets with threads assigned to them
  */
-export function assignThreads(ns, hosts, targets, hackPercentage = 10) {
-  // Calculate total available threads
+export function assignThreads(ns, hosts, targets, maxHackTargets=5, hackPercentage=10) {
+  // Sort (and filter) targets using calculateAndSortTargets
+  targets = calculateAndSortTargets(ns, targets, maxHackTargets, hackPercentage);
+  
+  // Calculate total available threads using reduce
   let totalThreadsAvailable = hosts.reduce((sum, host) => sum + host.threadsAvailable, 0);
-
-  // In the first pass, determine each target's thread need if not already set.
-  targets.forEach(target => {
-    // Ensure threadsAssigned is defined
-    target.threadsAssigned ??= 0;
-    if (target.threadsNeeded === undefined) {
-      const { hackThreads } = calculateThreadCounts(ns, target, hackPercentage, undefined);
-      target.threadsNeeded = hackThreads;
-    }
-  });
 
   // Perform assignment while threads remain and at least one target receives threads in a cycle
   let cycleThreadsAssigned;
