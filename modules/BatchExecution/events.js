@@ -5,7 +5,7 @@
   Description: Functions related to the firing of events.
 */
 
-import { weaken as runWeaken, grow as runGrow, hack as runHack } from "../../network/hack";
+import { weaken, grow, hack } from "../../network/hack";
 
 /**
  * Allocates the required number of threads for an event among the available hosts.
@@ -64,10 +64,10 @@ const eventHandlers = {
    * @param {Object[]} hosts - Array of host objects.
    * @returns {Object[]} The updated hosts array after deducting used threads.
    */
-  weaken: (ns, event, hosts) => {
+  'weaken': (ns, event, hosts) => {
     const allocation = allocateEventThreads(event, hosts);
     allocation.forEach(alloc => {
-      const success = runWeaken(ns, alloc.hostname, event.target, alloc.threads);
+      const success = weaken(ns, alloc.hostname, event.target, alloc.threads);
     });
     return deductAllocation(allocation, hosts);
   },
@@ -79,10 +79,10 @@ const eventHandlers = {
    * @param {Object[]} hosts - Array of host objects.
    * @returns {Object[]} The updated hosts array after deducting used threads.
    */
-  grow: (ns, event, hosts) => {
+  'grow': (ns, event, hosts) => {
     const allocation = allocateEventThreads(event, hosts);
     allocation.forEach(alloc => {
-      const success = runGrow(ns, alloc.hostname, event.target, alloc.threads);
+      const success = grow(ns, alloc.hostname, event.target, alloc.threads);
     });
     return deductAllocation(allocation, hosts);
   },
@@ -94,10 +94,10 @@ const eventHandlers = {
    * @param {Object[]} hosts - Array of host objects.
    * @returns {Object[]} The updated hosts array after deducting used threads.
    */
-  hack: (ns, event, hosts) => {
+  'hack': (ns, event, hosts) => {
     const allocation = allocateEventThreads(event, hosts);
     allocation.forEach(alloc => {
-      const success = runHack(ns, alloc.hostname, event.target, alloc.threads);
+      const success = hack(ns, alloc.hostname, event.target, alloc.threads);
     });
     return deductAllocation(allocation, hosts);
   }
