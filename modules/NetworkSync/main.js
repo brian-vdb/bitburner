@@ -12,7 +12,7 @@
  * @returns {boolean} True if the file is a script, .lit, or .txt file
  */
 function isAllowedFile(file) {
-  return file.endsWith('.js') || file.endsWith('.lit') || file.endsWith('.txt');
+  return file.endsWith('.js');
 }
 
 /**
