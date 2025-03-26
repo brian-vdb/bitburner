@@ -20,9 +20,9 @@ export function prepareBatch(targets, hackInterval=1000) {
   
   // Set the initial execution window variables
   batch.executionStartTime = Math.max(...targets.map(target => target.maxTime));
+  batch.executionEndTime = batch.executionStartTime + (2 * hackInterval);
+  batch.executionTimeFrame = batch.executionEndTime - batch.executionStartTime;
   batch.schedulingEndTime = batch.executionStartTime - hackInterval;
-  batch.executionEndTime = batch.schedulingEndTime + 3 * hackInterval;
-  batch.executionTimeFrame = batch.schedulingEndTime - batch.executionStartTime;
   
   // Initialize events as a SortedEventList instance with the optional initial events.
   return batch;
@@ -48,7 +48,6 @@ function createHealEvents(ns, target, batch, hackInterval=1000) {
     const weakenStartTime = batch.executionStartTime - target.weakenTime;
     events.push({
       time: weakenStartTime,
-      finishTime: weakenStartTime + target.weakenTime,
       target: target.hostname,
       action: 'weaken',
       threads: weakenThreads
@@ -57,20 +56,18 @@ function createHealEvents(ns, target, batch, hackInterval=1000) {
   
   if (growThreads + growWeakenThreads > 0) {
     // Calculate the grow start times
-    const growStartTime = batch.executionEndTime - hackInterval - target.growTime;
-    const growWeakenStartTime = batch.executionEndTime - target.weakenTime;
+    const growStartTime = batch.executionStartTime + ( 1 * hackInterval) - target.growTime;
+    const growWeakenStartTime = batch.executionStartTime + ( 2 * hackInterval) - target.weakenTime;
     
     // Push the grow events
     events.push({
       time: growStartTime,
-      finishTime: growStartTime + target.growTime,
       target: target.hostname,
       action: 'grow',
       threads: growThreads
     });
     events.push({
       time: growWeakenStartTime,
-      finishTime: growWeakenStartTime + target.weakenTime,
       target: target.hostname,
       action: 'weaken',
       threads: growWeakenThreads

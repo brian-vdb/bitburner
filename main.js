@@ -6,7 +6,23 @@
 */
 
 import { sleep } from "./internal/time";
-import { maintainHomeNetwork, batchExecution, propagationAttack, serverAnalysis, batchCreateHeal, batchCreateHack } from "./modules/handles";
+import { batchExecution, propagationAttack, serverAnalysis, batchCreateHeal, batchCreateHack, networkExpand, networkSync } from "./modules/handles";
+
+/**
+ * Maintains the network of in-home servers
+ *
+ * @param {import("./index").NS} ns - The environment object
+ * @returns {Promise<void>} A promise that never resolves as it loops indefinitely
+ */
+async function maintainNetwork(ns) {
+  // Expand the Home Network
+  ns.tprint(`>>> | Running: Network Expand | <<<`);
+  await networkExpand(ns);
+
+  // Sync the Home Network
+  ns.tprint(`>>> | Running: Network Sync | <<<`);
+  await networkSync(ns);
+}
 
 /**
  * Prepares the server information for performing actions on the network
@@ -47,9 +63,8 @@ export async function main(ns) {
   while (true) {
     ns.tprint(`>>> | Starting automation iteration with maxHackTargets=${maxHackTargets}, maxActionTime=${maxActionTime}, hackPercentage=${hackPercentage} and hackInterval=${hackInterval}| <<<`);
 
-    // Maintain the Home Network
-    ns.tprint(`>>> | Running: Maintain Home Network | <<<`);
-    await maintainHomeNetwork(ns);
+    // Maintains the in-home servers
+    await maintainNetwork(ns);
 
     // Prepare the servers
     await prepareServers(ns, maxActionTime);

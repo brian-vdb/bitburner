@@ -112,10 +112,9 @@ export function normalizeBatch(batch) {
   // Calculate the shift value as the time until the first event is fired
   const shift = firstEvent.time;
   
-  // Deduct the shift from every event's time and finishTime
+  // Deduct the shift from every event's time
   batch.events.events.forEach(event => {
     event.time -= shift;
-    event.finishTime -= shift;
   });
   
   // Deduct the shift from the batch's time properties
@@ -124,11 +123,6 @@ export function normalizeBatch(batch) {
   batch.executionEndTime -= shift;
   
   // Calculate the new execution timeframe
-  batch.executionTimeFrame = batch.executionEndTime - batch.executionStartTime;
-  
-  // Adjust the executionEndTime to the finishTime of the event that finishes last
-  const maxFinishTime = Math.max(...batch.events.events.map(event => event.finishTime));
-  batch.executionEndTime = maxFinishTime;
   batch.executionTimeFrame = batch.executionEndTime - batch.executionStartTime;
   
   return batch;

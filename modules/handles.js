@@ -7,16 +7,16 @@
 import { awaitScript } from "internal/process";
 
 /**
- * Executes the Maintain Home Network process
- * This process maintains the network of in-home servers
+ * Executes the Network Expand process
+ * This process expands the network of in-home servers
  *
  * @param {import("../index").NS} ns - The environment object
  * @returns {Promise<void>} Resolves when the maintenance is complete
  */
-export async function maintainHomeNetwork(ns) {
-  // Start the network maintenance process
+export async function networkExpand(ns) {
+  // Start the network expand process
   const pid = ns.exec(
-    "modules/MaintainHomeNetwork/main.js",
+    "modules/NetworkExpand/main.js",
     ns.getHostname(),
     {
       preventDuplicates: true,
@@ -26,7 +26,33 @@ export async function maintainHomeNetwork(ns) {
   );
 
   // Check if the process started
-  if (pid === 0) throw new Error("Maintain Home Network could not be started");
+  if (pid === 0) throw new Error("Network Expand could not be started");
+
+  // Wait for the process to finish
+  await awaitScript(ns, pid);
+}
+
+/**
+ * Executes the Network Sync process
+ * This process syncs the network of in-home servers
+ *
+ * @param {import("../index").NS} ns - The environment object
+ * @returns {Promise<void>} Resolves when the maintenance is complete
+ */
+export async function networkSync(ns) {
+  // Start the network sync process
+  const pid = ns.exec(
+    "modules/NetworkSync/main.js",
+    ns.getHostname(),
+    {
+      preventDuplicates: true,
+      temporary: false,
+      threads: 1,
+    }
+  );
+
+  // Check if the process started
+  if (pid === 0) throw new Error("Network Sync could not be started");
 
   // Wait for the process to finish
   await awaitScript(ns, pid);

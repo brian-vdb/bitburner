@@ -50,8 +50,13 @@ export async function main(ns) {
         // Fire the event
         hosts = handleEvent(ns, event, hosts);
 
+        // Get the new current time
+        const handleEventTime = currentTime;
+        currentTime = Date.now() - startTime;
+        const averageExecutionTime = (handleEventTime + currentTime) / 2;
+
         // Update the sliding average delay (EMA) and sleep offset
-        const delay = (Date.now() - startTime) - event.time;
+        const delay = averageExecutionTime - event.time;
         ns.tprint(`[${currentTime}]: ${event.action}[${event.threads}] -> ${event.target} (delay: ${delay.toFixed(2)}ms, offset: ${offset.toFixed(2)}ms)`);
         offset = (1 - alpha) * offset + alpha * delay;
 

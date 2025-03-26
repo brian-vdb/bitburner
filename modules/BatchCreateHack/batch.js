@@ -52,7 +52,6 @@ function createHackEvents(ns, target, batch, hackPercentage=10) {
     // Create the grow event
     events.push({
       time: hackStartTime,
-      finishTime: hackStartTime + target.hackTime,
       target: target.hostname,
       action: 'hack',
       threads: hackThreads
