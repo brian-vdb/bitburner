@@ -57,7 +57,7 @@ export async function main(ns) {
     ns.disableLog("ALL");
     ns.ui.openTail();
     ns.ui.resizeTail(543, 132);
-    ns.ui.moveTail(300, 50);
+    ns.ui.moveTail(1461, 204);
     
     
     // Set up the batch timing parameters.
