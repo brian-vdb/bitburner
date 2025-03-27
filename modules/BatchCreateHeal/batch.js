@@ -2,114 +2,115 @@
   Brian van den Berg
   Module: BatchCreateHeal
   File: batch.js
-  Description: Functions related to the creation of a batch of attacks
+  Description: Functions related to the creation of a batch of attacks.
 */
 
-import { createBaseBatch } from "../../internal/batch";
+import { createBatchTemplate } from "internal/batch";
 import { calculateThreadCounts } from "./threads";
 
 /**
- * Prepares the timeframe for a batch of attacks on the targets
+ * Prepares a batch object for a target.
  *
- * @param {Object[]} targets - The collection of target objects
- * @param {number} [hackInterval=1000] - The hack interval
- * @returns {Object} An object containing executionStartTime, executionEndTime, and a SortedEventList for events
+ * @param {object} target - The target object.
+ * @param {Object[]} targets - The collection of target objects.
+ * @param {number} [hackInterval=1000] - The hack interval.
+ * @returns {Object} The base batch object.
  */
-export function prepareBatch(targets, hackInterval=1000) {
-  let batch = createBaseBatch();
+function prepareBatch(target, targets, hackInterval=1000) {
+  let batch = createBatchTemplate();
   
-  // Set the initial execution window variables
-  batch.executionStartTime = Math.max(...targets.map(target => target.maxTime));
-  batch.executionEndTime = batch.executionStartTime + (2 * hackInterval);
-  batch.executionTimeFrame = batch.executionEndTime - batch.executionStartTime;
-  batch.schedulingEndTime = batch.executionStartTime - hackInterval;
-  
-  // Initialize events as a SortedEventList instance with the optional initial events.
+  // Set the initial batch metadata
+  batch.hostname = target.hostname;
+  batch.maxTime = Math.max(target.growTime, target.weakenTime);
+  const executionStartTime = Math.max(...targets.map(target => Math.max(target.growTime, target.weakenTime)));
+  batch.schedulingEndTime = executionStartTime - hackInterval;
+  batch.schedulingStartTime = executionStartTime - batch.maxTime;
+  batch.amount = 1;
+
   return batch;
 }
 
 /**
- * Creates heal events for a target with finishTime included
+ * Creates the thread composition for a heal batch.
  *
- * @param {import("../../index").NS} ns - The environment object
- * @param {Object} target - The target object
- * @param {Object} batch - The batch object containing executionStartTime, executionEndTime, etc.
- * @param {number} [hackInterval=1000] - The hack interval
- * @returns {Object[]} An array of event objects for heal actions (weaken and grow), or an empty array if no threads are allocated
+ * @param {import("../../index").NS} ns - The environment object.
+ * @param {Object} target - The target object.
+ * @param {number} [hackInterval=1000] - The hack interval.
+ * @returns {Object[]} An array of thread event objects for a target.
  */
-function createHealEvents(ns, target, batch, hackInterval=1000) {
-  let events = [];
+function createHealThreads(ns, target, hackInterval=1000) {
+  let threads = [];
+  let offset = 0;
+  let maxTime = Math.max(target.growTime, target.weakenTime);
 
   // Get the thread counts for heal (combined weaken and grow)
   const { weakenThreads, growThreads, growWeakenThreads } = calculateThreadCounts(ns, target, target.threadsAssigned);
 
   if (weakenThreads > 0) {
-    // Calculate the weaken start time and pusht he weaken event
-    const weakenStartTime = batch.executionStartTime - target.weakenTime;
-    events.push({
-      time: weakenStartTime,
-      target: target.hostname,
+    // Create the weaken threads
+    let additionalMsec = (maxTime - target.weakenTime + offset);
+    threads.push({
       action: 'weaken',
-      threads: weakenThreads
+      amount: weakenThreads,
+      additionalMsec: additionalMsec
     });
+    offset += hackInterval;
   }
   
   if (growThreads + growWeakenThreads > 0) {
-    // Calculate the grow start times
-    const growStartTime = batch.executionStartTime + ( 1 * hackInterval) - target.growTime;
-    const growWeakenStartTime = batch.executionStartTime + ( 2 * hackInterval) - target.weakenTime;
-    
-    // Push the grow events
-    events.push({
-      time: growStartTime,
-      target: target.hostname,
+    // Create the grow threads
+    let additionalMsec = (maxTime - target.growTime + offset);
+    threads.push({
       action: 'grow',
-      threads: growThreads
+      amount: growThreads,
+      additionalMsec: additionalMsec
     });
-    events.push({
-      time: growWeakenStartTime,
-      target: target.hostname,
+    offset += hackInterval;
+
+    // Create the grow weaken threads
+    additionalMsec = (maxTime - target.weakenTime + offset);
+    threads.push({
       action: 'weaken',
-      threads: growWeakenThreads
+      amount: growWeakenThreads,
+      additionalMsec: additionalMsec
     });
+    offset += hackInterval;
   }
   
-  return events;
+  return threads;
 }
 
 /**
- * Prepares the batch events for a target
+ * Creates the thread composition for a batch.
  *
- * @param {import("../../index").NS} ns - The environment object
- * @param {Object} target - The target object for which to create batch events
- * @param {Object} batch - The batch object
- * @param {number} [hackInterval=1000] - The hack interval
- * @returns {Object[]} An array of event objects created for the target
+ * @param {import("../../index").NS} ns - The environment object.
+ * @param {Object} target - The target object.
+ * @param {number} [hackInterval=1000] - The hack interval.
+ * @returns {Object[]} An array of thread event objects for a target.
  */
-function getTargetEvents(ns, target, batch, hackInterval=1000) {
+function getTargetThreads(ns, target, hackInterval=1000) {
   switch (target.status) {
     case 'heal':
-      return createHealEvents(ns, target, batch, hackInterval);
+      return createHealThreads(ns, target, hackInterval);
     default:
       return [];
   }
 }
 
 /**
- * Populates the batch with events for all targets
+ * Creates a collection of batch objects for a collection of targets.
  *
- * @param {import("../../index").NS} ns - The environment object
- * @param {Object[]} targets - The collection of target objects to process
- * @param {Object} batch - The batch object
- * @param {number} [hackInterval=1000] - The hack interval
- * @returns {Object} The updated batch object with events populated for all targets
+ * @param {import("../../index").NS} ns - The environment object.
+ * @param {Object[]} targets - The collection of target objects.
+ * @param {number} [hackInterval=1000] - The hack interval.
+ * @returns {Object[]} The collection of batch objects.
  */
-export function populateBatch(ns, targets, batch, hackInterval=1000) {
+export function createBatches(ns, targets, hackInterval = 1000) {
+  let batches = [];
   targets.forEach(target => {
-    const targetEvents = getTargetEvents(ns, target, batch, hackInterval);
-    targetEvents.forEach(event => {
-      batch.events.enqueue(event);
-    });
+    let batch = prepareBatch(target, targets, hackInterval);
+    batch.threads = getTargetThreads(ns, target, hackInterval);
+    batches.push(batch);
   });
-  return batch;
+  return batches;
 }

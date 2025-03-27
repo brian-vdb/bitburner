@@ -7,7 +7,8 @@
 export async function main(ns) {
   const hostname = ns.args[0];
   const threads = parseInt(ns.args[1], 10);
+  const additionalMsec = parseInt(ns.args[2], 10);
 
   // Perform the grow attack
-  await ns.grow(hostname, { threads: threads });
+  await ns.grow(hostname, { threads: threads, additionalMsec: additionalMsec });
 }

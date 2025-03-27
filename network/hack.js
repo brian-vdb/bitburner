@@ -11,16 +11,18 @@
  * @param {string} hostname - Server hosting the attack
  * @param {string} target - Server to attack
  * @param {number} threads - Number of threads to attack with
+ * @param {number} additionalMsec - Additional offset
  * @returns {boolean} True if the process started
  */
-export function weaken(ns, hostname, target, threads) {
+export function weaken(ns, hostname, target, threads, additionalMsec) {
   return (
     ns.exec(
       "public/weaken.js",
       hostname,
       { preventDuplicates: false, threads: threads },
       target,
-      threads
+      threads,
+      additionalMsec
     ) > 0
   );
 }
@@ -32,16 +34,18 @@ export function weaken(ns, hostname, target, threads) {
  * @param {string} hostname - Server hosting the attack
  * @param {string} target - Server to attack
  * @param {number} threads - Number of threads to attack with
+ * @param {number} additionalMsec - Additional offset
  * @returns {boolean} True if the process started
  */
-export function grow(ns, hostname, target, threads) {
+export function grow(ns, hostname, target, threads, additionalMsec) {
   return (
     ns.exec(
       "public/grow.js",
       hostname,
       { preventDuplicates: false, threads: threads },
       target,
-      threads
+      threads,
+      additionalMsec
     ) > 0
   );
 }
@@ -53,16 +57,18 @@ export function grow(ns, hostname, target, threads) {
  * @param {string} hostname - Server hosting the attack
  * @param {string} target - Server to attack
  * @param {number} threads - Number of threads to attack with
+ * @param {number} additionalMsec - Additional offset
  * @returns {boolean} True if the process started
  */
-export function hack(ns, hostname, target, threads) {
+export function hack(ns, hostname, target, threads, additionalMsec) {
   return (
     ns.exec(
       "public/hack.js",
       hostname,
       { preventDuplicates: false, threads: threads },
       target,
-      threads
+      threads,
+      additionalMsec
     ) > 0
   );
 }

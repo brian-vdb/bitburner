@@ -7,12 +7,11 @@
 
 import { readJSONFile, writeJSONFile } from "internal/json";
 import { assignThreads } from "./allocation";
-import { populateBatch, prepareBatch } from "./batch";
-import { normalizeBatch } from "../../internal/batch";
+import { createBatches } from "./batch";
 
 /**
  * Executes a batch analysis and stores results in data/targets.txt
- *
+ * 
  * Optional args:
  *   ns.args[2] - hack interval (default: 1000)
  *
@@ -31,16 +30,13 @@ export async function main(ns) {
   // Extract optional parameters with default values if not provided
   const hackInterval = ns.args[2] !== undefined ? ns.args[2] : 1000;
 
-  // Allocate the threads to every target using the optional parameters
+  // Allocate the threads to every target using the optional parameters.
   targets = assignThreads(ns, hosts, targets);
 
-  // Prepare the batch according to the assigned threads
-  let batch = prepareBatch(targets, hackInterval);
-  batch = populateBatch(ns, targets, batch, hackInterval);
-  batch = normalizeBatch(batch);
+  // Prepare the batch according to the assigned threads.
+  const batches = createBatches(ns, targets, hackInterval);
 
-  // Store the result
-  batch.events = batch.events.eventsArray;
+  // Store the result.
   writeJSONFile(ns, targets, "data/targets.txt");
-  writeJSONFile(ns, batch, "data/batch.txt");
+  writeJSONFile(ns, batches, "data/batches.txt");
 }

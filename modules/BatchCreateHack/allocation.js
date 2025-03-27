@@ -12,11 +12,10 @@ import { calculateThreadCounts } from "./threads";
  *
  * @param {import("../../index").NS} ns - The environment object
  * @param {Object[]} targets - The collection of targets from server analysis
- * @param {number} [maxHackTargets=5] - Maximum number of hack targets to include
  * @param {number} [hackPercentage=10] - The hack percentage
  * @returns {Object[]} Sorted targets array with updated threadsNeeded property
  */
-export function calculateAndSortTargets(ns, targets, maxHackTargets = 5, hackPercentage = 10) {
+export function calculateAndSortTargets(ns, targets, hackPercentage=10) {
   // Filter out targets with status 'heal'
   targets = targets.filter(target => target.status !== 'heal');
 
@@ -27,7 +26,7 @@ export function calculateAndSortTargets(ns, targets, maxHackTargets = 5, hackPer
   });
 
   // Sort targets by target.value descending and limit to maxHackTargets
-  return targets.sort((a, b) => b.value - a.value).splice(0, maxHackTargets);
+  return targets.sort((a, b) => b.value - a.value);
 }
 
 /**
@@ -36,13 +35,12 @@ export function calculateAndSortTargets(ns, targets, maxHackTargets = 5, hackPer
  * @param {import("../../index").NS} ns - The environment object
  * @param {Object[]} hosts - The collection of hosts from server analysis
  * @param {Object[]} targets - The collection of targets from server analysis
- * @param {number} [maxHackTargets=5] - Maximum number of hack targets to include
  * @param {number} [hackPercentage=10] - The hack percentage
  * @returns {Object[]} Targets with threads assigned to them
  */
-export function assignThreads(ns, hosts, targets, maxHackTargets=5, hackPercentage=10) {
+export function assignThreads(ns, hosts, targets, hackPercentage=10) {
   // Sort (and filter) targets using calculateAndSortTargets
-  targets = calculateAndSortTargets(ns, targets, maxHackTargets, hackPercentage);
+  targets = calculateAndSortTargets(ns, targets, hackPercentage);
   
   // Ensure threadsAssigned is initialized on each target
   targets.forEach(target => {

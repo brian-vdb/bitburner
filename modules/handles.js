@@ -114,15 +114,15 @@ export async function serverAnalysis(ns, maxActionTime=1440) {
 }
 
 /**
- * Creates a Heal Batch using data/hosts.txt and data/targets.txt
- * The results are stored in data/targets.txt and data/batch.txt
+ * Creates a Heal Batch using data/hosts.txt and data/targets.txt.
+ * The results are stored in data/targets.txt and data/batch.txt.
  *
- * @param {import("../index").NS} ns - The environment object
- * @param {number} [hackInterval=1000] - The hack interval
- * @returns {Promise<void>} Resolves when the analysis is complete
+ * @param {import("../index").NS} ns - The environment object.
+ * @param {number} [hackInterval=1000] - The hack interval.
+ * @returns {Promise<void>} Resolves when the analysis is complete.
  */
 export async function batchCreateHeal(ns, hackInterval=1000) {
-  // Start the analysis
+  // Start the analysis.
   const pid = ns.exec(
     "modules/BatchCreateHeal/main.js",
     ns.getHostname(),
@@ -136,24 +136,24 @@ export async function batchCreateHeal(ns, hackInterval=1000) {
     hackInterval
   );
 
-  // Check if the process started
+  // Check if the process started.
   if (pid === 0) throw new Error("Batch Create Heal could not be started");
 
-  // Wait for the process to finish
+  // Wait for the process to finish.
   await awaitScript(ns, pid);
 }
 
 /**
- * Creates a Hack Batch using data/hosts.txt and data/targets.txt
- * The results are stored in data/targets.txt and data/batch.txt
+ * Creates a Hack Batch using data/hosts.txt and data/targets.txt.
+ * The results are stored in data/targets.txt and data/batch.txt.
  *
- * @param {import("../index").NS} ns - The environment object
- * @param {number} [maxHackTargets=5] - Maximum number of hack targets
- * @param {number} [hackPercentage=10] - The hack percentage
- * @returns {Promise<void>} Resolves when the analysis is complete
+ * @param {import("../index").NS} ns - The environment object.
+ * @param {number} [hackInterval=1000] - The hack interval.
+ * @param {number} [hackPercentage=10] - The hack percentage.
+ * @returns {Promise<void>} Resolves when the analysis is complete.
  */
-export async function batchCreateHack(ns, maxHackTargets=5, hackPercentage=10) {
-  // Start the analysis
+export async function batchCreateHack(ns, hackInterval=1000, hackPercentage=10) {
+  // Start the analysis.
   const pid = ns.exec(
     "modules/BatchCreateHack/main.js",
     ns.getHostname(),
@@ -164,14 +164,14 @@ export async function batchCreateHack(ns, maxHackTargets=5, hackPercentage=10) {
     },
     "data/hosts.txt",
     "data/targets.txt",
-    maxHackTargets,
+    hackInterval,
     hackPercentage
   );
 
-  // Check if the process started
+  // Check if the process started.
   if (pid === 0) throw new Error("Batch Create Hack could not be started");
 
-  // Wait for the process to finish
+  // Wait for the process to finish.
   await awaitScript(ns, pid);
 }
 
@@ -179,9 +179,10 @@ export async function batchCreateHack(ns, maxHackTargets=5, hackPercentage=10) {
  * Executes a Batch Execution using data/hosts.txt and data/batch.txt
  *
  * @param {import("../index").NS} ns - The environment object
+ * @param {number} [hackInterval=1000] - The hack interval
  * @returns {Promise<void>} Resolves when the execution is complete
  */
-export async function batchExecution(ns) {
+export async function batchExecution(ns, hackInterval=1000) {
   // Start the execution
   const pid = ns.exec(
     "modules/BatchExecution/main.js",
@@ -192,7 +193,8 @@ export async function batchExecution(ns) {
       threads: 1,
     },
     "data/hosts.txt",
-    "data/batch.txt"
+    "data/batches.txt",
+    hackInterval
   );
 
   // Check if the process started

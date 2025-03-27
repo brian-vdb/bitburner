@@ -73,37 +73,36 @@ export async function main(ns) {
     const hostMaxRam = ns.getServerMaxRam(ns.getHostname());
     ns.tprint(`>>> | hostMaxRam=${hostMaxRam}GB | <<<`);
 
+    // Create a heal batch
+    ns.tprint(`>>> | Running: Batch Create Heal with hackInterval=${hackInterval} | <<<`);
+    await batchCreateHeal(ns, hackInterval);
+
+    // Perform Batch Execution
+    ns.tprint(`>>> | Running: Batch Execution with hackInterval=${hackInterval} | <<<`);
+    await batchExecution(ns, hackInterval);
+
+    // Give time to recover from async issues
+    ns.tprint(`>>> | Continuing in ${hackInterval}ms... | <<<`);
+    await sleep(hackInterval);
+
+    // Prepare the servers
+    await prepareServers(ns, maxActionTime);
+
     // Choose which batch analysis to run based on available RAM
     if (hostMaxRam <= 8) {
-      // Create a heal batch
-      ns.tprint(`>>> | Running: Batch Create Heal with hackInterval=${hackInterval} | <<<`);
-      await batchCreateHeal(ns, hackInterval);
-
-      // Perform Batch Execution
-      ns.tprint(`>>> | Running: Batch Execution | <<<`);
-      await batchExecution(ns);
-
-      // Give time to recover from async issues
-      ns.tprint(`>>> | Continuing in ${hackInterval}ms... | <<<`);
-      await sleep(hackInterval);
-
-      // Prepare the servers
-      await prepareServers(ns, maxActionTime);
-
       // Create a hack batch
-      ns.tprint(`>>> | Running: Batch Create Hack with maxHackTargets=${maxHackTargets} and hackPercentage=${hackPercentage} | <<<`);
-      await batchCreateHack(ns, maxHackTargets, hackPercentage);
+      ns.tprint(`>>> | Running: Batch Create Hack with hackInterval=${hackInterval} and hackPercentage=${hackPercentage} | <<<`);
+      await batchCreateHack(ns, hackInterval, hackPercentage);
     } else {
-      ns.tprint(`>>> | Running: Batch Analysis Full with hackInterval=${hackInterval} | <<<`);
       // TODO: Implement batchAnalysis when available
     }
 
     // Perform Batch Execution
-    ns.tprint(`>>> | Running: Batch Execution | <<<`);
-    await batchExecution(ns);
+    ns.tprint(`>>> | Running: Batch Execution with hackInterval=${hackInterval} | <<<`);
+    await batchExecution(ns, hackInterval);
 
     // Give time to recover from async issues
-    ns.tprint(`>>> | Iteration complete. Restarting loop in ${hackInterval}ms... | <<<`);
+    ns.tprint(`>>> | Iteration complete. Restarting in ${hackInterval}ms... | <<<`);
     await sleep(hackInterval);
   }
 }

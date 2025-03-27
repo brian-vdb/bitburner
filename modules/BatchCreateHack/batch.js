@@ -5,95 +5,89 @@
   Description: Functions related to the creation of a batch of attacks
 */
 
-import { createBaseBatch } from "../../internal/batch";
+import { createBatchTemplate } from "internal/batch";
 import { calculateThreadCounts } from "./threads";
 
 /**
- * Prepares the timeframe for a batch of attacks on the targets
+ * Prepares a batch object for a target.
  *
- * @param {Object[]} targets - The collection of target objects
- * @param {number} [hackInterval=1000] - The hack interval
- * @returns {Object} An object containing executionStartTime, executionEndTime, and a SortedEventList for events
+ * @param {object} target - The target object.
+ * @param {Object[]} targets - The collection of target objects.
+ * @param {number} [hackInterval=1000] - The hack interval.
+ * @returns {Object} The base batch object.
  */
-export function prepareBatch(targets, hackInterval=1000) {
-  let batch = createBaseBatch();
-
-  // Set the execution window according to hack targets
-  const hackTargets = targets.filter(target => target.status === "hack");
-  if (hackTargets.length > 0) {
-    batch.executionStartTime = Math.max(...hackTargets.map(target => target.hackTime));
-    batch.schedulingEndTime = batch.executionStartTime - hackInterval;
-    batch.executionEndTime = batch.executionStartTime;
-  }
+function prepareBatch(target, targets, hackInterval=1000) {
+  let batch = createBatchTemplate();
   
-  // Initialize events as a SortedEventList instance with the optional initial events
+  // Set the initial batch metadata
+  batch.hostname = target.hostname;
+  batch.maxTime = target.hackTime;
+  const executionStartTime = Math.max(...targets.map(target => target.hackTime));
+  batch.schedulingEndTime = executionStartTime - hackInterval;
+  batch.schedulingStartTime = executionStartTime - batch.maxTime;
+  batch.amount = 1;
+
   return batch;
 }
 
 /**
- * Creates hack events for a target
+ * Creates the thread composition for a hack batch.
  *
- * @param {import("../../index").NS} ns - The environment object
- * @param {Object} target - The target object
- * @param {Object} batch - The batch object containing executionStartTime, executionEndTime, etc.
- * @param {number} [hackPercentage=10] - The hack percentage
- * @returns {Object[]} An array of event objects for heal actions (weaken and grow), or an empty array if no threads are allocated
+ * @param {import("../../index").NS} ns - The environment object.
+ * @param {object} target - The target object.
+ * @param {number} [hackPercentage=10] - The hack percentage.
+ * @returns {Object[]} An array of thread objects created for the target.
  */
-function createHackEvents(ns, target, batch, hackPercentage=10) {
-  let events = [];
+function createHackThreads(ns, target, hackPercentage=10) {
+  let threads = [];
 
   // Get the thread counts for hack
   const { hackThreads } = calculateThreadCounts(ns, target, hackPercentage, target.threadsAssigned);
   
   if (hackThreads > 0) {
-    // Calculate the hack start time
-    const hackStartTime = batch.executionStartTime - target.hackTime;
-    
-    // Create the grow event
-    events.push({
-      time: hackStartTime,
-      target: target.hostname,
+    // Create the hack threads
+    threads.push({
       action: 'hack',
-      threads: hackThreads
+      amount: hackThreads,
+      additionalMsec: 0
     });
   }
 
-  return events;
+  return threads;
 }
 
 /**
- * Prepares the batch events for a target
+ * Creates the thread composition for a batch.
  *
- * @param {import("../../index").NS} ns - The environment object
- * @param {Object} target - The target object for which to create batch events
- * @param {Object} batch - The batch object
- * @param {number} [hackPercentage=10] - The hack percentage
- * @returns {Object[]} An array of event objects created for the target
+ * @param {import("../../index").NS} ns - The environment object.
+ * @param {Object} target - The target object.
+ * @param {number} [hackPercentage=10] - The hack percentage.
+ * @returns {Object[]} An array of thread objects created for the target.
  */
-function getTargetEvents(ns, target, batch, hackPercentage=10) {
+function getTargetThreads(ns, target = 1000, hackPercentage=10) {
   switch (target.status) {
     case 'hack':
-      return createHackEvents(ns, target, batch, hackPercentage);
+      return createHackThreads(ns, target, hackPercentage);
     default:
       return [];
   }
 }
 
 /**
- * Populates the batch with events for all targets
+ * Creates a collection of batch objects for a collection of targets.
  *
- * @param {import("../../index").NS} ns - The environment object
- * @param {Object[]} targets - The collection of target objects to process
- * @param {Object} batch - The batch object
- * @param {number} [hackPercentage=10] - The hack percentage
- * @returns {Object} The updated batch object with events populated for all targets
+ * @param {import("../../index").NS} ns - The environment object.
+ * @param {Object[]} targets - The collection of target objects.
+ * @param {number} [hackInterval=1000] - The hack interval.
+ * @param {number} [hackPercentage=10] - The hack percentage.
+ * @returns {Object[]} The collection of batch objects.
  */
-export function populateBatch(ns, targets, batch, hackPercentage=10) {
+export function createBatches(ns, targets, hackInterval = 1000, hackPercentage=10) {
+  let batches = [];
   targets.forEach(target => {
-    const targetEvents = getTargetEvents(ns, target, batch, hackPercentage);
-    targetEvents.forEach(event => {
-      batch.events.enqueue(event);
-    });
+    let batch = prepareBatch(target, targets, hackInterval);
+    batch.threads = getTargetThreads(ns, target, hackPercentage);
+    batches.push(batch);
   });
-  return batch;
+  return batches;
 }
