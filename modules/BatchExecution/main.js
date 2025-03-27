@@ -8,7 +8,13 @@
 import { readJSONFile } from "internal/json";
 import { getHighestThreadCount, handleThreads } from "./threads";
 
-function reloadProgressBar(ns, currentTime, endTime) {
+function reloadProgressBar(ns, title, currentTime, endTime) {
+  // Adjust the position
+  let size = ns.ui.windowSize();
+  let width = 543;
+  ns.ui.resizeTail(width, 132);
+  ns.ui.moveTail(size[0] - width - 200, 0);
+  
   // Clamp currentTime between 0 and endTime
   currentTime = Math.max(0, Math.min(currentTime, endTime));
 
@@ -23,7 +29,7 @@ function reloadProgressBar(ns, currentTime, endTime) {
   
   // Clear the log and print the progress bar
   ns.clearLog();
-  ns.print("  Batch Execution Progress:");
+  ns.print(`  ${title} Progress: [${Math.round(currentTime / 1000)}s/${Math.round(endTime / 1000)}s]`);
   ns.print(`  ${progressBar}`);
   ns.print(" ");
 }
@@ -33,6 +39,7 @@ function reloadProgressBar(ns, currentTime, endTime) {
  * 
  * Optional args:
  *   ns.args[2] - hack interval (default: 1000)
+ *   ns.args[3] - ttitle (default: 'Batch Execution')
  *
  * @param {import("../../index").NS} ns - The environment object.
  * @returns {Promise<void>} Resolves when the execution is complete.
@@ -49,15 +56,13 @@ export async function main(ns) {
   // Extract optional parameters with default values if not provided.
   const hackInterval = ns.args[2] !== undefined ? ns.args[2] : 1000;
   const hackCycleInterval = getHighestThreadCount(batches) * hackInterval;
+  const title = ns.args[3] !== undefined ? ns.args[3] : 'Batch Execution';
 
   // Start the batch execution.
   if (batches.length > 0) {
     // Open the progress bar
-    reloadProgressBar(ns, 0, 50);
     ns.disableLog("ALL");
     ns.ui.openTail();
-    ns.ui.resizeTail(543, 132);
-    ns.ui.moveTail(1461, 204);
     
     
     // Set up the batch timing parameters.
@@ -90,7 +95,7 @@ export async function main(ns) {
       }
 
       // Wait a hack cycle.
-      reloadProgressBar(ns, currentTime, endTime);
+      reloadProgressBar(ns, title, currentTime, endTime);
       await ns.sleep(hackCycleInterval);
     }
 

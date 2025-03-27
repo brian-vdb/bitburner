@@ -19,11 +19,23 @@ export function createBatchTemplate() {
 }
 
 /**
- * Normalizes a batch templates by shifting the start and end times according to the earliest start time.
+ * Normalizes batches to move the start and end times according to the lowest start time.
  *
- * @param {Object[]} templates - array of template objects to normalize.
- * @returns {Object[]} The normalized template object.
+ * @param {Object[]} batches - The collection of batch objects.
+ * @returns {Object[]} The collection of normalized batch objects.
  */
-export function normalizeBatchTemplates(templates) {
-  return templates;
+export function normalizeBatches(batches) {
+  if (!batches.length) return batches;
+  
+  // Find the lowest schedulingStartTime among all batches
+  const minStartTime = Math.min(...batches.map(batch => batch.schedulingStartTime));
+  
+  // Return a new array with adjusted times
+  return batches.map(batch => {
+    return {
+      ...batch,
+      schedulingStartTime: batch.schedulingStartTime - minStartTime,
+      schedulingEndTime: batch.schedulingEndTime - minStartTime
+    };
+  });
 }

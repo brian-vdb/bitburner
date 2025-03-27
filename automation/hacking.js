@@ -14,7 +14,7 @@ import { batchCreateHack, batchCreateHeal, batchExecution, propagationAttack, se
  * @param {string} - Status to print on the screen.
  * @returns {void} A promise that resolves when the server preperation is finished.
  */
-function printStatus(ns, status) {  
+function printStatus(ns, status) {
   // Clear the log and print the status
   ns.clearLog();
   ns.print("  Hacking Status:");
@@ -26,11 +26,10 @@ function printStatus(ns, status) {
  * Prepares the server information for performing actions on the network.
  *
  * @param {import("../index").NS} ns - The environment object
- * @param {number} [hackInterval=1000] - The hack interval.
  * @param {number} [maxActionTime=1440] - The maximum time an action is allowed to take
  * @returns {Promise<void>} A promise that resolves when the server preperation is finished
  */
-async function prepareServers(ns, hackInterval=1000, maxActionTime=1440) {
+async function prepareServers(ns, maxActionTime=1440) {
   // Perform a propagation attack.
   printStatus(ns, `- Infecting the network`);
   await propagationAttack(ns);
@@ -60,9 +59,6 @@ export async function main(ns) {
 
   // Open a tail log
   ns.disableLog("ALL");
-  ns.ui.openTail();
-  ns.ui.resizeTail(543, 132);
-  ns.ui.moveTail(1461, 59);
 
   while (true) {
     // Prepare the servers.
@@ -74,7 +70,7 @@ export async function main(ns) {
 
     // Perform the heal batch execution.
     printStatus(ns, `- Executing heal batch`);
-    await batchExecution(ns, hackInterval);
+    await batchExecution(ns, hackInterval, 'Heal Batch');
     await sleep(hackInterval);
 
     // Prepare the servers.
@@ -91,7 +87,7 @@ export async function main(ns) {
 
     // Perform the hack batch execution.
     printStatus(ns, `- Executing hack batch`);
-    await batchExecution(ns, hackInterval);
+    await batchExecution(ns, hackInterval, 'Hack Batch');
     await sleep(hackInterval);
   }
 }

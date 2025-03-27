@@ -5,9 +5,10 @@
   Description: Tool to perform batch analysis.
 */
 
-import { readJSONFile, writeJSONFile } from "internal/json";
+import { readJSONFile, writeJSONFile } from "../../internal/json";
 import { assignThreads } from "./allocation";
 import { createBatches } from "./batch";
+import { normalizeBatches } from "../../internal/batch";
 
 /**
  * Perform a batch analysis purely for hacking a percentage of money from hacking targets.
@@ -37,7 +38,8 @@ export async function main(ns) {
   targets = assignThreads(ns, hosts, targets, hackPercentage);
 
   // Prepare the batch according to the assigned threads.
-  const batches = createBatches(ns, targets, hackInterval, hackPercentage)
+  let batches = createBatches(ns, targets, hackInterval, hackPercentage)
+  batches = normalizeBatches(batches);
 
   // Store the result.
   writeJSONFile(ns, targets, "data/targets.txt");

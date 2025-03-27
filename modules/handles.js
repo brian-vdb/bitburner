@@ -180,9 +180,10 @@ export async function batchCreateHack(ns, hackInterval=1000, hackPercentage=10) 
  *
  * @param {import("../index").NS} ns - The environment object
  * @param {number} [hackInterval=1000] - The hack interval
+ * @param {string} [title='Batch Execution'] - The batch title
  * @returns {Promise<void>} Resolves when the execution is complete
  */
-export async function batchExecution(ns, hackInterval=1000) {
+export async function batchExecution(ns, hackInterval=1000, title='Batch Execution') {
   // Start the execution
   const pid = ns.exec(
     "modules/BatchExecution/main.js",
@@ -194,7 +195,8 @@ export async function batchExecution(ns, hackInterval=1000) {
     },
     "data/hosts.txt",
     "data/batches.txt",
-    hackInterval
+    hackInterval,
+    title
   );
 
   // Check if the process started

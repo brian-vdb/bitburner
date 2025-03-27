@@ -108,9 +108,12 @@ function getTargetThreads(ns, target, hackInterval=1000) {
 export function createBatches(ns, targets, hackInterval = 1000) {
   let batches = [];
   targets.forEach(target => {
-    let batch = prepareBatch(target, targets, hackInterval);
-    batch.threads = getTargetThreads(ns, target, hackInterval);
-    batches.push(batch);
+    let threads = getTargetThreads(ns, target, hackInterval);
+    if (threads.length > 0) {
+      let batch = prepareBatch(target, targets, hackInterval);
+      batch.threads = threads;
+      batches.push(batch);
+    }
   });
   return batches;
 }

@@ -4,7 +4,7 @@
    Description: Automation script for buying/ upgrading/ preparing in-home servers.
 */
 
-import { networkExpand, networkSync } from "./modules/handles";
+import { networkExpand, networkSync } from "../modules/handles";
 
 /**
  * Main function to automate the process of maintaining servers.
