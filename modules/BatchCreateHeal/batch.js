@@ -43,11 +43,11 @@ function createHealThreads(ns, target, hackInterval=1000) {
   let offset = 0;
   let maxTime = Math.max(target.growTime, target.weakenTime);
 
-  // Get the thread counts for heal (combined weaken and grow)
+  // Get the thread counts for heal (combined weaken and grow).
   const { weakenThreads, growThreads, growWeakenThreads } = calculateThreadCounts(ns, target, target.threadsAssigned);
 
   if (weakenThreads > 0) {
-    // Create the weaken threads
+    // Create the weaken threads.
     let additionalMsec = (maxTime - target.weakenTime + offset);
     threads.push({
       action: 'weaken',
@@ -58,7 +58,7 @@ function createHealThreads(ns, target, hackInterval=1000) {
   }
   
   if (growThreads + growWeakenThreads > 0) {
-    // Create the grow threads
+    // Create the grow threads.
     let additionalMsec = (maxTime - target.growTime + offset);
     threads.push({
       action: 'grow',
@@ -67,7 +67,7 @@ function createHealThreads(ns, target, hackInterval=1000) {
     });
     offset += hackInterval;
 
-    // Create the grow weaken threads
+    // Create the grow weaken threads.
     additionalMsec = (maxTime - target.weakenTime + offset);
     threads.push({
       action: 'weaken',

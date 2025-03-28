@@ -129,11 +129,7 @@ const threadsHandlers = {
  */
 export function handleThreads(ns, target, threads, hosts) {
   for (const threadsObj of threads) {
-    if (threadsHandlers[threadsObj.action]) {
-      hosts = threadsHandlers[threadsObj.action](ns, target, threadsObj, hosts);
-    } else {
-      ns.tprint(`Unknown action "${threadsObj.action}" for target ${target}.`);
-    }
+    hosts = threadsHandlers[threadsObj.action](ns, target, threadsObj, hosts);
   }
   return hosts;
 }

@@ -8,12 +8,16 @@
 import { readJSONFile } from "internal/json";
 import { getHighestThreadCount, handleThreads } from "./threads";
 
-function reloadProgressBar(ns, title, currentTime, endTime) {
-  // Adjust the position
+function relocateTail(ns) {
   let size = ns.ui.windowSize();
   let width = 543;
   ns.ui.resizeTail(width, 132);
   ns.ui.moveTail(size[0] - width - 200, 0);
+}
+
+function reloadProgressBar(ns, title, currentTime, endTime) {
+  // Adjust the position
+  relocateTail(ns);
   
   // Clamp currentTime between 0 and endTime
   currentTime = Math.max(0, Math.min(currentTime, endTime));
@@ -63,12 +67,12 @@ export async function main(ns) {
     // Open the progress bar
     ns.disableLog("ALL");
     ns.ui.openTail();
-    
+    relocateTail(ns);
     
     // Set up the batch timing parameters.
     const startTime = Date.now();
     let currentTime = Date.now() - startTime;
-    let endTime = startTime;
+    let endTime = currentTime;
 
     // Start firing batches.
     while (batches.length !== 0 || currentTime < endTime) {
@@ -80,9 +84,9 @@ export async function main(ns) {
         const batch = batches[i];
         if (batch.schedulingStartTime <= currentTime && batch.schedulingEndTime > currentTime) {
           // Schedule the batch.
-          currentTime = Date.now() - startTime;
-          endTime = currentTime + batch.maxTime;
           hosts = handleThreads(ns, batch.hostname, batch.threads, hosts);
+          currentTime = Date.now() - startTime;
+          endTime = Math.max(endTime, currentTime + batch.maxTime);
 
           // Maintain loop variables.
           batch.amount -= 1;
@@ -93,7 +97,7 @@ export async function main(ns) {
           batches.splice(i, 1);
         }
       }
-
+      
       // Wait a hack cycle.
       reloadProgressBar(ns, title, currentTime, endTime);
       await ns.sleep(hackCycleInterval);

@@ -2,31 +2,30 @@
   Brian van den Berg
   Module: BatchCreateHeal
   File: threads.js
-  Description: Centralized functions for calculating thread counts for heal actions
+  Description: Centralized functions for calculating thread counts for heal actions.
 */
 
 /**
- * Calculates the optimal allocation for grow threads and the corresponding extra weaken threads
- * (to offset security increases) given a combined thread limit
+ * Calculates the optimal allocation for grow threads and the corresponding extra weaken threads.
  *
  * @param {import("../../index").NS} ns - The environment object
- * @param {Object} target - The target object with properties such as hostname, moneyCurrent, and moneyMax
- * @param {number} combinedLimit - The maximum number of threads available for both grow and extra weaken
- * @returns {Object} An object with the optimal thread counts: { optimizedGrowThreads, optimizedGrowWeakenThreads }
+ * @param {Object} target - The target object with properties such as hostname, moneyCurrent, and moneyMax.
+ * @param {number} combinedLimit - The maximum number of threads available for both grow and extra weaken.
+ * @returns {Object} An object with the optimal thread counts: { optimizedGrowThreads, optimizedGrowWeakenThreads }.
  */
 function optimizeGrowthAllocation(ns, target, combinedLimit) {
-  // Helper: total threads used for a given grow thread count x
+  // Helper: total threads used for a given grow thread count x.
   function totalThreads(x) {
     return x + Math.ceil(ns.growthAnalyzeSecurity(x, target.hostname) / ns.weakenAnalyze(1)) + 1;
   }
 
-  // Helper: cost function as the squared difference from combinedLimit
+  // Helper: cost function as the squared difference from combinedLimit.
   function cost(x) {
     let total = totalThreads(x);
     return Math.pow(total - combinedLimit, 2);
   }
 
-  // Binary search over possible grow threads
+  // Binary search over possible grow threads.
   let low = 0;
   let high = combinedLimit;
   let bestX = 0;
@@ -37,13 +36,13 @@ function optimizeGrowthAllocation(ns, target, combinedLimit) {
     let totalMid = totalThreads(mid);
     let midCost = cost(mid);
 
-    // Track the best candidate
+    // Track the best candidate.
     if (midCost < bestCost) {
       bestCost = midCost;
       bestX = mid;
     }
 
-    // Since totalThreads is monotonic, adjust the search bounds
+    // Since totalThreads is monotonic, adjust the search bounds.
     if (totalMid < combinedLimit) {
       low = mid + 1;
     } else if (totalMid > combinedLimit) {
@@ -56,7 +55,7 @@ function optimizeGrowthAllocation(ns, target, combinedLimit) {
     }
   }
 
-  // Check neighboring candidates to account for discontinuities due to Math.ceil
+  // Check neighboring candidates to account for discontinuities due to Math.ceil.
   for (let candidate of [bestX - 1, bestX, bestX + 1]) {
     if (candidate < 0) continue;
     let candidateCost = cost(candidate);
@@ -74,29 +73,29 @@ function optimizeGrowthAllocation(ns, target, combinedLimit) {
 }
 
 /**
- * Calculates the required thread counts for healing a target
+ * Calculates the required thread counts for healing a target.
  *
- * @param {import("../../index").NS} ns - The environment object
- * @param {Object} target - The target object with its properties
- * @param {number} [limit=undefined] - Optional limit on the total available threads
- * @returns {Object} An object with thread counts: { weakenThreads, growThreads, hackThreads }
+ * @param {import("../../index").NS} ns - The environment object.
+ * @param {Object} target - The target object with its properties.
+ * @param {number} [limit=undefined] - Optional limit on the total available threads.
+ * @returns {Object} An object with thread counts: { weakenThreads, growThreads, growWeakenThreads }.
  */
 function calculateHealThreads(ns, target, limit = undefined) {
-  // Return nothing if the limit is 0
+  // Return nothing if the limit is 0.
   if (limit === 0) return {
     weakenThreads: 0,
     growThreads: 0,
     growWeakenThreads: 0
   };
 
-  // Calculate base weaken threads required
+  // Calculate base weaken threads required.
   let weakenThreads = 0;
   const securityGap = target.securityCurrent - target.securityMin;
   if (securityGap > 0) {
     weakenThreads = Math.ceil(securityGap / ns.weakenAnalyze(1)) + 1;
   }
 
-  // Return the weaken threads if that's the only thing that fits
+  // Return the weaken threads if that's the only thing that fits.
   if (limit !== undefined && limit < weakenThreads) {
     return {
       weakenThreads: limit,
@@ -109,26 +108,26 @@ function calculateHealThreads(ns, target, limit = undefined) {
   let growWeakenThreads = 0;
   const multiplier = target.moneyMax / target.moneyCurrent;
   if (multiplier > 1) {
-    // Calculate base grow threads required
+    // Calculate base grow threads required.
     growThreads = Math.ceil(ns.growthAnalyze(target.hostname, multiplier)) + 1;
 
-    // Calculate the security increase from growing and the associated weaken threads needed
+    // Calculate the security increase from growing and the associated weaken threads needed.
     const securityIncrease = ns.growthAnalyzeSecurity(growThreads, target.hostname);
     growWeakenThreads = Math.ceil(securityIncrease / ns.weakenAnalyze(1)) + 1;
   }
 
-  // Scale the threads if there aren't enough threads available
+  // Scale the threads if there aren't enough threads available.
   if (limit !== undefined && limit < weakenThreads + growThreads + growWeakenThreads) {
-    // Calculate the available threads for the growth phase
+    // Calculate the available threads for the growth phase.
     const combinedLimit = limit - weakenThreads;
 
-    // Use binary search to find the optimal allocation for grow and its weaken threads
+    // Use binary search to find the optimal allocation for grow and its weaken threads.
     const { optimizedGrowThreads, optimizedGrowWeakenThreads } = optimizeGrowthAllocation(ns, target, combinedLimit);
     growThreads = optimizedGrowThreads;
     growWeakenThreads = optimizedGrowWeakenThreads;
   }
 
-  // Return the composed thread counts
+  // Return the composed thread counts.
   return {
     weakenThreads,
     growThreads,
@@ -137,12 +136,12 @@ function calculateHealThreads(ns, target, limit = undefined) {
 }
 
 /**
- * Calculates the required thread counts for a given target based on its status
+ * Calculates the required thread counts for a given target based on its status.
  *
- * @param {import("../../index").NS} ns - The environment object
- * @param {Object} target - The target object with its properties
- * @param {number} [limit=undefined] - Optional limit on the total available threads
- * @returns {Object} An object with thread counts: { weakenThreads, growThreads, hackThreads }
+ * @param {import("../../index").NS} ns - The environment object.
+ * @param {Object} target - The target object with its properties.
+ * @param {number} [limit=undefined] - Optional limit on the total available threads.
+ * @returns {Object} An object with thread counts: { weakenThreads, growThreads, growWeakenThreads }.
  */
 export function calculateThreadCounts(ns, target, limit=undefined) {
   switch (target.status) {

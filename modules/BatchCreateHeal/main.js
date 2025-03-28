@@ -11,13 +11,13 @@ import { createBatches } from "./batch";
 import { normalizeBatches } from "../../internal/batch";
 
 /**
- * Executes a batch analysis and stores results in data/targets.txt
+ * Executes a batch analysis and stores results in data/targets.txt.
  * 
  * Optional args:
  *   ns.args[2] - hack interval (default: 1000)
  *
- * @param {import("../../index").NS} ns - The environment object
- * @returns {Promise<void>} Resolves when the analysis is complete
+ * @param {import("../../index").NS} ns - The environment object.
+ * @returns {Promise<void>} Resolves when the analysis is complete.
  */
 export async function main(ns) {
   if (ns.args.length < 2) {
@@ -28,7 +28,7 @@ export async function main(ns) {
   const hosts = readJSONFile(ns, ns.args[0]);
   let targets = readJSONFile(ns, ns.args[1]);
 
-  // Extract optional parameters with default values if not provided
+  // Extract optional parameters with default values if not provided.
   const hackInterval = ns.args[2] !== undefined ? ns.args[2] : 1000;
 
   // Allocate the threads to every target using the optional parameters.
