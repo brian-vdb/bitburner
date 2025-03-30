@@ -176,14 +176,45 @@ export async function batchCreateHack(ns, hackInterval=1000, hackPercentage=10) 
 }
 
 /**
+ * Creates a Cycle Batch using data/hosts.txt and data/targets.txt.
+ * The results are stored in data/targets.txt and data/batch.txt.
+ *
+ * @param {import("../index").NS} ns - The environment object.
+ * @param {number} [hackInterval=1000] - The hack interval.
+ * @param {number} [hackPercentage=10] - The hack percentage.
+ * @returns {Promise<void>} Resolves when the analysis is complete.
+ */
+export async function batchCreateCycle(ns, hackInterval = 1000, hackPercentage = 10) {
+  // Start the analysis.
+  const pid = ns.exec(
+    "modules/BatchCreateCycle/main.js",
+    ns.getHostname(),
+    {
+      preventDuplicates: true,
+      temporary: false,
+      threads: 1,
+    },
+    "data/hosts.txt",
+    "data/targets.txt",
+    hackInterval,
+    hackPercentage
+  );
+
+  // Check if the process started.
+  if (pid === 0) throw new Error("Batch Create Cycle could not be started");
+
+  // Wait for the process to finish.
+  await awaitScript(ns, pid);
+}
+
+/**
  * Executes a Batch Execution using data/hosts.txt and data/batch.txt
  *
- * @param {import("../index").NS} ns - The environment object
- * @param {number} [hackInterval=1000] - The hack interval
- * @param {string} [title='Batch Execution'] - The batch title
- * @returns {Promise<void>} Resolves when the execution is complete
+ * @param {import("../index").NS} ns - The environment object.
+ * @param {number} [hackInterval=1000] - The hack interval.
+ * @returns {Promise<void>} Resolves when the execution is complete.
  */
-export async function batchExecution(ns, hackInterval=1000, title='Batch Execution') {
+export async function batchExecution(ns, hackInterval=1000) {
   // Start the execution
   const pid = ns.exec(
     "modules/BatchExecution/main.js",
@@ -195,8 +226,7 @@ export async function batchExecution(ns, hackInterval=1000, title='Batch Executi
     },
     "data/hosts.txt",
     "data/batches.txt",
-    hackInterval,
-    title
+    hackInterval
   );
 
   // Check if the process started

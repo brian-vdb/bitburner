@@ -5,7 +5,7 @@
 */
 
 import { sleep } from "./internal/time";
-import { batchCreateHack, batchCreateHeal, batchExecution, networkSync, propagationAttack, serverAnalysis } from "./modules/handles";
+import { batchCreateCycle, batchCreateHack, batchCreateHeal, batchExecution, networkSync, propagationAttack, serverAnalysis } from "./modules/handles";
 
 /**
  * Prepares the server information for performing actions on the network.
@@ -30,8 +30,7 @@ async function prepareServers(ns, maxActionTime = 1440) {
  * Optional args:
  *   ns.args[0] - hack percentage (default: 10)
  *   ns.args[1] - hack interval (default: 1000)
- *   ns.args[2] - max hack targets (default: 5)
- *   ns.args[3] - max action time (default: 1440) for weaken, grow, and hack operations.
+ *   ns.args[2] - max action time (default: 1440) for weaken, grow, and hack operations.
  *
  * @param {import("./index").NS} ns - The environment object.
  * @returns {Promise<void>} A promise that never resolves as it loops indefinitely.
@@ -44,7 +43,7 @@ export async function main(ns) {
   if (
     ns.getHostname() !== "home-1" &&
     ns.serverExists("home-1") &&
-    ns.getServerMaxRam("home-1") > ns.getServerMaxRam(ns.getHostname())
+    ns.getServerMaxRam("home-1") >= 16
   ) {
     await networkSync(ns);
     ns.exec(ns.getScriptName(), "home-1", 1, ...ns.args);
@@ -73,7 +72,7 @@ export async function main(ns) {
 
     // Perform the heal batch execution.
     ns.print(" > Executing heal batch");
-    await batchExecution(ns, hackInterval, 'Heal Batch');
+    await batchExecution(ns, hackInterval);
     await sleep(hackInterval);
 
     // Prepare the servers.
@@ -85,16 +84,14 @@ export async function main(ns) {
       ns.print(" > Creating hack batch");
       await batchCreateHack(ns, hackInterval, hackPercentage);
     } else {
-      // TODO: Implement batchCreateCycle when available.
-
-      // Temp: Create a hack batch.
-      ns.print(" > Creating hack batch");
-      await batchCreateHack(ns, hackInterval, hackPercentage);
+      // Create a cycle batch.
+      ns.print(" > Creating cycle batch");
+      await batchCreateCycle(ns, hackInterval, hackPercentage);
     }
 
     // Perform the hack batch execution.
-    ns.print(" > Executing hack batch");
-    await batchExecution(ns, hackInterval, 'Hack Batch');
-    await sleep(hackInterval);
+      ns.print(" > Executing hack batch");
+      await batchExecution(ns, hackInterval);
+      await sleep(hackInterval);
   }
 }

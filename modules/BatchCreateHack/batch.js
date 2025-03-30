@@ -22,9 +22,9 @@ function prepareBatch(target, targets, hackInterval=1000) {
   // Set the initial batch metadata
   batch.hostname = target.hostname;
   batch.maxTime = target.hackTime;
-  const executionStartTime = Math.max(...targets.map(target => target.hackTime));
-  batch.schedulingEndTime = executionStartTime - hackInterval;
-  batch.schedulingStartTime = executionStartTime - batch.maxTime;
+  batch.executionStartTime = Math.max(...targets.map(target => target.hackTime));
+  batch.schedulingEndTime = batch.executionStartTime - hackInterval;
+  batch.schedulingStartTime = batch.executionStartTime - batch.maxTime;
   batch.amount = 1;
 
   return batch;

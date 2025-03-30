@@ -1,6 +1,6 @@
 /*
   Brian van den Berg
-  Module: BatchCreateHack
+  Module: BatchCreateHeal
   File: allocation.js
   Description: Functions related to the allocation of threads to targets.
 */
@@ -22,11 +22,15 @@ export function calculateAndSortTargets(ns, targets, hackPercentage=10) {
   // Calculate threads needed for each target.
   targets.forEach(target => {
     const threadCounts = calculateThreadCounts(ns, target, hackPercentage, undefined);
-    target.threadsNeeded = threadCounts.hackThreads;
+    target.threadsNeeded =
+      threadCounts.hackThreads +
+      threadCounts.hackWeakenThreads +
+      threadCounts.growThreads +
+      threadCounts.growWeakenThreads;
   });
 
-  // Sort targets by target.value descending.
-  return targets.sort((a, b) => b.value - a.value);
+  // Sort targets by target.value descending and limit to the top target.
+  return targets.sort((a, b) => b.value - a.value).slice(0, 1);
 }
 
 /**
@@ -41,12 +45,12 @@ export function calculateAndSortTargets(ns, targets, hackPercentage=10) {
 export function assignThreads(ns, hosts, targets, hackPercentage=10) {
   // Sort (and filter) targets using calculateAndSortTargets.
   targets = calculateAndSortTargets(ns, targets, hackPercentage);
-  
+
   // Ensure threadsAssigned is initialized on each target.
   targets.forEach(target => {
     target.threadsAssigned = target.threadsAssigned ?? 0;
   });
-  
+
   // Calculate total available threads using reduce.
   let totalThreadsAvailable = hosts.reduce((sum, host) => sum + host.threadsAvailable, 0);
 
@@ -54,25 +58,13 @@ export function assignThreads(ns, hosts, targets, hackPercentage=10) {
   let cycleThreadsAssigned;
   do {
     cycleThreadsAssigned = 0;
-    // Only consider targets that still need threads.
-    const activeTargets = targets.filter(target => target.threadsNeeded > target.threadsAssigned);
-
-    // Recalculate total value only for active targets.
-    const totalActiveValue = activeTargets.reduce((sum, target) => sum + target.value, 0);
-
-    activeTargets.forEach(target => {
-      // Calculate the available threads for this target based on its proportion of the active total value.
-      const proportionalThreads = Math.floor(
-        (target.value / totalActiveValue) * totalThreadsAvailable
-      );
-
-      // Assign the minimum of needed or available threads.
-      const threadsAssigned = Math.min(target.threadsNeeded - target.threadsAssigned, proportionalThreads);
+    targets.forEach(target => {
+      // Assign the maximum of needed or available threads.
+      const threadsAssigned = Math.min(target.threadsNeeded - target.threadsAssigned, totalThreadsAvailable);
       target.threadsAssigned += threadsAssigned;
+      totalThreadsAvailable -= threadsAssigned;
       cycleThreadsAssigned += threadsAssigned;
     });
-
-    totalThreadsAvailable -= cycleThreadsAssigned;
   } while (totalThreadsAvailable > 0 && cycleThreadsAssigned > 0);
 
   return targets;

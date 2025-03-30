@@ -8,36 +8,6 @@
 import { readJSONFile } from "internal/json";
 import { getHighestThreadCount, handleThreads } from "./threads";
 
-function relocateTail(ns) {
-  let size = ns.ui.windowSize();
-  let width = 543;
-  ns.ui.resizeTail(width, 132);
-  ns.ui.moveTail(size[0] - width - 200, 0);
-}
-
-function reloadProgressBar(ns, title, currentTime, endTime) {
-  // Adjust the position
-  relocateTail(ns);
-  
-  // Clamp currentTime between 0 and endTime
-  currentTime = Math.max(0, Math.min(currentTime, endTime));
-
-  // Calculate the progress
-  const progress = currentTime / endTime;
-  const totalLength = 50;
-  const filledLength = Math.round(progress * totalLength);
-  const emptyLength = totalLength - filledLength;
-  
-  // Build the progress bar string
-  const progressBar = `[${'|'.repeat(filledLength)}${'-'.repeat(emptyLength)}]`;
-  
-  // Clear the log and print the progress bar
-  ns.clearLog();
-  ns.print(`  ${title} Progress: [${Math.round(currentTime / 1000)}s/${Math.round(endTime / 1000)}s]`);
-  ns.print(`  ${progressBar}`);
-  ns.print(" ");
-}
-
 /**
  * Perform a batch execution.
  * 
@@ -60,15 +30,9 @@ export async function main(ns) {
   // Extract optional parameters with default values if not provided.
   const hackInterval = ns.args[2] !== undefined ? ns.args[2] : 1000;
   const hackCycleInterval = getHighestThreadCount(batches) * hackInterval;
-  const title = ns.args[3] !== undefined ? ns.args[3] : 'Batch Execution';
 
   // Start the batch execution.
   if (batches.length > 0) {
-    // Open the progress bar
-    ns.disableLog("ALL");
-    ns.ui.openTail();
-    relocateTail(ns);
-    
     // Set up the batch timing parameters.
     const startTime = Date.now();
     let currentTime = Date.now() - startTime;
@@ -99,11 +63,7 @@ export async function main(ns) {
       }
       
       // Wait a hack cycle.
-      reloadProgressBar(ns, title, currentTime, endTime);
       await ns.sleep(hackCycleInterval);
     }
-
-    // Close the progress bar
-    ns.ui.closeTail();
   }
 }
