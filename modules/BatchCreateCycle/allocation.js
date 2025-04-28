@@ -13,9 +13,10 @@ import { calculateThreadCounts } from "./threads";
  * @param {import("../../index").NS} ns - The environment object.
  * @param {Object[]} targets - The collection of targets from server analysis.
  * @param {number} [hackPercentage=10] - The hack percentage.
+ * @param {number} [maxTargets=25] - Max number of targets.
  * @returns {Object[]} Sorted targets array with updated threadsNeeded property.
  */
-export function calculateAndSortTargets(ns, targets, hackPercentage=10) {
+export function calculateAndSortTargets(ns, targets, hackPercentage=10, maxTargets=25) {
   // Filter out targets with status 'heal'.
   targets = targets.filter(target => target.status !== 'heal');
 
@@ -30,7 +31,7 @@ export function calculateAndSortTargets(ns, targets, hackPercentage=10) {
   });
 
   // Sort targets by target.value descending and limit to the top target.
-  return targets.sort((a, b) => b.value - a.value).slice(0, 1);
+  return targets.sort((a, b) => b.value - a.value).slice(0, maxTargets);
 }
 
 /**
@@ -40,9 +41,10 @@ export function calculateAndSortTargets(ns, targets, hackPercentage=10) {
  * @param {Object[]} hosts - The collection of hosts from server analysis.
  * @param {Object[]} targets - The collection of targets from server analysis.
  * @param {number} [hackPercentage=10] - The hack percentage.
+ * @param {number} [maxTargets=25] - Max number of targets.
  * @returns {Object[]} Targets with threads assigned to them.
  */
-export function assignThreads(ns, hosts, targets, hackPercentage=10) {
+export function assignThreads(ns, hosts, targets, hackPercentage=10, maxTargets=25) {
   // Sort (and filter) targets using calculateAndSortTargets.
   targets = calculateAndSortTargets(ns, targets, hackPercentage);
 

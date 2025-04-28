@@ -13,12 +13,16 @@
  * @returns {Object} The host object containing information about the server.
  */
 export function prepareHost(ns, hostname) {
-  const host = { hostname: hostname };
+  const server = ns.getServer(hostname);
+  const host = server;
 
-  // Get server RAM
-  host.ramMax = ns.getServerMaxRam(host.hostname);
-  host.ramAvailable = host.ramMax - ns.getServerUsedRam(host.hostname)
-  host.threadsAvailable = Math.floor(host.ramAvailable / 1.75)
+  // If the host is the one running the script, subtract 8GB from the max RAM.
+  if (hostname === ns.getHostname()) {
+    host.maxRam += 1.15;
+  }
+
+  host.ramAvailable = host.maxRam - server.ramUsed;
+  host.threadsAvailable = Math.floor(host.ramAvailable / 1.75);
 
   return host;
 }

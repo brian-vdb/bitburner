@@ -61,13 +61,12 @@ function copyAllFilesToTarget(ns, target) {
 export async function main(ns) {
   // Retrieve all purchased servers.
   const servers = ns.getPurchasedServers();
-  let allSuccess = true;
 
   // Process each server: clear it then copy allowed files from home.
   for (const server of servers) {
     clearTargetServer(ns, server);
     if (!copyAllFilesToTarget(ns, server)) {
-      allSuccess = false;
+      ns.tprint(`Failed to copy files from 'home' to ${server}.`);
     }
   }
 }

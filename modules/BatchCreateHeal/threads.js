@@ -9,14 +9,13 @@
  * Calculates the optimal allocation for grow threads and the corresponding extra weaken threads.
  *
  * @param {import("../../index").NS} ns - The environment object
- * @param {Object} target - The target object with properties such as hostname, moneyCurrent, and moneyMax.
  * @param {number} combinedLimit - The maximum number of threads available for both grow and extra weaken.
  * @returns {Object} An object with the optimal thread counts: { optimizedGrowThreads, optimizedGrowWeakenThreads }.
  */
-function optimizeGrowthAllocation(ns, target, combinedLimit) {
+function optimizeGrowthAllocation(ns, combinedLimit) {
   // Helper: total threads used for a given grow thread count x.
   function totalThreads(x) {
-    return x + Math.ceil(ns.growthAnalyzeSecurity(x, target.hostname) / ns.weakenAnalyze(1)) + 1;
+    return x + Math.ceil(ns.growthAnalyzeSecurity(x) / ns.weakenAnalyze(1)) + 1;
   }
 
   // Helper: cost function as the squared difference from combinedLimit.
@@ -67,7 +66,7 @@ function optimizeGrowthAllocation(ns, target, combinedLimit) {
 
   const optimizedGrowThreads = bestX;
   const optimizedGrowWeakenThreads =
-    Math.ceil(ns.growthAnalyzeSecurity(optimizedGrowThreads, target.hostname) / ns.weakenAnalyze(1)) + 1;
+    Math.ceil(ns.growthAnalyzeSecurity(optimizedGrowThreads) / ns.weakenAnalyze(1)) + 1;
 
   return { optimizedGrowThreads, optimizedGrowWeakenThreads };
 }
@@ -112,7 +111,7 @@ function calculateHealThreads(ns, target, limit = undefined) {
     growThreads = Math.ceil(ns.growthAnalyze(target.hostname, multiplier)) + 1;
 
     // Calculate the security increase from growing and the associated weaken threads needed.
-    const securityIncrease = ns.growthAnalyzeSecurity(growThreads, target.hostname);
+    const securityIncrease = ns.growthAnalyzeSecurity(growThreads);
     growWeakenThreads = Math.ceil(securityIncrease / ns.weakenAnalyze(1)) + 1;
   }
 
@@ -122,7 +121,7 @@ function calculateHealThreads(ns, target, limit = undefined) {
     const combinedLimit = limit - weakenThreads;
 
     // Use binary search to find the optimal allocation for grow and its weaken threads.
-    const { optimizedGrowThreads, optimizedGrowWeakenThreads } = optimizeGrowthAllocation(ns, target, combinedLimit);
+    const { optimizedGrowThreads, optimizedGrowWeakenThreads } = optimizeGrowthAllocation(ns, combinedLimit);
     growThreads = optimizedGrowThreads;
     growWeakenThreads = optimizedGrowWeakenThreads;
   }

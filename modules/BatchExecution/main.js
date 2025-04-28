@@ -5,8 +5,9 @@
   Description: Tool to execute batches of events.
 */
 
-import { readJSONFile } from "internal/json";
-import { getHighestThreadCount, handleThreads } from "./threads";
+import { readJSONFile } from "../../internal/json";
+import { activeWaitUntil } from "../../internal/time";
+import { createAllocation, executeAllocation, getHighestThreadCount } from "./threads";
 
 /**
  * Perform a batch execution.
@@ -23,6 +24,9 @@ export async function main(ns) {
     throw new Error(`Expected program parameters: [hostsFile: string, batchesFile: string, hackInterval?: number]`);
   }
 
+  // Disable default logs.
+  ns.disableLog("ALL");
+
   // Setup data containers.
   let hosts = readJSONFile(ns, ns.args[0]);
   let batches = readJSONFile(ns, ns.args[1]);
@@ -31,39 +35,75 @@ export async function main(ns) {
   const hackInterval = ns.args[2] !== undefined ? ns.args[2] : 1000;
   const hackCycleInterval = getHighestThreadCount(batches) * hackInterval;
 
-  // Start the batch execution.
-  if (batches.length > 0) {
-    // Set up the batch timing parameters.
-    const startTime = Date.now();
-    let currentTime = Date.now() - startTime;
-    let endTime = currentTime;
+  // Set up the batch timing parameters.
+  const startTime = Date.now();
+  let batchTime = 0;
+  let schedulingEndTime = Infinity;
+  let executionEndTime = 0;
 
-    // Start firing batches.
-    while (batches.length !== 0 || currentTime < endTime) {
-      // Fetch the current time.
-      currentTime = Date.now() - startTime;
+  // Start firing batches.
+  while (true) {
+    const allocation = [];
+    let extendExecutionEndTime = 0;
+    
+    // Iterate over the batches.
+    for (let i = 0; i < batches.length; i++) {
+      const batch = batches[i];
 
-      // Iterate over the batches in reverse order.
-      for (let i = batches.length - 1; i >= 0; i--) {
-        const batch = batches[i];
-        if (batch.schedulingStartTime <= currentTime && batch.schedulingEndTime > currentTime) {
-          // Schedule the batch.
-          hosts = handleThreads(ns, batch.hostname, batch.threads, hosts);
-          currentTime = Date.now() - startTime;
-          endTime = Math.max(endTime, currentTime + batch.maxTime);
+      // Check if batches are allowed to be created
+      if (batchTime < batch.schedulingStartTime) continue;
 
-          // Maintain loop variables.
-          batch.amount -= 1;
+      // Set up the data containers
+      let batchAllocation = [];
+      let validBatch = true;
+
+      // Check each threadsObj in the batch.
+      for (const threadsObj of batch.threads) {
+        const threadAllocation = createAllocation(threadsObj, hosts, batch.hostname);
+
+        // If allocation for a thread is empty, mark the batch as invalid and exit the loop.
+        if (threadAllocation.length === 0) {
+          validBatch = false;
+          break;
         }
 
-        // Remove batch if its amount is 0 or if its scheduling end time has passed.
-        if (batch.amount === 0 || batch.schedulingEndTime < currentTime) {
-          batches.splice(i, 1);
-        }
+        // Otherwise, accumulate the allocations.
+        batchAllocation.push(...threadAllocation);
+        extendExecutionEndTime = batch.maxTime > extendExecutionEndTime ?
+          batch.maxTime : extendExecutionEndTime;
+        schedulingEndTime = batch.schedulingEndTime < schedulingEndTime ?
+          batch.schedulingEndTime : schedulingEndTime;
       }
-      
-      // Wait a hack cycle.
-      await ns.sleep(hackCycleInterval);
+
+      // Remove batch if its amount is 0 or if its scheduling end time has passed.
+      batch.amount -= 1;
+      if (batch.amount === 0 || batch.schedulingEndTime < batchTime) {
+        batches.splice(i, 1);
+      }
+
+      // If the batch is valid (all threads allocated), merge its allocations.
+      if (validBatch) {
+        allocation.push(...batchAllocation);
+      }
     }
+
+    // Sleep to the batch time.
+    await activeWaitUntil(ns, batchTime + startTime);
+
+    // Perform the hacks.
+    executeAllocation(ns, allocation);
+
+    // Measure the timing window
+    let currentTime = Date.now();
+    batchTime = currentTime - startTime + hackCycleInterval;
+    executionEndTime = currentTime + extendExecutionEndTime + hackCycleInterval > executionEndTime ?
+      currentTime + extendExecutionEndTime + hackCycleInterval :
+      executionEndTime;
+
+    // Check if the scheduling time is finished or batches were fired.
+    if (batchTime - startTime >= schedulingEndTime || batches.length === 0) break;
   }
+
+  // Sleep to the end time.
+  await activeWaitUntil(ns, executionEndTime);
 }

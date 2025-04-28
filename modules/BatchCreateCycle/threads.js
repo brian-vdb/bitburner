@@ -20,12 +20,12 @@ function optimizeHackAllocation(ns, target, hackPercentage, combinedLimit) {
   function totalThreads(x) {
     const hackFraction = x / 100;
     const hackThreads = Math.floor(hackFraction / ns.hackAnalyze(target.hostname));
-    const hackSecIncrease = ns.hackAnalyzeSecurity(hackThreads, target.hostname);
+    const hackSecIncrease = ns.hackAnalyzeSecurity(hackThreads);
     const hackWeakenThreads = Math.ceil(hackSecIncrease / ns.weakenAnalyze(1) * 1.1) + 1;
 
     const multiplier = 1 / (1 - hackFraction);
     const growThreads = Math.ceil(ns.growthAnalyze(target.hostname, multiplier) * 1.1) + 1;
-    const growSecIncrease = ns.growthAnalyzeSecurity(growThreads, target.hostname);
+    const growSecIncrease = ns.growthAnalyzeSecurity(growThreads);
     const growWeakenThreads = Math.ceil(growSecIncrease / ns.weakenAnalyze(1) * 1.1) + 1;
 
     return hackThreads + hackWeakenThreads + growThreads + growWeakenThreads;
@@ -61,12 +61,12 @@ function optimizeHackAllocation(ns, target, hackPercentage, combinedLimit) {
   // Calculate the final thread counts using the optimized hack percentage.
   const optimalHackFraction = optimalHackPercent / 100;
   const hackThreads = Math.floor(optimalHackFraction / ns.hackAnalyze(target.hostname));
-  const hackSecIncrease = ns.hackAnalyzeSecurity(hackThreads, target.hostname);
+  const hackSecIncrease = ns.hackAnalyzeSecurity(hackThreads);
   const hackWeakenThreads = Math.ceil(hackSecIncrease / ns.weakenAnalyze(1) * 1.1) + 1;
 
   const multiplier = 1 / (1 - optimalHackFraction);
   const growThreads = Math.ceil(ns.growthAnalyze(target.hostname, multiplier) * 1.1) + 1;
-  const growSecIncrease = ns.growthAnalyzeSecurity(growThreads, target.hostname);
+  const growSecIncrease = ns.growthAnalyzeSecurity(growThreads);
   const growWeakenThreads = Math.ceil(growSecIncrease / ns.weakenAnalyze(1) * 1.1) + 1;
 
   return { hackThreads, hackWeakenThreads, growThreads, growWeakenThreads };
@@ -95,7 +95,7 @@ function calculateHackThreads(ns, target, hackPercentage = 10, limit = undefined
   let hackThreads = Math.floor(hackFraction / ns.hackAnalyze(target.hostname));
 
   // Calculate the security increase from hacking and the weaken threads to offset it.
-  const hackSecIncrease = ns.hackAnalyzeSecurity(hackThreads, target.hostname);
+  const hackSecIncrease = ns.hackAnalyzeSecurity(hackThreads);
   let hackWeakenThreads = Math.ceil(hackSecIncrease / ns.weakenAnalyze(1) * 1.1) + 1;
 
   // Calculate the grow threads to restore the hacked money.

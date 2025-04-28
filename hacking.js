@@ -10,9 +10,9 @@ import { batchCreateCycle, batchCreateHack, batchCreateHeal, batchExecution, net
 /**
  * Prepares the server information for performing actions on the network.
  *
- * @param {import("./index").NS} ns - The environment object
- * @param {number} [maxActionTime=1440] - The maximum time an action is allowed to take
- * @returns {Promise<void>} A promise that resolves when the server preparation is finished
+ * @param {import("./index").NS} ns - The environment object.
+ * @param {number} [maxActionTime=1440] - The maximum time an action is allowed to take.
+ * @returns {Promise<void>} A promise that resolves when the server preparation is finished.
  */
 async function prepareServers(ns, maxActionTime = 1440) {
   // Perform a propagation attack.
@@ -50,10 +50,6 @@ export async function main(ns) {
     return;
   }
 
-  // open the tail.
-  ns.ui.openTail();
-  ns.ui.resizeTail(543, 300);
-
   // Extract optional arguments with default values.
   const hackPercentage = ns.args[0] !== undefined ? ns.args[0] : 10;
   const hackInterval = ns.args[1] !== undefined ? ns.args[1] : 1000;
@@ -73,7 +69,7 @@ export async function main(ns) {
     // Perform the heal batch execution.
     ns.print(" > Executing heal batch");
     await batchExecution(ns, hackInterval);
-    await sleep(hackInterval);
+    await sleep(1000);
 
     // Prepare the servers.
     await prepareServers(ns, maxActionTime);
@@ -92,6 +88,6 @@ export async function main(ns) {
     // Perform the hack batch execution.
       ns.print(" > Executing hack batch");
       await batchExecution(ns, hackInterval);
-      await sleep(hackInterval);
+      await sleep(1000);
   }
 }

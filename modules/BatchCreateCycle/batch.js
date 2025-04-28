@@ -144,7 +144,7 @@ export function scaleBatchAmounts(targets, batches, hosts) {
   const totalThreadsAvailable = hosts.reduce((sum, host) => sum + host.threadsAvailable, 0);
   
   // Calculate the new amount based on the ratio of totalThreadsCost to totalThreadsAvailable.
-  const newAmount = Math.floor(totalThreadsCost / totalThreadsAvailable);
+  const newAmount = Math.floor(totalThreadsAvailable / totalThreadsCost);
 
   // Update the amount for every batch in the batches array.
   batches.forEach(batch => {

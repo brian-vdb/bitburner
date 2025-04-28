@@ -9,7 +9,7 @@ import {
   getAvailableHacks,
   intrudeServer,
 } from "./intrude";
-import { arrayToJSON, writeJSONFile } from "internal/json";
+import { arrayToJSON, writeJSONFile } from "../../internal/json";
 
 /**
  * Propagate through the network and all of its nodes.
@@ -49,6 +49,23 @@ export async function main(ns) {
   // Get a list of all servers in the network
   servers = propagateNetwork(ns, hostname, servers);
 
+  // Sort servers
+  servers.sort((a, b) => {
+    // Compare by max RAM (descending)
+    const ramDiff = ns.getServerMaxRam(b) - ns.getServerMaxRam(a);
+    if (ramDiff !== 0) return ramDiff;
+
+    // If RAM is equal, check if one is a home server
+    const aIsHome = a.startsWith("home");
+    const bIsHome = b.startsWith("home");
+    if (aIsHome !== bIsHome) {
+      return aIsHome ? -1 : 1;
+    }
+
+    // If both are the same type, sort alphabetically (ascending)
+    return a.localeCompare(b);
+  });
+  
   // Get the list of available hacking methods
   const hacks = getAvailableHacks(ns);
 

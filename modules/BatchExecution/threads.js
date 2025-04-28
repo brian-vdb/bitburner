@@ -5,7 +5,7 @@
   Description: Functions related to the firing of events.
 */
 
-import { weaken, grow, hack } from "../../network/hack";
+import { weaken, grow, hack } from "./hack";
 
 /**
  * Returns the highest count of threads in the batch.
@@ -28,42 +28,45 @@ export function getHighestThreadCount(batches) {
  *
  * @param {Object} threads - The threads object that contains information about the hack.
  * @param {Object[]} hosts - Collection of host objects.
+ * @param {string} target - Hostname of the target of the hack.
  * @returns {Object[]} Collection of thread allocations.
  */
-function allocateEventThreads(threads, hosts) {
-  let requiredThreads = threads.amount;
+export function createAllocation(threads, hosts, target) {
+  let threadsRequired = threads.amount;
+  const totalRequired = threadsRequired;
+  let totalAllocated = 0; 
   const allocation = [];
 
-  // Loop over the hosts array and allocate threads.
-  for (let i = 0; i < hosts.length && requiredThreads > 0; i++) {
+  // Iterate through hosts while there are threads required.
+  for (let i = 0; i < hosts.length && threadsRequired > 0; ) {
     const host = hosts[i];
-    // Allocate as many threads as possible from this host.
-    const threadsAllocated = Math.min(host.threadsAvailable, requiredThreads);
-    if (threadsAllocated > 0) allocation.push({ hostname: host.hostname, threads: threadsAllocated });
-    requiredThreads -= threadsAllocated;
+
+    // Determine how many threads can be allocated from this host.
+    const threadsAllocated = Math.min(host.threadsAvailable, threadsRequired);
+    if (threadsAllocated > 0) {
+      allocation.push({
+        action: threads.action,
+        hostname: host.hostname,
+        target: target,
+        threads: threadsAllocated,
+        additionalMsec: threads.additionalMsec
+      });
+
+      // Deduct threads directly from the host.
+      host.threadsAvailable -= threadsAllocated;
+      threadsRequired -= threadsAllocated;
+      totalAllocated += threadsAllocated;
+    }
+
+    // Remove the host if no threads remain.
+    if (host.threadsAvailable <= 0) {
+      hosts.splice(i, 1);
+    } else {
+      i++;
+    }
   }
 
-  return allocation;
-}
-
-/**
- * Deducts the allocated threads from the hosts array and returns the updated hosts array.
- *
- * @param {Object[]} allocation - Collection of thread allocations.
- * @param {Object[]} hosts - Collection of host objects.
- * @returns {Object[]} The updated hosts array after deducting used threads.
- */
-function deductAllocation(allocation, hosts) {
-  allocation.forEach(alloc => {
-    const idx = hosts.findIndex(h => h.hostname === alloc.hostname);
-    if (idx !== -1) {
-      hosts[idx].threadsAvailable -= alloc.threads;
-      if (hosts[idx].threadsAvailable <= 0) {
-        hosts.splice(idx, 1);
-      }
-    }
-  });
-  return hosts;
+  return totalAllocated === totalRequired ? allocation : [];
 }
 
 /**
@@ -76,60 +79,43 @@ const threadsHandlers = {
    * Handles a "weaken" event.
    *
    * @param {import("../../index").NS} ns - The Bitburner environment object.
-   * @param {Object} threadsObj - The threads object that contains information about the hack.
-   * @param {Object[]} hosts - Collection of host objects.
-   * @returns {Object[]} The updated hosts array after deducting used threads.
+   * @param {Object[]} alloc - Thread allocation.
+   * @returns {void}
    */
-  'weaken': (ns, target, threadsObj, hosts) => {
-    const allocation = allocateEventThreads(threadsObj, hosts);
-    allocation.forEach(alloc => {
-      const success = weaken(ns, alloc.hostname, target, alloc.threads, threadsObj.additionalMsec);
-    });
-    return deductAllocation(allocation, hosts);
+  'weaken': (ns, alloc) => {
+    weaken(ns, alloc.hostname, alloc.target, alloc.threads, alloc.additionalMsec);
   },
   /**
    * Handles a "grow" event.
    *
    * @param {import("../../index").NS} ns - The Bitburner environment object.
-   * @param {Object} threadsObj - The threads object that contains information about the hack.
-   * @param {Object[]} hosts - Collection of host objects.
-   * @returns {Object[]} The updated hosts array after deducting used threads.
+   * @param {Object[]} alloc - Thread allocation.
+   * @returns {void}
    */
-  'grow': (ns, target, threadsObj, hosts) => {
-    const allocation = allocateEventThreads(threadsObj, hosts);
-    allocation.forEach(alloc => {
-      const success = grow(ns, alloc.hostname, target, alloc.threads, threadsObj.additionalMsec);
-    });
-    return deductAllocation(allocation, hosts);
+  'grow': (ns, alloc) => {
+    grow(ns, alloc.hostname, alloc.target, alloc.threads, alloc.additionalMsec);
   },
   /**
    * Handles a "hack" event.
    *
    * @param {import("../../index").NS} ns - The Bitburner environment object.
-   * @param {Object} threadsObj - The threads object that contains information about the hack.
-   * @param {Object[]} hosts - Collection of host objects.
-   * @returns {Object[]} The updated hosts array after deducting used threads.
+   * @param {Object[]} alloc - Thread allocation.
+   * @returns {void}
    */
-  'hack': (ns, target, threadsObj, hosts) => {
-    const allocation = allocateEventThreads(threadsObj, hosts);
-    allocation.forEach(alloc => {
-      const success = hack(ns, alloc.hostname, target, alloc.threads, threadsObj.additionalMsec);
-    });
-    return deductAllocation(allocation, hosts);
+  'hack': (ns, alloc) => {
+    hack(ns, alloc.hostname, alloc.target, alloc.threads, alloc.additionalMsec);
   }
 };
 
 /**
- * Handles an event based on its action, assigns hosts for execution, and returns an updated hosts array.
+ * Handles an allocation of threads.
  *
  * @param {import("../../index").NS} ns - The Bitburner environment object.
- * @param {Object} threads - The collection of threads objects that contain information about the batch.
- * @param {Object[]} hosts - Collection of host objects.
- * @returns {Object[]} The updated hosts array after handling the event.
+ * @param {Object[]} allocation - Collection of thread allocations.
+ * @returns {void}
  */
-export function handleThreads(ns, target, threads, hosts) {
-  for (const threadsObj of threads) {
-    hosts = threadsHandlers[threadsObj.action](ns, target, threadsObj, hosts);
+export function executeAllocation(ns, allocation) {
+  for (const alloc of allocation) {
+    threadsHandlers[alloc.action](ns, alloc);
   }
-  return hosts;
 }

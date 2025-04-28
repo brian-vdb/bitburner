@@ -35,7 +35,7 @@ export async function main(ns) {
   const hackPercentage = ns.args[3] !== undefined ? ns.args[3] : 10;
 
   // Allocate the threads to every target using the optional parameters.
-  targets = assignThreads(ns, hosts, targets, hackPercentage);
+  targets = assignThreads(ns, hosts, targets, hackPercentage, hosts.length);
 
   // Prepare the batch according to the assigned threads.
   let batches = createBatches(ns, targets, hackInterval, hackPercentage);

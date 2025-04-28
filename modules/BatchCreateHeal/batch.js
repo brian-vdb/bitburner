@@ -5,7 +5,7 @@
   Description: Functions related to the creation of a batch of attacks.
 */
 
-import { createBatchTemplate } from "internal/batch";
+import { createBatchTemplate } from "../../internal/batch";
 import { calculateThreadCounts } from "./threads";
 
 /**
