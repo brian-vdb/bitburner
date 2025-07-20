@@ -77,7 +77,7 @@ export async function main(ns) {
         // If all threads were allocated successfully
         if (allocationSuccess) {
           batch.count--;
-          executionEndTime = Math.max(executionEndTime, now + batch.maxTime);
+          executionEndTime = Math.max(executionEndTime, now + batch.maxTime + spacing);
 
           // Remove completed batches from queue
           if (batch.count <= 0) {
