@@ -8,7 +8,6 @@
 import { readJSONFile, writeJSONFile } from "../../internal/json";
 import { assignThreads } from "./allocation";
 import { createBatches } from "./batch";
-import { normalizeBatches } from "../../internal/batch";
 
 /**
  * Executes a batch analysis and stores results in data/targets.txt.
@@ -36,7 +35,6 @@ export async function main(ns) {
 
   // Prepare the batch according to the assigned threads.
   let batches = createBatches(ns, targets, hackInterval);
-  batches = normalizeBatches(batches);
 
   // Store the result.
   writeJSONFile(ns, targets, "data/targets.txt");

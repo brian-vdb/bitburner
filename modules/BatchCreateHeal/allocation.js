@@ -27,7 +27,7 @@ export function calculateAndSortTargets(ns, targets) {
       threadCounts.growWeakenThreads;
   });
 
-  // Sort targets in ascending order (lowest product first).
+  // Sort targets in ascending order (lowest first).
   return targets.sort(
     (a, b) => (a.maxTime * a.threadsNeeded) - (b.maxTime * b.threadsNeeded)
   );
@@ -47,11 +47,11 @@ export function assignThreads(ns, hosts, targets) {
 
   // Ensure threadsAssigned is initialized on each target.
   targets.forEach(target => {
-    target.threadsAssigned = target.threadsAssigned ?? 0;
+    target.threadsAssigned = 0;
   });
 
   // Calculate total available threads using reduce.
-  let totalThreadsAvailable = hosts.reduce((sum, host) => sum + host.threadsAvailable, 0);
+  let totalThreadsAvailable = hosts.reduce((sum, host) => sum + host.maxThreadsAvailable, 0);
 
   // Perform assignment while threads remain and at least one target receives threads in a cycle.
   let cycleThreadsAssigned;

@@ -5,7 +5,6 @@
   Description: Functions related to the creation of a batch of attacks.
 */
 
-import { createBatchTemplate } from "../../internal/batch";
 import { calculateThreadCounts } from "./threads";
 
 /**
@@ -16,18 +15,13 @@ import { calculateThreadCounts } from "./threads";
  * @param {number} [hackInterval=1000] - The hack interval.
  * @returns {Object} The base batch object.
  */
-function prepareBatch(target, targets, hackInterval=1000) {
-  let batch = createBatchTemplate();
-  
-  // Set the initial batch metadata
-  batch.hostname = target.hostname;
-  batch.maxTime = Math.max(target.growTime, target.weakenTime);
-  batch.executionStartTime = Math.max(...targets.map(target => Math.max(target.growTime, target.weakenTime)));
-  batch.schedulingEndTime = batch.executionStartTime - hackInterval;
-  batch.schedulingStartTime = batch.executionStartTime - batch.maxTime;
-  batch.amount = 1;
-
-  return batch;
+function prepareBatch(target) {
+  return {
+    hostname: target.hostname,
+    minTime: Math.min(target.weakenTime, target.growTime),
+    maxTime: Math.max(target.weakenTime, target.growTime),
+    mode: 'single',
+  };
 }
 
 /**
@@ -38,47 +32,50 @@ function prepareBatch(target, targets, hackInterval=1000) {
  * @param {number} [hackInterval=1000] - The hack interval.
  * @returns {Object[]} An array of thread event objects for a target.
  */
-function createHealThreads(ns, target, hackInterval=1000) {
+function createHealThreads(ns, target, hackInterval = 1000) {
   let threads = [];
   let offset = 0;
-  let maxTime = Math.max(target.growTime, target.weakenTime);
+  let maxTime = Math.max(target.weakenTime, target.growTime);
 
-  // Get the thread counts for heal (combined weaken and grow).
   const { weakenThreads, growThreads, growWeakenThreads } = calculateThreadCounts(ns, target, target.threadsAssigned);
 
   if (weakenThreads > 0) {
-    // Create the weaken threads.
-    let additionalMsec = (maxTime - target.weakenTime + offset);
     threads.push({
       action: 'weaken',
       amount: weakenThreads,
-      additionalMsec: additionalMsec
+      additionalMsec: (maxTime - target.weakenTime + offset)
     });
     offset += hackInterval;
   }
-  
-  if (growThreads + growWeakenThreads > 0) {
-    // Create the grow threads.
-    let additionalMsec = (maxTime - target.growTime + offset);
+
+  if (growThreads > 0 && growWeakenThreads > 0) {
     threads.push({
       action: 'grow',
       amount: growThreads,
-      additionalMsec: additionalMsec
+      additionalMsec: (maxTime - target.growTime + offset)
     });
     offset += hackInterval;
 
-    // Create the grow weaken threads.
-    additionalMsec = (maxTime - target.weakenTime + offset);
     threads.push({
       action: 'weaken',
       amount: growWeakenThreads,
-      additionalMsec: additionalMsec
+      additionalMsec: (maxTime - target.weakenTime + offset)
     });
     offset += hackInterval;
   }
-  
+
+  // Normalize the additionalMsec values
+  if (threads.length > 0) {
+    const minAdditionalMsec = Math.min(...threads.map(t => t.additionalMsec));
+    threads = threads.map(t => ({
+      ...t,
+      additionalMsec: t.additionalMsec - minAdditionalMsec
+    }));
+  }
+
   return threads;
 }
+
 
 /**
  * Creates the thread composition for a batch.
@@ -110,7 +107,7 @@ export function createBatches(ns, targets, hackInterval = 1000) {
   targets.forEach(target => {
     let threads = getTargetThreads(ns, target, hackInterval);
     if (threads.length > 0) {
-      let batch = prepareBatch(target, targets, hackInterval);
+      let batch = prepareBatch(target);
       batch.threads = threads;
       batches.push(batch);
     }
