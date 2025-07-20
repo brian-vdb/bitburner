@@ -72,7 +72,7 @@ export async function main(ns) {
     await sleep(1000);
 
     // Prepare the servers.
-    await prepareServers(ns, maxActionTime);
+    // await prepareServers(ns, maxActionTime);
 
     // Choose which batch analysis to run based on available RAM.
     // if (ns.getServerMaxRam(ns.getHostname()) <= 8) {
