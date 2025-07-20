@@ -14,7 +14,7 @@
  */
 function optimizeGrowthAllocation(ns, combinedLimit) {
   function total(x) {
-    return x + Math.ceil(ns.growthAnalyzeSecurity(x) / ns.weakenAnalyze(1)) + 1;
+    return x + Math.ceil(ns.growthAnalyzeSecurity(x) / ns.weakenAnalyze(1));
   }
 
   function cost(x) {
@@ -46,7 +46,7 @@ function optimizeGrowthAllocation(ns, combinedLimit) {
 
   return {
     optimizedGrowThreads: bestX,
-    optimizedGrowWeakenThreads: Math.ceil(ns.growthAnalyzeSecurity(bestX) / ns.weakenAnalyze(1)) + 1,
+    optimizedGrowWeakenThreads: Math.ceil(ns.growthAnalyzeSecurity(bestX) / ns.weakenAnalyze(1)),
   };
 }
 
@@ -74,7 +74,7 @@ function calculateHealThreads(ns, target, limit) {
 
   if (multiplier > 1) {
     growThreads = Math.ceil(ns.growthAnalyze(target.hostname, multiplier)) + 1;
-    growWeakenThreads = Math.ceil(ns.growthAnalyzeSecurity(growThreads) / ns.weakenAnalyze(1)) + 1;
+    growWeakenThreads = Math.ceil(ns.growthAnalyzeSecurity(growThreads) / ns.weakenAnalyze(1));
   }
 
   if (limit !== undefined && limit < weakenThreads + growThreads + growWeakenThreads) {

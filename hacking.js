@@ -15,10 +15,10 @@ import {
  * @returns {Promise<void>}
  */
 async function prepareNetwork(ns, maxActionTime = 1440) {
-  ns.tprint(" > Infecting the network...");
+  ns.print(" > Infecting the network...");
   await hackingInfiltration(ns);
 
-  ns.tprint(" > Analyzing the servers...");
+  ns.print(" > Analyzing the servers...");
   await hackingAnalysis(ns, maxActionTime);
 }
 
@@ -31,12 +31,14 @@ async function prepareNetwork(ns, maxActionTime = 1440) {
  * @returns {Promise<void>}
  */
 async function runOrchestratedExecution(ns, hackInterval, label) {
-  ns.tprint(` > Scheduling ${label} execution...`);
+  ns.print(` > Scheduling ${label} execution...`);
   await extractionOrchestratedPrepare(ns, hackInterval);
 
-  ns.tprint(` > Executing ${label} batch...`);
+  ns.print(` > Executing ${label} batch...`);
   await extractionOrchestratedExecution(ns, hackInterval);
-  await ns.sleep(1000);
+
+  ns.print(` > Finished ${label} batch...`);
+  await ns.sleep(3 * hackInterval);
 }
 
 /**
@@ -51,23 +53,31 @@ async function runOrchestratedExecution(ns, hackInterval, label) {
  * @returns {Promise<void>}
  */
 export async function main(ns) {
+  ns.disableLog("ALL");
+
   const hackPercentage = ns.args[0] !== undefined ? ns.args[0] : 10;
   const hackInterval = ns.args[1] !== undefined ? ns.args[1] : 1000;
   const maxActionTime = ns.args[2] !== undefined ? ns.args[2] : 1440;
 
-  ns.tprint(" Hacking Network:");
-
   while (true) {
+    ns.clearLog();
+    
     // HEAL CYCLE
+    ns.print(" Healing Network:");
+
     await prepareNetwork(ns, maxActionTime);
 
-    ns.tprint(" > Creating heal batch...");
+    ns.print(" > Creating heal batch...");
     await extractionOrchestratedHeal(ns, hackInterval);
 
     await runOrchestratedExecution(ns, hackInterval, "heal");
 
     // HACK CYCLE
-    ns.tprint(" > Creating hack batch...");
+    ns.print(" Hacking Network:");
+
+    await prepareNetwork(ns, maxActionTime);
+
+    ns.print(" > Creating hack batch...");
     await extractionOrchestratedHack(ns, hackPercentage);
 
     await runOrchestratedExecution(ns, hackInterval, "hack");
