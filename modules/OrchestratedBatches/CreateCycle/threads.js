@@ -1,6 +1,6 @@
 /*
   Brian van den Berg
-  Module: BatchCreateHeal
+  Module: CreateCycle
   File: threads.js
   Description: Centralized functions for calculating thread counts for hack actions.
 */
@@ -8,7 +8,7 @@
 /**
  * Optimizes the allocation of threads for a hack, weaken, grow, and weaken batch.
  *
- * @param {import("../../index").NS} ns - The environment object.
+ * @param {import("../../../index").NS} ns - The environment object.
  * @param {Object} target - The target object with properties such as hostname.
  * @param {number} hackPercentage - The desired hack percentage (e.g., 10 for 10%).
  * @param {number} combinedLimit - The maximum total threads available for the entire batch.
@@ -75,7 +75,7 @@ function optimizeHackAllocation(ns, target, hackPercentage, combinedLimit) {
 /**
  * Calculates the required thread counts for cycle hacking a target.
  *
- * @param {import("../../index").NS} ns - The environment object.
+ * @param {import("../../../index").NS} ns - The environment object.
  * @param {Object} target - The target object with its properties.
  * @param {number} [hackPercentage=10] - The hack percentage.
  * @param {number} [limit=undefined] - Optional limit on the total available threads.
@@ -127,7 +127,7 @@ function calculateHackThreads(ns, target, hackPercentage = 10, limit = undefined
 /**
  * Calculates the required thread counts for a given target based on its status.
  *
- * @param {import("../../index").NS} ns - The environment object.
+ * @param {import("../../../index").NS} ns - The environment object.
  * @param {Object} target - The target object with its properties.
  * @param {number} [hackPercentage=10] - The hack percentage.
  * @param {number} [limit=undefined] - Optional limit on the total available threads.

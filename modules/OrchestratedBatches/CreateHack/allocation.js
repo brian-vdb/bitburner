@@ -1,6 +1,6 @@
 /*
   Brian van den Berg
-  Module: BatchCreateHack
+  Module: CreateHack
   File: allocation.js
   Description: Functions related to the allocation of threads to targets.
 */
@@ -10,7 +10,7 @@ import { calculateThreadCounts } from "./threads";
 /**
  * Calculates thread counts for each target and sorts/ filters targets.
  *
- * @param {import("../../index").NS} ns - The environment object.
+ * @param {import("../../../index").NS} ns - The environment object.
  * @param {Object[]} targets - The collection of targets from server analysis.
  * @param {number} [hackPercentage=10] - The hack percentage.
  * @returns {Object[]} Sorted targets array with updated threadsNeeded property.
@@ -32,7 +32,7 @@ export function calculateAndSortTargets(ns, targets, hackPercentage=10) {
 /**
  * Assigns threads from hosts to targets.
  *
- * @param {import("../../index").NS} ns - The environment object.
+ * @param {import("../../../index").NS} ns - The environment object.
  * @param {Object[]} hosts - The collection of hosts from server analysis.
  * @param {Object[]} targets - The collection of targets from server analysis.
  * @param {number} [hackPercentage=10] - The hack percentage.

@@ -1,6 +1,6 @@
 /*
   Brian van den Berg
-  Module: BatchCreateHack
+  Module: CreateHack
   File: batch.js
   Description: Functions related to the creation of a batch of attacks
 */

@@ -1,6 +1,6 @@
 /*
   Brian van den Berg
-  Module: BatchCreateHeal
+  Module: CreateCycle
   File: batch.js
   Description: Functions related to the creation of a batch of attacks.
 */
@@ -33,7 +33,7 @@ function prepareBatch(target, targets, hackInterval=1000) {
 /**
  * Creates the thread composition for a hack batch.
  *
- * @param {import("../../index").NS} ns - The environment object.
+ * @param {import("../../../index").NS} ns - The environment object.
  * @param {Object} target - The target object.
  * @param {number} [hackInterval=1000] - The hack interval.
  * @param {number} [hackPercentage=10] - The hack percentage.
@@ -91,7 +91,7 @@ function createHackThreads(ns, target, hackInterval=1000, hackPercentage=10) {
 /**
  * Creates the thread composition for a batch.
  *
- * @param {import("../../index").NS} ns - The environment object.
+ * @param {import("../../../index").NS} ns - The environment object.
  * @param {Object} target - The target object.
  * @param {number} [hackInterval=1000] - The hack interval.
  * @param {number} [hackPercentage=10] - The hack percentage.
@@ -109,7 +109,7 @@ function getTargetThreads(ns, target, hackInterval=1000, hackPercentage=10) {
 /**
  * Creates a collection of batch objects for a collection of targets.
  *
- * @param {import("../../index").NS} ns - The environment object.
+ * @param {import("../../../index").NS} ns - The environment object.
  * @param {Object[]} targets - The collection of target objects.
  * @param {number} [hackInterval=1000] - The hack interval.
  * @param {number} [hackPercentage=10] - The hack percentage.

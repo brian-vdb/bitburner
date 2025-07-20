@@ -1,11 +1,11 @@
 /*
   Brian van den Berg
-  Module: BatchOrchestratedExecution
+  Module: Execution
   File: main.js
   Description: Tool to execute batches of events.
 */
 
-import { readJSONFile } from "../../internal/json";
+import { readJSONFile } from "../../../internal/json";
 
 /**
  * Entry point for batch execution orchestration.
@@ -15,7 +15,7 @@ import { readJSONFile } from "../../internal/json";
  *   ns.args[1] - Path to batches JSON file
  *   ns.args[2] - Optional hack interval (default: 1000)
  *
- * @param {import("../../index").NS} ns - The environment object.
+ * @param {import("../../../index").NS} ns - The environment object.
  * @returns {Promise<void>}
  */
 export async function main(ns) {

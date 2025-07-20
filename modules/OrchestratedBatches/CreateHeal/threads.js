@@ -1,6 +1,6 @@
 /*
   Brian van den Berg
-  Module: BatchCreateHeal
+  Module: CreateHeal
   File: threads.js
   Description: Centralized functions for calculating thread counts for heal actions.
 */
@@ -8,7 +8,7 @@
 /**
  * Calculates the optimal allocation for grow threads and the corresponding extra weaken threads.
  *
- * @param {import("../../index").NS} ns - The environment object
+ * @param {import("../../../index").NS} ns - The environment object
  * @param {number} combinedLimit - The maximum number of threads available for both grow and extra weaken.
  * @returns {Object} An object with the optimal thread counts: { optimizedGrowThreads, optimizedGrowWeakenThreads }.
  */
@@ -74,7 +74,7 @@ function optimizeGrowthAllocation(ns, combinedLimit) {
 /**
  * Calculates the required thread counts for healing a target.
  *
- * @param {import("../../index").NS} ns - The environment object.
+ * @param {import("../../../index").NS} ns - The environment object.
  * @param {Object} target - The target object with its properties.
  * @param {number} [limit=undefined] - Optional limit on the total available threads.
  * @returns {Object} An object with thread counts: { weakenThreads, growThreads, growWeakenThreads }.
@@ -137,7 +137,7 @@ function calculateHealThreads(ns, target, limit = undefined) {
 /**
  * Calculates the required thread counts for a given target based on its status.
  *
- * @param {import("../../index").NS} ns - The environment object.
+ * @param {import("../../../index").NS} ns - The environment object.
  * @param {Object} target - The target object with its properties.
  * @param {number} [limit=undefined] - Optional limit on the total available threads.
  * @returns {Object} An object with thread counts: { weakenThreads, growThreads, growWeakenThreads }.

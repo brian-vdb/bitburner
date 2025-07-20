@@ -1,6 +1,6 @@
 /*
   Brian van den Berg
-  Module: BatchCreateHeal
+  Module: CreateHeal
   File: batch.js
   Description: Functions related to the creation of a batch of attacks.
 */
@@ -27,7 +27,7 @@ function prepareBatch(target) {
 /**
  * Creates the thread composition for a heal batch.
  *
- * @param {import("../../index").NS} ns - The environment object.
+ * @param {import("../../../index").NS} ns - The environment object.
  * @param {Object} target - The target object.
  * @param {number} [hackInterval=1000] - The hack interval.
  * @returns {Object[]} An array of thread event objects for a target.
@@ -80,7 +80,7 @@ function createHealThreads(ns, target, hackInterval = 1000) {
 /**
  * Creates the thread composition for a batch.
  *
- * @param {import("../../index").NS} ns - The environment object.
+ * @param {import("../../../index").NS} ns - The environment object.
  * @param {Object} target - The target object.
  * @param {number} [hackInterval=1000] - The hack interval.
  * @returns {Object[]} An array of thread event objects for a target.
@@ -97,7 +97,7 @@ function getTargetThreads(ns, target, hackInterval=1000) {
 /**
  * Creates a collection of batch objects for a collection of targets.
  *
- * @param {import("../../index").NS} ns - The environment object.
+ * @param {import("../../../index").NS} ns - The environment object.
  * @param {Object[]} targets - The collection of target objects.
  * @param {number} [hackInterval=1000] - The hack interval.
  * @returns {Object[]} The collection of batch objects.

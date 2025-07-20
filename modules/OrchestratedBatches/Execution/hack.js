@@ -1,6 +1,6 @@
 /*
   Brian van den Berg
-  Module: BatchOrchestratedExecution
+  Module: Execution
   File: hack.js
   Description: Script dispatch functions for hacking-related actions.
 */

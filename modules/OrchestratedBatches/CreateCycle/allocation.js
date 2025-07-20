@@ -1,6 +1,6 @@
 /*
   Brian van den Berg
-  Module: BatchCreateHeal
+  Module: CreateCycle
   File: allocation.js
   Description: Functions related to the allocation of threads to targets.
 */
@@ -12,25 +12,26 @@ import { calculateThreadCounts } from "./threads";
  *
  * @param {import("../../index").NS} ns - The environment object.
  * @param {Object[]} targets - The collection of targets from server analysis.
+ * @param {number} [hackPercentage=10] - The hack percentage.
+ * @param {number} [maxTargets=25] - Max number of targets.
  * @returns {Object[]} Sorted targets array with updated threadsNeeded property.
  */
-export function calculateAndSortTargets(ns, targets) {
-  // Filter out targets with status 'hack'.
-  targets = targets.filter(target => target.status !== 'hack');
+export function calculateAndSortTargets(ns, targets, hackPercentage=10, maxTargets=25) {
+  // Filter out targets with status 'heal'.
+  targets = targets.filter(target => target.status !== 'heal');
 
   // Calculate threads needed for each target.
   targets.forEach(target => {
-    const threadCounts = calculateThreadCounts(ns, target, undefined);
+    const threadCounts = calculateThreadCounts(ns, target, hackPercentage, undefined);
     target.threadsNeeded =
-      threadCounts.weakenThreads +
+      threadCounts.hackThreads +
+      threadCounts.hackWeakenThreads +
       threadCounts.growThreads +
       threadCounts.growWeakenThreads;
   });
 
-  // Sort targets in ascending order (lowest first).
-  return targets.sort(
-    (a, b) => (a.maxTime * a.threadsNeeded) - (b.maxTime * b.threadsNeeded)
-  );
+  // Sort targets by target.value descending and limit to the top target.
+  return targets.sort((a, b) => b.value - a.value).slice(0, maxTargets);
 }
 
 /**
@@ -39,19 +40,21 @@ export function calculateAndSortTargets(ns, targets) {
  * @param {import("../../index").NS} ns - The environment object.
  * @param {Object[]} hosts - The collection of hosts from server analysis.
  * @param {Object[]} targets - The collection of targets from server analysis.
+ * @param {number} [hackPercentage=10] - The hack percentage.
+ * @param {number} [maxTargets=25] - Max number of targets.
  * @returns {Object[]} Targets with threads assigned to them.
  */
-export function assignThreads(ns, hosts, targets) {
+export function assignThreads(ns, hosts, targets, hackPercentage=10, maxTargets=25) {
   // Sort (and filter) targets using calculateAndSortTargets.
-  targets = calculateAndSortTargets(ns, targets);
+  targets = calculateAndSortTargets(ns, targets, hackPercentage);
 
   // Ensure threadsAssigned is initialized on each target.
   targets.forEach(target => {
-    target.threadsAssigned = 0;
+    target.threadsAssigned = target.threadsAssigned ?? 0;
   });
 
   // Calculate total available threads using reduce.
-  let totalThreadsAvailable = hosts.reduce((sum, host) => sum + host.maxThreadsAvailable, 0);
+  let totalThreadsAvailable = hosts.reduce((sum, host) => sum + host.threadsAvailable, 0);
 
   // Perform assignment while threads remain and at least one target receives threads in a cycle.
   let cycleThreadsAssigned;

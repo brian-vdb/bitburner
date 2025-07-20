@@ -1,6 +1,6 @@
 /*
   Brian van den Berg
-  Module: BatchCreateHack
+  Module: CreateHack
   File: threads.js
   Description: Centralized functions for calculating thread counts for hack actions.
 */
@@ -8,7 +8,7 @@
 /**
  * Calculates the required thread counts for hacking a target.
  *
- * @param {import("../../index").NS} ns - The environment object.
+ * @param {import("../../../index").NS} ns - The environment object.
  * @param {Object} target - The target object with its properties.
  * @param {number} [hackPercentage=10] - The hack percentage.
  * @param {number} [limit=undefined] - Optional limit on the total available threads.
@@ -36,7 +36,7 @@ function calculateHackThreads(ns, target, hackPercentage=10, limit = undefined) 
 /**
  * Calculates the required thread counts for a given target based on its status.
  *
- * @param {import("../../index").NS} ns - The environment object.
+ * @param {import("../../../index").NS} ns - The environment object.
  * @param {Object} target - The target object with its properties.
  * @param {number} [hackPercentage=10] - The hack percentage.
  * @param {number} [limit=undefined] - Optional limit on the total available threads.

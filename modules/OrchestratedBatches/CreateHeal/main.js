@@ -1,11 +1,11 @@
 /*
   Brian van den Berg
-  Module: BatchCreateHeal
+  Module: CreateHeal
   File: main.js
   Description: Tool to perform batch analysis.
 */
 
-import { readJSONFile, writeJSONFile } from "../../internal/json";
+import { readJSONFile, writeJSONFile } from "../../../internal/json";
 import { assignThreads } from "./allocation";
 import { createBatches } from "./batch";
 
@@ -15,7 +15,7 @@ import { createBatches } from "./batch";
  * Optional args:
  *   ns.args[2] - hack interval (default: 1000)
  *
- * @param {import("../../index").NS} ns - The environment object.
+ * @param {import("../../../index").NS} ns - The environment object.
  * @returns {Promise<void>} Resolves when the analysis is complete.
  */
 export async function main(ns) {

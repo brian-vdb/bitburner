@@ -1,6 +1,6 @@
 /*
   Brian van den Berg
-  Module: BatchOrchestratedExecution
+  Module: Execution
   File: events.js
   Description: Functions related to the firing of events.
 */
@@ -68,7 +68,7 @@ export function createAllocation(threads, hosts, target) {
 /**
  * Executes a list of allocated threads by dispatching the correct script.
  *
- * @param {import("../../index").NS} ns - Bitburner environment.
+ * @param {import("../../../index").NS} ns - Bitburner environment.
  * @param {Object[]} allocation - Array of allocated thread objects.
  */
 export function executeAllocation(ns, allocation) {
