@@ -36,7 +36,6 @@ export function calculateAndSortTargets(ns, targets) {
 export function assignThreads(ns, hosts, targets) {
   targets = calculateAndSortTargets(ns, targets);
   targets.forEach(t => t.threadsAssigned = 0);
-
   let total = hosts.reduce((sum, h) => sum + h.maxThreadsAvailable, 0);
 
   let didAssign;

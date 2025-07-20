@@ -128,7 +128,6 @@ export async function extractionOrchestratedHeal(ns, hackInterval = 1000) {
  * - Stores batches to disk for execution
  *
  * @param {import("../../../../index").NS} ns - The Bitburner environment object.
- * @param {number} [hackInterval=1000] - Interval between events in milliseconds.
  * @param {number} [hackPercentage=10] - Target hack percentage.
  * @returns {Promise<void>} Resolves when the pipeline completes.
  */

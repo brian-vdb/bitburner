@@ -38,8 +38,7 @@ export function calculateAndSortTargets(ns, targets, hackPercentage = 10) {
 export function assignThreads(ns, hosts, targets, hackPercentage = 10) {
   targets = calculateAndSortTargets(ns, targets, hackPercentage);
   targets.forEach(t => t.threadsAssigned = 0);
-
-  let total = hosts.reduce((sum, h) => sum + h.threadsAvailable, 0);
+  let total = hosts.reduce((sum, h) => sum + h.maxThreadsAvailable, 0);
 
   let didAssign;
   do {
@@ -47,7 +46,7 @@ export function assignThreads(ns, hosts, targets, hackPercentage = 10) {
 
     const active = targets.filter(t => t.threadsAssigned < t.threadsNeeded);
     const valueSum = active.reduce((sum, t) => sum + t.value, 0);
-
+    
     for (const target of active) {
       const want = target.threadsNeeded - target.threadsAssigned;
       const shareRatio = Math.floor((target.value / valueSum) * total);
