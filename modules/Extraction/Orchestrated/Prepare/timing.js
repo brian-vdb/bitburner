@@ -47,12 +47,6 @@ export function normalizeExecutionTimes(batches, metadata) {
     const shift = targetStart - entry.executionStartTime;
     const batch = batches[entry.hostname];
 
-    // Adjust thread delays
-    batch.threads = batch.threads.map(t => ({
-      ...t,
-      additionalMsec: t.additionalMsec + shift,
-    }));
-
     // Attach normalized timing
     Object.assign(batch, {
       schedulingStartTime: entry.schedulingStartTime + shift,
