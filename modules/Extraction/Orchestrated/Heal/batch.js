@@ -8,17 +8,16 @@
 import { calculateThreadCounts } from "./threads";
 
 /**
- * Prepares a base batch object with metadata for a target.
+ * Prepares a base batch object without hostname metadata.
  *
  * @param {Object} target - The target object.
- * @returns {Object} Batch object without thread definitions yet.
+ * @returns {Object} Batch object without thread definitions or hostname.
  */
 function prepareBatch(target) {
   return {
-    hostname: target.hostname,
     minTime: Math.min(target.weakenTime, target.growTime),
     maxTime: Math.max(target.weakenTime, target.growTime),
-    mode: "single",
+    count: 1,
   };
 }
 
@@ -72,12 +71,12 @@ function createHealThreads(ns, target, hackInterval = 1000) {
 }
 
 /**
- * Dispatches the appropriate thread builder based on target status.
+ * Selects the appropriate thread plan for the given target.
  *
  * @param {import("../../../../index").NS} ns - Bitburner environment object.
  * @param {Object} target - Target object.
  * @param {number} [hackInterval=1000] - Action interval.
- * @returns {Object[]} Array of thread event objects.
+ * @returns {Object[]} Thread events for the batch.
  */
 function getTargetThreads(ns, target, hackInterval = 1000) {
   switch (target.status) {
@@ -89,22 +88,22 @@ function getTargetThreads(ns, target, hackInterval = 1000) {
 }
 
 /**
- * Creates a batch object for each valid target.
+ * Creates a batch plan mapping by target hostname.
  *
  * @param {import("../../../../index").NS} ns - Bitburner environment object.
- * @param {Object[]} targets - List of prepared targets.
- * @param {number} [hackInterval=1000] - Action spacing in milliseconds.
- * @returns {Object[]} Array of batch definitions.
+ * @param {Object[]} targets - List of prepared target objects.
+ * @param {number} [hackInterval=1000] - Action delay interval.
+ * @returns {{ [hostname: string]: Object }} Mapping of hostname to batch object.
  */
 export function createBatches(ns, targets, hackInterval = 1000) {
-  const batches = [];
+  const batches = {};
 
   for (const target of targets) {
     const threads = getTargetThreads(ns, target, hackInterval);
     if (threads.length > 0) {
       const batch = prepareBatch(target);
       batch.threads = threads;
-      batches.push(batch);
+      batches[target.hostname] = batch;
     }
   }
 
