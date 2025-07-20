@@ -75,19 +75,19 @@ export async function main(ns) {
     await prepareServers(ns, maxActionTime);
 
     // Choose which batch analysis to run based on available RAM.
-    if (ns.getServerMaxRam(ns.getHostname()) <= 8) {
+    // if (ns.getServerMaxRam(ns.getHostname()) <= 8) {
       // Create a hack batch.
-      ns.print(" > Creating hack batch");
-      await batchCreateHack(ns, hackInterval, hackPercentage);
-    } else {
+      // ns.print(" > Creating hack batch");
+      // await batchCreateHack(ns, hackInterval, hackPercentage);
+    // } else {
       // Create a cycle batch.
-      ns.print(" > Creating cycle batch");
-      await batchCreateCycle(ns, hackInterval, hackPercentage);
-    }
+      // ns.print(" > Creating cycle batch");
+      // await batchCreateCycle(ns, hackInterval, hackPercentage);
+    // }
 
-    // Perform the hack batch execution.
-      ns.print(" > Executing hack batch");
-      await batchExecution(ns, hackInterval);
-      await sleep(1000);
+    // Perform the batch execution.
+      // ns.print(" > Executing batch");
+      // await batchExecution(ns, hackInterval);
+      // await sleep(1000);
   }
 }
