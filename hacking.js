@@ -73,7 +73,7 @@ export async function main(ns) {
     await runOrchestratedExecution(ns, hackInterval, "heal");
 
     // HACK CYCLE
-    ns.print(" Hacking Network:");
+    ns.print("\n Hacking Network:");
 
     await prepareNetwork(ns, maxActionTime);
 
