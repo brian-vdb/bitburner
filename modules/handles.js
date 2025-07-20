@@ -1,22 +1,15 @@
-/*
-  Brian van den Berg
-  File: handles.js
-  Description: Contains handles to execute tools from the main script
-*/
-
 import { awaitScript } from "internal/process";
 
 /**
- * Executes the Network Expand process
- * This process expands the network of in-home servers
+ * Launches the network expansion script to purchase or identify more servers.
  *
- * @param {import("../index").NS} ns - The environment object
- * @returns {Promise<void>} Resolves when the maintenance is complete
+ * @param {import("../index").NS} ns - The Bitburner environment object.
+ * @returns {Promise<void>} Resolves when the script completes.
+ * @throws {Error} If the script fails to start.
  */
 export async function networkExpand(ns) {
-  // Start the network expand process
   const pid = ns.exec(
-    "modules/NetworkExpand/main.js",
+    "modules/Network/Expand/main.js",
     ns.getHostname(),
     {
       preventDuplicates: true,
@@ -25,24 +18,21 @@ export async function networkExpand(ns) {
     }
   );
 
-  // Check if the process started
-  if (pid === 0) throw new Error("Network Expand could not be started");
+  if (pid === 0) throw new Error("Failed to start networkExpand");
 
-  // Wait for the process to finish
   await awaitScript(ns, pid);
 }
 
 /**
- * Executes the Network Sync process
- * This process syncs the network of in-home servers
+ * Launches the network synchronization script to update server data or configurations.
  *
- * @param {import("../index").NS} ns - The environment object
- * @returns {Promise<void>} Resolves when the maintenance is complete
+ * @param {import("../index").NS} ns - The Bitburner environment object.
+ * @returns {Promise<void>} Resolves when the script completes.
+ * @throws {Error} If the script fails to start.
  */
 export async function networkSync(ns) {
-  // Start the network sync process
   const pid = ns.exec(
-    "modules/NetworkSync/main.js",
+    "modules/Network/Sync/main.js",
     ns.getHostname(),
     {
       preventDuplicates: true,
@@ -51,24 +41,21 @@ export async function networkSync(ns) {
     }
   );
 
-  // Check if the process started
-  if (pid === 0) throw new Error("Network Sync could not be started");
+  if (pid === 0) throw new Error("Failed to start networkSync");
 
-  // Wait for the process to finish
   await awaitScript(ns, pid);
 }
 
 /**
- * Executes a Propagation Attack
- * The results are stored in data/servers.txt
+ * Launches the hacking infiltration script to perform initial hacks or weaken targets.
  *
- * @param {import("../index").NS} ns - The environment object
- * @returns {Promise<void>} Resolves when the attack is complete
+ * @param {import("../index").NS} ns - The Bitburner environment object.
+ * @returns {Promise<void>} Resolves when the script completes.
+ * @throws {Error} If the script fails to start.
  */
-export async function propagationAttack(ns) {
-  // Start the attack
+export async function hackingInfiltration(ns) {
   const pid = ns.exec(
-    "modules/PropagationAttack/main.js",
+    "modules/Hacking/Infiltration/main.js",
     ns.getHostname(),
     {
       preventDuplicates: true,
@@ -77,25 +64,22 @@ export async function propagationAttack(ns) {
     }
   );
 
-  // Check if the process started
-  if (pid === 0) throw new Error("Propagation Attack could not be started");
+  if (pid === 0) throw new Error("Failed to start hackingInfiltration");
 
-  // Wait for the process to finish
   await awaitScript(ns, pid);
 }
 
 /**
- * Executes a Server Analysis using data/servers.txt
- * The results are stored in data/hosts.txt and data/targets.txt
+ * Launches the hacking analysis script to evaluate potential targets and calculate thread costs.
  *
- * @param {import("../index").NS} ns - The environment object
- * @param {number} [maxActionTime=1440] - The maximum time an action is allowed to take
- * @returns {Promise<void>} Resolves when the analysis is complete
+ * @param {import("../index").NS} ns - The Bitburner environment object.
+ * @param {number} [maxActionTime=1440] - Optional max action time to filter long jobs.
+ * @returns {Promise<void>} Resolves when the script completes.
+ * @throws {Error} If the script fails to start.
  */
-export async function serverAnalysis(ns, maxActionTime=1440) {
-  // Start the analysis
+export async function hackingAnalysis(ns, maxActionTime = 1440) {
   const pid = ns.exec(
-    "modules/ServerAnalysis/main.js",
+    "modules/Hacking/Analysis/main.js",
     ns.getHostname(),
     {
       preventDuplicates: true,
@@ -106,25 +90,22 @@ export async function serverAnalysis(ns, maxActionTime=1440) {
     maxActionTime
   );
 
-  // Check if the process started
-  if (pid === 0) throw new Error("Server Analysis could not be started");
+  if (pid === 0) throw new Error("Failed to start hackingAnalysis");
 
-  // Wait for the process to finish
   await awaitScript(ns, pid);
 }
 
 /**
- * Creates a Heal Batch using data/hosts.txt and data/targets.txt.
- * The results are stored in data/targets.txt and data/batch.txt.
+ * Executes a heal-based batch extraction strategy (grow + weaken) on available targets.
  *
- * @param {import("../index").NS} ns - The environment object.
- * @param {number} [hackInterval=1000] - The hack interval.
- * @returns {Promise<void>} Resolves when the analysis is complete.
+ * @param {import("../index").NS} ns - The Bitburner environment object.
+ * @param {number} [hackInterval=1000] - Interval between script events in a batch.
+ * @returns {Promise<void>} Resolves when the script completes.
+ * @throws {Error} If the script fails to start.
  */
-export async function batchCreateHeal(ns, hackInterval=1000) {
-  // Start the analysis.
+export async function extractionOrchestratedHeal(ns, hackInterval = 1000) {
   const pid = ns.exec(
-    "modules/BatchCreateHeal/main.js",
+    "modules/Extraction/Orchestrated/Heal/main.js",
     ns.getHostname(),
     {
       preventDuplicates: true,
@@ -136,88 +117,22 @@ export async function batchCreateHeal(ns, hackInterval=1000) {
     hackInterval
   );
 
-  // Check if the process started.
-  if (pid === 0) throw new Error("Batch Create Heal could not be started");
+  if (pid === 0) throw new Error("Failed to start extractionOrchestratedHeal");
 
-  // Wait for the process to finish.
   await awaitScript(ns, pid);
 }
 
 /**
- * Creates a Hack Batch using data/hosts.txt and data/targets.txt.
- * The results are stored in data/targets.txt and data/batch.txt.
+ * Executes orchestrated batch hacking using pre-generated batch data.
  *
- * @param {import("../index").NS} ns - The environment object.
- * @param {number} [hackInterval=1000] - The hack interval.
- * @param {number} [hackPercentage=10] - The hack percentage.
- * @returns {Promise<void>} Resolves when the analysis is complete.
+ * @param {import("../index").NS} ns - The Bitburner environment object.
+ * @param {number} [hackInterval=1000] - Interval between thread executions in a batch.
+ * @returns {Promise<void>} Resolves when the script completes.
+ * @throws {Error} If the script fails to start.
  */
-export async function batchCreateHack(ns, hackInterval=1000, hackPercentage=10) {
-  // Start the analysis.
+export async function extractionOrchestratedExecution(ns, hackInterval = 1000) {
   const pid = ns.exec(
-    "modules/BatchCreateHack/main.js",
-    ns.getHostname(),
-    {
-      preventDuplicates: true,
-      temporary: false,
-      threads: 1,
-    },
-    "data/hosts.txt",
-    "data/targets.txt",
-    hackInterval,
-    hackPercentage
-  );
-
-  // Check if the process started.
-  if (pid === 0) throw new Error("Batch Create Hack could not be started");
-
-  // Wait for the process to finish.
-  await awaitScript(ns, pid);
-}
-
-/**
- * Creates a Cycle Batch using data/hosts.txt and data/targets.txt.
- * The results are stored in data/targets.txt and data/batch.txt.
- *
- * @param {import("../index").NS} ns - The environment object.
- * @param {number} [hackInterval=1000] - The hack interval.
- * @param {number} [hackPercentage=10] - The hack percentage.
- * @returns {Promise<void>} Resolves when the analysis is complete.
- */
-export async function batchCreateCycle(ns, hackInterval = 1000, hackPercentage = 10) {
-  // Start the analysis.
-  const pid = ns.exec(
-    "modules/BatchCreateCycle/main.js",
-    ns.getHostname(),
-    {
-      preventDuplicates: true,
-      temporary: false,
-      threads: 1,
-    },
-    "data/hosts.txt",
-    "data/targets.txt",
-    hackInterval,
-    hackPercentage
-  );
-
-  // Check if the process started.
-  if (pid === 0) throw new Error("Batch Create Cycle could not be started");
-
-  // Wait for the process to finish.
-  await awaitScript(ns, pid);
-}
-
-/**
- * Executes a Batch Execution using data/hosts.txt and data/batch.txt
- *
- * @param {import("../index").NS} ns - The environment object.
- * @param {number} [hackInterval=1000] - The hack interval.
- * @returns {Promise<void>} Resolves when the execution is complete.
- */
-export async function batchExecution(ns, hackInterval=1000) {
-  // Start the execution
-  const pid = ns.exec(
-    "modules/BatchExecution/main.js",
+    "modules/Extraction/Orchestrated/Execution/main.js",
     ns.getHostname(),
     {
       preventDuplicates: true,
@@ -229,9 +144,7 @@ export async function batchExecution(ns, hackInterval=1000) {
     hackInterval
   );
 
-  // Check if the process started
-  if (pid === 0) throw new Error("Batch Execution could not be started");
+  if (pid === 0) throw new Error("Failed to start extractionOrchestratedExecution");
 
-  // Wait for the process to finish
   await awaitScript(ns, pid);
 }
