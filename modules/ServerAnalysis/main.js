@@ -34,12 +34,9 @@ export async function main(ns) {
   let maxActionTime = ns.args[1] !== undefined ? ns.args[1] : 1440;
   maxActionTime = maxActionTime * 60 * 1000;
 
-  // Loop through every known server to find valid hosts, limit to first 25 servers
+  // Loop through every known server to find valid hosts
   for (const server of servers) {
-    if (hosts.length >= ns.getPurchasedServerLimit()) break;
-
-    // Check if the server is a valid host
-    if (ns.hasRootAccess(server.hostname) && server.hostname !== 'home') {
+    if (ns.hasRootAccess(server.hostname)) {
       hosts.push(prepareHost(ns, server.hostname));
     }
   }

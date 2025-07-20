@@ -18,11 +18,10 @@ export function prepareHost(ns, hostname) {
 
   // If the host is the one running the script, subtract 8GB from the max RAM.
   if (hostname === ns.getHostname()) {
-    host.maxRam += 1.15;
+    host.maxRam = Math.max(host.maxRam - 64.0, 0.0);
   }
 
-  host.ramAvailable = host.maxRam - server.ramUsed;
-  host.threadsAvailable = Math.floor(host.ramAvailable / 1.75);
+  host.threadsAvailable = Math.floor(host.maxRam / 1.75);
 
   return host;
 }
