@@ -148,3 +148,28 @@ export async function extractionOrchestratedExecution(ns, hackInterval = 1000) {
 
   await awaitScript(ns, pid);
 }
+
+/**
+ * Launches the ExtractionOrchestratedPrepare script to calculate execution windows for batches.
+ *
+ * @param {import("../index").NS} ns - The Bitburner environment object.
+ * @returns {Promise<void>} Resolves when the script completes.
+ * @throws {Error} If the script fails to start.
+ */
+export async function extractionOrchestratedPrepare(ns) {
+  const pid = ns.exec(
+    "modules/Extraction/Orchestrated/Prepare/main.js",
+    ns.getHostname(),
+    {
+      preventDuplicates: true,
+      temporary: false,
+      threads: 1,
+    },
+    "data/batches.txt"
+  );
+
+  if (pid === 0) throw new Error("Failed to start extractionOrchestratedPrepare");
+
+  await awaitScript(ns, pid);
+}
+

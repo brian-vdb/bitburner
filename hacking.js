@@ -3,6 +3,7 @@ import {
   hackingInfiltration,
   hackingAnalysis,
   extractionOrchestratedHeal,
+  extractionOrchestratedPrepare,
   extractionOrchestratedExecution,
 } from "./modules/handles";
 
@@ -43,6 +44,9 @@ export async function main(ns) {
 
     ns.tprint(" > Creating heal batch...");
     await extractionOrchestratedHeal(ns, hackInterval);
+
+    ns.tprint(" > Scheduling execution...");
+    await extractionOrchestratedPrepare(ns);
 
     ns.tprint(" > Executing heal batch...");
     await extractionOrchestratedExecution(ns, hackInterval);
