@@ -123,6 +123,38 @@ export async function extractionOrchestratedHeal(ns, hackInterval = 1000) {
 }
 
 /**
+ * Executes the ExtractionOrchestratedHack pipeline:
+ * - Performs thread allocation and batch generation
+ * - Stores batches to disk for execution
+ *
+ * @param {import("../../../../index").NS} ns - The Bitburner environment object.
+ * @param {number} [hackInterval=1000] - Interval between events in milliseconds.
+ * @param {number} [hackPercentage=10] - Target hack percentage.
+ * @returns {Promise<void>} Resolves when the pipeline completes.
+ */
+export async function handleExtractionOrchestratedHack(ns, hackInterval = 1000, hackPercentage = 10) {
+  const pid = ns.exec(
+    "modules/Extraction/Orchestrated/Hack/main.js",
+    ns.getHostname(),
+    {
+      preventDuplicates: true,
+      temporary: false,
+      threads: 1,
+    },
+    "data/hosts.txt",
+    "data/targets.txt",
+    hackInterval,
+    hackPercentage
+  );
+
+  if (pid === 0) {
+    throw new Error("Failed to start handleExtractionOrchestratedHack");
+  }
+
+  await awaitScript(ns, pid);
+}
+
+/**
  * Launches the ExtractionOrchestratedPrepare script to calculate execution windows for batches.
  *
  * @param {import("../index").NS} ns - The Bitburner environment object.

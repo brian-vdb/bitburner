@@ -4,6 +4,7 @@ import {
   extractionOrchestratedHeal,
   extractionOrchestratedPrepare,
   extractionOrchestratedExecution,
+  handleExtractionOrchestratedHack,
 } from "./modules/handles";
 
 /**
@@ -25,7 +26,7 @@ async function prepareNetwork(ns, maxActionTime = 1440) {
  * Main function to automate heal/hack batch cycles.
  *
  * Optional args:
- *   ns.args[0] - Hack percentage (unused currently)
+ *   ns.args[0] - Hack percentage (default: 10)
  *   ns.args[1] - Hack interval (default: 1000)
  *   ns.args[2] - Max action time (default: 1440) in minutes
  *
@@ -33,6 +34,7 @@ async function prepareNetwork(ns, maxActionTime = 1440) {
  * @returns {Promise<void>}
  */
 export async function main(ns) {
+  const hackPercentage = ns.args[0] !== undefined ? ns.args[0] : 10;
   const hackInterval = ns.args[1] !== undefined ? ns.args[1] : 1000;
   const maxActionTime = ns.args[2] !== undefined ? ns.args[2] : 1440;
 
@@ -41,13 +43,24 @@ export async function main(ns) {
   while (true) {
     await prepareNetwork(ns, maxActionTime);
 
+    // HEAL CYCLE
     ns.tprint(" > Creating heal batch...");
     await extractionOrchestratedHeal(ns, hackInterval);
 
-    ns.tprint(" > Scheduling execution...");
+    ns.tprint(" > Scheduling heal execution...");
     await extractionOrchestratedPrepare(ns);
 
     ns.tprint(" > Executing heal batch...");
+    await extractionOrchestratedExecution(ns, hackInterval);
+
+    // HACK CYCLE
+    ns.tprint(" > Creating hack batch...");
+    await handleExtractionOrchestratedHack(ns, hackInterval, hackPercentage);
+
+    ns.tprint(" > Scheduling hack execution...");
+    await extractionOrchestratedPrepare(ns);
+
+    ns.tprint(" > Executing hack batch...");
     await extractionOrchestratedExecution(ns, hackInterval);
 
     await ns.sleep(1000);
