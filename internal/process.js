@@ -1,5 +1,3 @@
-import { sleep } from "internal/time";
-
 /**
  * Checks if a process with the specified PID is currently running.
  *
@@ -33,6 +31,6 @@ function isProcessRunning(ns, pid) {
  */
 export async function awaitScript(ns, pid) {
   while (isProcessRunning(ns, pid)) {
-    await sleep(20);
+    await ns.sleep(20);
   }
 }
