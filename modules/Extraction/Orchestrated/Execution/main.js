@@ -6,7 +6,7 @@
 */
 
 import { readJSONFile } from "../../../../internal/json";
-import { sleep, activeWaitUntil } from "../../../../internal/time";
+import { activeWaitUntil } from "../../../../internal/time";
 import { createAllocation, executeAllocation, getHighestThreadCount } from "./events";
 
 /**
@@ -87,7 +87,7 @@ export async function main(ns) {
       }
     }
 
-    await sleep(spacing);
+    await ns.sleep(spacing);
   }
 
   // Ensure execution completes for the final batch

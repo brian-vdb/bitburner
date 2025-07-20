@@ -1,4 +1,3 @@
-import { sleep } from "./internal/time";
 import {
   hackingInfiltration,
   hackingAnalysis,
@@ -51,6 +50,6 @@ export async function main(ns) {
     ns.tprint(" > Executing heal batch...");
     await extractionOrchestratedExecution(ns, hackInterval);
 
-    await sleep(1000);
+    await ns.sleep(1000);
   }
 }
