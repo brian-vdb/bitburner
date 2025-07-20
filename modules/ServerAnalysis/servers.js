@@ -15,13 +15,14 @@
 export function prepareHost(ns, hostname) {
   const server = ns.getServer(hostname);
   const host = server;
+  let maxRam = host.maxRam;
 
   // If the host is the one running the script, subtract 8GB from the max RAM.
   if (hostname === ns.getHostname()) {
-    host.maxRam = Math.max(host.maxRam - 64.0, 0.0);
+    maxRam = Math.max(maxRam - 64.0, 0.0);
   }
 
-  host.maxThreadsAvailable = Math.floor(host.maxRam / 1.75);
+  host.maxThreadsAvailable = Math.floor(maxRam / 1.75);
 
   return host;
 }
