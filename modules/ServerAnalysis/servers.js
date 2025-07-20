@@ -21,7 +21,7 @@ export function prepareHost(ns, hostname) {
     host.maxRam = Math.max(host.maxRam - 64.0, 0.0);
   }
 
-  host.threadsAvailable = Math.floor(host.maxRam / 1.75);
+  host.maxThreadsAvailable = Math.floor(host.maxRam / 1.75);
 
   return host;
 }
