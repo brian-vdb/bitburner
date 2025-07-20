@@ -1,9 +1,3 @@
-/*
-  Brian van den Berg
-  File: time.js
-  Description: Helper functions for working with timing in the game environment
-*/
-
 /**
  * Makes the task inactive for a specified duration.
  *

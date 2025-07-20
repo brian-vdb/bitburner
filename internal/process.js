@@ -1,9 +1,3 @@
-/*
-  Brian van den Berg
-  File: main.js
-  Description: Helper functions for working with processes in the game environment.
-*/
-
 import { sleep } from "internal/time";
 
 /**
