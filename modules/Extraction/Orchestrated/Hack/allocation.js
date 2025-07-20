@@ -50,8 +50,8 @@ export function assignThreads(ns, hosts, targets, hackPercentage = 10) {
 
     for (const target of active) {
       const want = target.threadsNeeded - target.threadsAssigned;
-      const share = Math.floor((target.value / valueSum) * total);
-      const assign = Math.min(want, share);
+      const shareRatio = Math.floor((target.value / valueSum) * total);
+      const assign = Math.min(want, shareRatio);
       target.threadsAssigned += assign;
       total -= assign;
       didAssign += assign;

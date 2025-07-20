@@ -66,11 +66,10 @@ function getTargetThreads(ns, target, hackPercentage = 10) {
  *
  * @param {import("../../../../index").NS} ns - Bitburner environment object.
  * @param {Object[]} targets - List of prepared target objects.
- * @param {number} [hackInterval=1000] - Unused but present for consistency.
  * @param {number} [hackPercentage=10] - Percentage of money to hack.
  * @returns {{ [hostname: string]: Object }} Mapping of hostname to batch object.
  */
-export function createBatches(ns, targets, hackInterval = 1000, hackPercentage = 10) {
+export function createBatches(ns, targets, hackPercentage = 10) {
   const batches = {};
 
   for (const target of targets) {

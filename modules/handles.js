@@ -123,7 +123,7 @@ export async function extractionOrchestratedHeal(ns, hackInterval = 1000) {
 }
 
 /**
- * Executes the ExtractionOrchestratedHack pipeline:
+ * Executes the extractionOrchestratedHack pipeline:
  * - Performs thread allocation and batch generation
  * - Stores batches to disk for execution
  *
@@ -132,7 +132,7 @@ export async function extractionOrchestratedHeal(ns, hackInterval = 1000) {
  * @param {number} [hackPercentage=10] - Target hack percentage.
  * @returns {Promise<void>} Resolves when the pipeline completes.
  */
-export async function handleExtractionOrchestratedHack(ns, hackInterval = 1000, hackPercentage = 10) {
+export async function extractionOrchestratedHack(ns, hackPercentage = 10) {
   const pid = ns.exec(
     "modules/Extraction/Orchestrated/Hack/main.js",
     ns.getHostname(),
@@ -143,12 +143,11 @@ export async function handleExtractionOrchestratedHack(ns, hackInterval = 1000, 
     },
     "data/hosts.txt",
     "data/targets.txt",
-    hackInterval,
     hackPercentage
   );
 
   if (pid === 0) {
-    throw new Error("Failed to start handleExtractionOrchestratedHack");
+    throw new Error("Failed to start extractionOrchestratedHack");
   }
 
   await awaitScript(ns, pid);
@@ -158,10 +157,11 @@ export async function handleExtractionOrchestratedHack(ns, hackInterval = 1000, 
  * Launches the ExtractionOrchestratedPrepare script to calculate execution windows for batches.
  *
  * @param {import("../index").NS} ns - The Bitburner environment object.
+ * @param {number} [hackInterval=1000] - Interval between events in milliseconds.
  * @returns {Promise<void>} Resolves when the script completes.
  * @throws {Error} If the script fails to start.
  */
-export async function extractionOrchestratedPrepare(ns) {
+export async function extractionOrchestratedPrepare(ns, hackInterval = 1000) {
   const pid = ns.exec(
     "modules/Extraction/Orchestrated/Prepare/main.js",
     ns.getHostname(),
@@ -170,7 +170,8 @@ export async function extractionOrchestratedPrepare(ns) {
       temporary: false,
       threads: 1,
     },
-    "data/batches.txt"
+    "data/batches.txt",
+    hackInterval
   );
 
   if (pid === 0) throw new Error("Failed to start extractionOrchestratedPrepare");

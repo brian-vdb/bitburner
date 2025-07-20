@@ -16,8 +16,7 @@ import { createBatches } from "./batch";
  * Expected args:
  *   ns.args[0] - path to hosts JSON file
  *   ns.args[1] - path to targets JSON file
- *   ns.args[2] - optional hack interval (default: 1000)
- *   ns.args[3] - optional hack percentage (default: 10)
+ *   ns.args[2] - optional hack percentage (default: 10)
  *
  * @param {import("../../../../index").NS} ns - The Bitburner environment object.
  * @returns {Promise<void>}
@@ -30,11 +29,10 @@ export async function main(ns) {
   const hosts = readJSONFile(ns, ns.args[0]);
   let targets = readJSONFile(ns, ns.args[1]);
 
-  const hackInterval = ns.args[2] !== undefined ? ns.args[2] : 1000;
-  const hackPercentage = ns.args[3] !== undefined ? ns.args[3] : 10;
+  const hackPercentage = ns.args[2] !== undefined ? ns.args[2] : 10;
 
   targets = assignThreads(ns, hosts, targets, hackPercentage);
-  const batches = createBatches(ns, targets, hackInterval, hackPercentage);
+  const batches = createBatches(ns, targets, hackPercentage);
 
   writeJSONFile(ns, targets, "data/targets.txt");
   writeJSONFile(ns, batches, "data/batches.txt");

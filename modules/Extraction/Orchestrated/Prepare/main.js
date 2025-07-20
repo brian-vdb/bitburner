@@ -10,6 +10,10 @@ import { computeSchedulingWindows, normalizeExecutionTimes } from "./timing";
 
 /**
  * Adds synchronized timing metadata to all batches.
+ * 
+ * Expected args:
+ *   ns.args[0] - path to batches JSON file
+ *   ns.args[1] - optional hack interval (default: 1000)
  *
  * @param {import("../../../../index").NS} ns - Bitburner environment object
  * @returns {Promise<void>}
@@ -21,7 +25,7 @@ export async function main(ns) {
 
   const file = ns.args[0];
   const batches = readJSONFile(ns, file);
-  const hackInterval = 1000;
+  const hackInterval = ns.args[1] !== undefined ? ns.args[1] : 1000;
 
   // Compute scheduling windows
   const schedulingData = computeSchedulingWindows(batches, hackInterval);
