@@ -22,7 +22,7 @@ function optimizeHackAllocation(ns, target, hackPercentage, combinedLimit) {
     const hackWeakenThreads = Math.ceil(hackSec / ns.weakenAnalyze(1) * 1.1);
 
     const multiplier = 1 / (1 - hackFrac);
-    const growThreads = Math.ceil(ns.growthAnalyze(target.hostname, multiplier) * 1.1);
+    const growThreads = Math.ceil(ns.growthAnalyze(target.hostname, multiplier) * 1.25);
     const growSec = ns.growthAnalyzeSecurity(growThreads);
     const growWeakenThreads = Math.ceil(growSec / ns.weakenAnalyze(1) * 1.1);
 
@@ -61,7 +61,7 @@ function optimizeHackAllocation(ns, target, hackPercentage, combinedLimit) {
   const hackWeakenThreads = Math.ceil(hackSec / ns.weakenAnalyze(1) * 1.1);
 
   const multiplier = 1 / (1 - hackFrac);
-  const growThreads = Math.ceil(ns.growthAnalyze(target.hostname, multiplier) * 1.1);
+  const growThreads = Math.ceil(ns.growthAnalyze(target.hostname, multiplier) * 1.25);
   const growSec = ns.growthAnalyzeSecurity(growThreads);
   const growWeakenThreads = Math.ceil(growSec / ns.weakenAnalyze(1) * 1.1);
 
@@ -98,7 +98,7 @@ function calculateHackThreads(ns, target, hackPercentage = 10, limit = undefined
   let hackWeakenThreads = Math.ceil(hackSec / ns.weakenAnalyze(1) * 1.1);
 
   const multiplier = 1 / (1 - hackFrac);
-  let growThreads = Math.ceil(ns.growthAnalyze(target.hostname, multiplier) * 1.1);
+  let growThreads = Math.ceil(ns.growthAnalyze(target.hostname, multiplier) * 1.25);
   const growSec = ns.growthAnalyzeSecurity(growThreads);
   let growWeakenThreads = Math.ceil(growSec / ns.weakenAnalyze(1) * 1.1);
 
