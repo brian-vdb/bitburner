@@ -153,6 +153,41 @@ export async function extractionOrchestratedHack(ns, hackPercentage = 10) {
 }
 
 /**
+ * Executes the ExtractionOrchestratedCycle module:
+ * - Performs HWGW thread assignment
+ * - Creates batches
+ * - Scales based on threads and timing
+ * - Saves targets and batch plans to disk
+ *
+ * @param {import("../index").NS} ns - The Bitburner environment object.
+ * @param {number} [hackInterval=1000] - Interval between batch steps.
+ * @param {number} [hackPercentage=10] - Percent of money to hack per batch.
+ * @returns {Promise<void>} Resolves when the pipeline completes.
+ */
+export async function extractionOrchestratedCycle(ns, hackInterval = 1000, hackPercentage = 10) {
+  const pid = ns.exec(
+    "modules/Extraction/Orchestrated/Cycle/main.js",
+    ns.getHostname(),
+    {
+      preventDuplicates: true,
+      temporary: false,
+      threads: 1,
+    },
+    "data/hosts.txt",
+    "data/targets.txt",
+    hackInterval,
+    hackPercentage
+  );
+
+  if (pid === 0) {
+    throw new Error("Failed to start ExtractionOrchestratedCycle");
+  }
+
+  await awaitScript(ns, pid);
+}
+
+
+/**
  * Launches the ExtractionOrchestratedPrepare script to calculate execution windows for batches.
  *
  * @param {import("../index").NS} ns - The Bitburner environment object.
