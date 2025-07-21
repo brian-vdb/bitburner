@@ -77,8 +77,14 @@ export async function main(ns) {
 
     await prepareNetwork(ns, maxActionTime);
 
-    ns.print(" > Creating hack batch...");
-    await extractionOrchestratedHack(ns, hackPercentage);
+    const hostMaxRam = ns.getServerMaxRam(ns.getHostname());
+    if (hostMaxRam <= 8) {
+      ns.print(" > Low RAM host: using Hack strategy...");
+      await extractionOrchestratedHack(ns, hackPercentage);
+    } else {
+      ns.print(" > High RAM host: using Cycle strategy...");
+      await extractionOrchestratedCycle(ns, hackInterval, hackPercentage);
+    }
 
     await runOrchestratedExecution(ns, hackInterval, "hack");
   }

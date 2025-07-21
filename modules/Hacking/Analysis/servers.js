@@ -18,7 +18,7 @@ export function prepareHost(ns, hostname) {
   let maxRam = host.maxRam;
 
   if (hostname === ns.getHostname()) {
-    maxRam = Math.max(maxRam - 64.0, 0.0); // Reserve RAM if it's the local host
+    maxRam = Math.max(maxRam - 16.0, 0.0); // Reserve RAM if it's the local host
   }
 
   host.maxThreadsAvailable = Math.floor(maxRam / 1.75); // Assume 1.75 GB per thread
