@@ -33,11 +33,17 @@ export async function main(ns) {
   const hackInterval = ns.args[2] !== undefined ? ns.args[2] : 1000;
   const hackPercentage = ns.args[3] !== undefined ? ns.args[3] : 10;
 
-  targets = assignThreads(ns, hosts, targets, hackPercentage);
-  let batches = createBatches(ns, targets, hackInterval, hackPercentage);
+  const assignment = assignThreads(ns, hosts, targets, hackPercentage);
+  targets = assignment.targets;
 
-  batches = scaleBatchCounts(targets, batches, hosts, hackInterval);
-  
+  const batches = scaleBatchCounts(
+    targets,
+    createBatches(ns, targets, hackInterval, hackPercentage),
+    assignment.hosts,
+    hackInterval
+  );
+
   writeJSONFile(ns, targets, "data/targets.txt");
   writeJSONFile(ns, batches, "data/batches.txt");
+  writeJSONFile(ns, assignment.hosts, "data/hosts.txt");
 }

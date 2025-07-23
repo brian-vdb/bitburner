@@ -34,25 +34,41 @@ export function calculateAndSortTargets(ns, targets, hackPercentage, maxTargets 
  * @param {Object[]} hosts
  * @param {Object[]} targets
  * @param {number} hackPercentage
- * @returns {Object[]}
+ * @returns {{ targets: Object[], hosts: Object[] }}
  */
 export function assignThreads(ns, hosts, targets, hackPercentage) {
   targets = calculateAndSortTargets(ns, targets, hackPercentage);
-  targets.forEach(t => t.threadsAssigned = 0);
 
-  let total = hosts.reduce((sum, h) => sum + h.maxThreadsAvailable, 0);
+  targets.forEach(t => {
+    if (t.threadsAssigned === undefined) t.threadsAssigned = 0;
+  });
+
+  hosts.forEach(h => {
+    if (h.threadsAssigned === undefined) h.threadsAssigned = 0;
+  });
+
   let didAssign;
 
   do {
     didAssign = 0;
     for (const target of targets) {
-      const want = target.threadsNeeded - target.threadsAssigned;
-      const canAssign = Math.min(want, total);
-      target.threadsAssigned += canAssign;
-      total -= canAssign;
-      didAssign += canAssign;
-    }
-  } while (total > 0 && didAssign > 0);
+      let want = target.threadsNeeded - target.threadsAssigned;
+      if (want <= 0) continue;
 
-  return targets;
+      for (const host of hosts) {
+        const hostFree = host.maxThreadsAvailable - host.threadsAssigned;
+        if (hostFree <= 0) continue;
+
+        const toAssign = Math.min(want, hostFree);
+        target.threadsAssigned += toAssign;
+        host.threadsAssigned += toAssign;
+        didAssign += toAssign;
+        want -= toAssign;
+
+        if (want <= 0) break;
+      }
+    }
+  } while (didAssign > 0);
+
+  return { targets, hosts };
 }
